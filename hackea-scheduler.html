@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hackea — Planificador Ciclo 2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --blue: #0090F8;
+    --blue-dim: rgba(0,144,248,0.12);
+    --blue-mid: rgba(0,144,248,0.25);
+    --dark: #2A2A2A;
+    --body: #404040;
+    --bg: #EBECF0;
+    --surface: #F3F3F3;
+    --white: #FFFFFF;
+    --border: rgba(0,0,0,0.08);
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+
+    --r1: #0090F8;
+    --r2: #00C48C;
+    --r3: #F5A623;
+    --r4: #E84545;
+
+    --status-ok: #00C48C;
+    --status-warn: #F5A623;
+    --status-delay: #E84545;
+    --status-pending: #B0B3BA;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    min-height: 100vh;
+    font-size: 13px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--dark);
+    color: white;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid var(--blue);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+  .logo svg { width: 28px; height: 28px; }
+  .logo-hack { color: white; }
+  .logo-ea { color: var(--blue); }
+
+  header h1 {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.7);
+    border-left: 1px solid rgba(255,255,255,0.2);
+    padding-left: 16px;
+    margin-left: 4px;
+  }
+
+  header .spacer { flex: 1; }
+
+  .header-info {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    font-family: 'DM Mono', monospace;
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  /* ── LAYOUT ── */
+  .app {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    height: calc(100vh - 54px);
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sidebar-header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sidebar-header h2 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--body);
+  }
+
+  .btn-add {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: opacity 0.15s;
+  }
+  .btn-add:hover { opacity: 0.85; }
+
+  .sidebar-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+
+  .sidebar-list::-webkit-scrollbar { width: 4px; }
+  .sidebar-list::-webkit-scrollbar-track { background: transparent; }
+  .sidebar-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .subject-item {
+    padding: 10px 20px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .subject-item:hover { background: var(--bg); }
+  .subject-item.active {
+    background: var(--blue-dim);
+    border-left-color: var(--blue);
+  }
+
+  .subject-item .s-program {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--blue);
+    margin-bottom: 2px;
+  }
+  .subject-item .s-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--dark);
+    line-height: 1.3;
+  }
+  .subject-item .s-meta {
+    font-size: 10px;
+    color: var(--body);
+    margin-top: 4px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .stage-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 7px;
+    border-radius: 20px;
+  }
+  .stage-pill.pending { background: rgba(176,179,186,0.2); color: var(--status-pending); }
+  .stage-pill.active  { background: rgba(0,144,248,0.12); color: var(--blue); }
+  .stage-pill.done    { background: rgba(0,196,140,0.12); color: var(--status-ok); }
+  .stage-pill.delayed { background: rgba(232,69,69,0.12); color: var(--status-delay); }
+
+  /* ── MAIN PANEL ── */
+  .main {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .tabs {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    padding: 0 24px;
+    gap: 0;
+  }
+
+  .tab {
+    padding: 14px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--body);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    margin-bottom: -1px;
+  }
+  .tab:hover { color: var(--dark); }
+  .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  .tab-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+  }
+  .tab-content::-webkit-scrollbar { width: 4px; }
+  .tab-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── SUBJECT DETAIL ── */
+  .detail-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .detail-program-badge {
+    background: var(--blue);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    margin-top: 3px;
+  }
+
+  .detail-title h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1.2;
+  }
+  .detail-title p {
+    font-size: 12px;
+    color: var(--body);
+    margin-top: 4px;
+  }
+
+  /* ── FLOW TIMELINE ── */
+  .flow-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .flow-step {
+    background: var(--white);
+    padding: 16px;
+    position: relative;
+  }
+
+  .flow-step-num {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--status-pending);
+    margin-bottom: 4px;
+  }
+  .flow-step.step-done .flow-step-num { color: var(--status-ok); }
+  .flow-step.step-active .flow-step-num { color: var(--blue); }
+  .flow-step.step-delayed .flow-step-num { color: var(--status-delay); }
+
+  .flow-step-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 8px;
+  }
+
+  .flow-step-detail {
+    font-size: 10px;
+    color: var(--body);
+    line-height: 1.5;
+  }
+
+  .flow-date-input {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 8px;
+  }
+
+  .flow-date-input label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--body);
+  }
+
+  .flow-date-input input[type="date"],
+  .flow-date-input select {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--dark);
+    background: var(--surface);
+    width: 100%;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .flow-date-input input[type="date"]:focus,
+  .flow-date-input select:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+
+  .computed-dates {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .computed-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+  }
+  .computed-row span:first-child { color: var(--body); }
+  .computed-row span:last-child {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    color: var(--dark);
+  }
+
+  .divider-line {
+    height: 2px;
+    background: var(--blue);
+    width: 24px;
+    margin: 12px 0;
+  }
+
+  /* ── COLLISION WARNING ── */
+  .conflict-banner {
+    background: rgba(232,69,69,0.08);
+    border: 1px solid rgba(232,69,69,0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 11px;
+    color: var(--status-delay);
+    display: none;
+  }
+  .conflict-banner.show { display: block; }
+  .conflict-banner strong { font-weight: 700; display: block; margin-bottom: 4px; }
+
+  /* ── CALENDAR VIEW ── */
+  .cal-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .cal-nav {
+    display: flex;
+    gap: 4px;
+  }
+
+  .cal-nav button {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+  .cal-nav button:hover { border-color: var(--blue); color: var(--blue); }
+
+  .cal-week-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--dark);
+  }
+
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .filter-chip {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--white);
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+  }
+  .filter-chip.active { background: var(--blue); color: white; border-color: var(--blue); }
+  .filter-chip:hover:not(.active) { border-color: var(--blue); color: var(--blue); }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: 60px repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .cal-header-cell {
+    background: var(--dark);
+    color: white;
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .cal-header-cell .date-num {
+    font-size: 18px;
+    font-weight: 700;
+    display: block;
+    margin-top: 2px;
+    font-family: 'DM Mono', monospace;
+  }
+  .cal-header-cell.today {
+    background: var(--blue);
+  }
+  .cal-header-cell.time-col { background: var(--dark); }
+
+  .cal-cell {
+    background: var(--white);
+    min-height: 80px;
+    padding: 6px;
+    vertical-align: top;
+    position: relative;
+  }
+  .cal-cell.weekend { background: var(--surface); }
+  .cal-cell.time-label {
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    color: var(--body);
+    font-weight: 500;
+    min-height: 80px;
+  }
+
+  .cal-event {
+    border-radius: 4px;
+    padding: 4px 6px;
+    margin-bottom: 3px;
+    font-size: 9px;
+    font-weight: 600;
+    cursor: pointer;
+    line-height: 1.3;
+    transition: opacity 0.15s;
+  }
+  .cal-event:hover { opacity: 0.8; }
+  .cal-event.r1 { background: rgba(0,144,248,0.15); color: #0070C0; border-left: 2px solid var(--r1); }
+  .cal-event.r2 { background: rgba(0,196,140,0.15); color: #00956A; border-left: 2px solid var(--r2); }
+  .cal-event.r3 { background: rgba(245,166,35,0.15); color: #B07800; border-left: 2px solid var(--r3); }
+  .cal-event.r4 { background: rgba(232,69,69,0.15); color: #C02020; border-left: 2px solid var(--r4); }
+
+  /* ── MAIBE LOAD ── */
+  .load-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .load-bar-label {
+    font-size: 10px;
+    color: var(--body);
+    width: 70px;
+    font-family: 'DM Mono', monospace;
+    flex-shrink: 0;
+  }
+  .load-bar-track {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .load-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+  .load-bar-fill.ok { background: var(--status-ok); }
+  .load-bar-fill.warn { background: var(--status-warn); }
+  .load-bar-fill.over { background: var(--status-delay); }
+  .load-bar-count {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--dark);
+    width: 20px;
+    text-align: right;
+  }
+
+  /* ── OVERVIEW TABLE ── */
+  .overview-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+  .overview-table th {
+    background: var(--dark);
+    color: white;
+    padding: 9px 12px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .overview-table th:first-child { border-radius: 6px 0 0 0; }
+  .overview-table th:last-child { border-radius: 0 6px 0 0; }
+
+  .overview-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--body);
+    vertical-align: middle;
+  }
+  .overview-table tr:hover td { background: var(--blue-dim); cursor: pointer; }
+  .overview-table tr.active-row td { background: var(--blue-dim); }
+
+  .overview-table td:first-child { font-weight: 600; color: var(--dark); }
+
+  .date-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    background: var(--surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .date-chip.set { background: var(--blue-dim); color: var(--blue); }
+  .date-chip.computed { background: rgba(0,196,140,0.1); color: #00956A; }
+  .date-chip.empty { color: var(--status-pending); background: transparent; }
+
+  /* ── PROGRESS CARD ── */
+  .progress-section {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .progress-card {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 14px 16px;
+    border-top: 3px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .progress-card.r1 { border-top-color: var(--r1); }
+  .progress-card.r2 { border-top-color: var(--r2); }
+  .progress-card.r3 { border-top-color: var(--r3); }
+  .progress-card.r4 { border-top-color: var(--r4); }
+
+  .progress-card .p-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--body);
+    margin-bottom: 4px;
+  }
+  .progress-card .p-count {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    color: var(--dark);
+    line-height: 1;
+  }
+  .progress-card .p-sub {
+    font-size: 10px;
+    color: var(--body);
+    margin-top: 4px;
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+
+  .modal {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 28px;
+    width: 480px;
+    max-width: 95vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .modal h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--body);
+    margin-bottom: 5px;
+  }
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 8px 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    color: var(--dark);
+    background: var(--surface);
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--body);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+  }
+  .btn-primary {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    padding: 8px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+  }
+  .btn-danger {
+    background: rgba(232,69,69,0.1);
+    color: var(--status-delay);
+    border: 1px solid rgba(232,69,69,0.2);
+    border-radius: 7px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    margin-right: auto;
+  }
+
+  /* ── RESCHEDULE HELPER ── */
+  .reschedule-section {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 12px;
+  }
+  .reschedule-section h4 {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 10px;
+  }
+  .reschedule-suggestion {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+  }
+  .btn-use-date {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--body);
+  }
+  .empty-state .es-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    opacity: 0.4;
+  }
+  .empty-state p { font-size: 13px; }
+
+  /* ── TZ BADGE ── */
+  .tz-badge {
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    background: rgba(245,166,35,0.15);
+    color: #B07800;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--body);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 28 28" fill="none">
+      <circle cx="14" cy="14" r="13" stroke="white" stroke-width="1.5"/>
+      <circle cx="14" cy="14" r="8" stroke="#0090F8" stroke-width="1.5"/>
+      <circle cx="14" cy="14" r="3" fill="#0090F8"/>
+      <line x1="14" y1="1" x2="14" y2="27" stroke="white" stroke-width="1.2"/>
+      <line x1="1" y1="14" x2="27" y2="14" stroke="white" stroke-width="1.2"/>
+    </svg>
+    <span><span class="logo-hack">HACK</span><span class="logo-ea">EA</span></span>
+  </div>
+  <h1>Planificador de Producción — Ciclo 2</h1>
+  <div class="spacer"></div>
+  <button onclick="if(confirm('¿Resetear todos los datos? Esto borrará fechas ingresadas.')){localStorage.removeItem('hackea_c2');subjects=[];seedIfEmpty();renderAll();}" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.15);border-radius:5px;padding:4px 10px;font-size:10px;cursor:pointer;font-family:Poppins,sans-serif;margin-right:12px">↺ Reset datos</button>
+  <div class="header-info">
+    <span id="currentDate"></span><br>
+    Maibe: México UTC-6 <span class="tz-badge">-3h vs Chile</span>
+  </div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Asignaturas (<span id="subjectCount">0</span>)</h2>
+      <button class="btn-add" onclick="openAddModal()">+ Nueva</button>
+    </div>
+    <div class="sidebar-list" id="subjectList"></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('detail')">Detalle</div>
+      <div class="tab" onclick="switchTab('calendar')">Calendario</div>
+      <div class="tab" onclick="switchTab('overview')">Vista General</div>
+    </div>
+
+    <!-- DETAIL TAB -->
+    <div class="tab-content" id="tab-detail">
+      <div id="detailEmpty" class="empty-state">
+        <div class="es-icon">📋</div>
+        <p>Selecciona una asignatura o crea una nueva para comenzar.</p>
+      </div>
+      <div id="detailContent" style="display:none"></div>
+    </div>
+
+    <!-- CALENDAR TAB -->
+    <div class="tab-content" id="tab-calendar" style="display:none">
+      <div class="cal-controls">
+        <div class="cal-nav">
+          <button onclick="calNav(-1)">‹</button>
+          <button onclick="calNav(1)">›</button>
+        </div>
+        <span class="cal-week-label" id="calWeekLabel"></span>
+        <div class="filter-row">
+          <div class="filter-chip active" onclick="toggleFilter(this,'ALL')">Todas</div>
+          <div class="filter-chip" onclick="toggleFilter(this,'R1')" style="border-color:var(--r1);color:var(--r1)">R1</div>
+          <div class="filter-chip" onclick="toggleFilter(this,'R2')" style="border-color:var(--r2);color:var(--r2)">R2</div>
+          <div class="filter-chip" onclick="toggleFilter(this,'R3')" style="border-color:var(--r3);color:var(--r3)">R3</div>
+          <div class="filter-chip" onclick="toggleFilter(this,'R4')" style="border-color:var(--r4);color:var(--r4)">R4</div>
+        </div>
+      </div>
+
+      <!-- Maibe load indicator -->
+      <div style="background:var(--white);border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+        <div class="section-title">Carga de reuniones esta semana</div>
+        <div id="maibeLoad"></div>
+      </div>
+
+      <div id="calGrid" class="cal-grid"></div>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="tab-content" id="tab-overview" style="display:none">
+      <div class="progress-section" id="progressCards"></div>
+      <div class="section-title">Todas las asignaturas</div>
+      <table class="overview-table">
+        <thead>
+          <tr>
+            <th>Asignatura</th>
+            <th>Programa</th>
+            <th>R1 Inicial</th>
+            <th>Envío Contenido</th>
+            <th>R2 Comentarios</th>
+            <th>R3 Guiones</th>
+            <th>R4 Recursos</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="overviewBody"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3 id="modalTitle">Nueva Asignatura</h3>
+
+    <div class="form-group">
+      <label>Nombre de la asignatura</label>
+      <input type="text" id="fName" placeholder="Ej: Economía Gerencial">
+    </div>
+    <div class="form-group">
+      <label>Programa</label>
+      <select id="fProgram">
+        <option value="MBA">MBA</option>
+        <option value="MCG">Magíster Control de Gestión</option>
+        <option value="MCEE">Magíster Currículum y Evaluación Educativa</option>
+        <option value="OPT">Optativo</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Docente</label>
+      <input type="text" id="fTeacher" placeholder="Nombre del docente">
+    </div>
+    <div class="form-group">
+      <label>Fecha Reunión 1 (con Maibe)</label>
+      <input type="date" id="fR1Date">
+    </div>
+    <div class="form-group">
+      <label>Restricciones de disponibilidad</label>
+      <input type="text" id="fRestrictions" placeholder="Ej: No disponible lunes, prefiere mañanas...">
+    </div>
+
+    <div id="rescheduleHelper" class="reschedule-section" style="display:none">
+      <h4>⚡ Días libres cercanos para Maibe (Reuniones 1)</h4>
+      <div id="rescheduleSuggestions"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-danger" id="btnDelete" onclick="deleteSubject()" style="display:none">Eliminar</button>
+      <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveSubject()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+
+const PROGRAMS = { MBA: 'MBA', MCG: 'MCG', MCEE: 'MCEE' };
+
+// Durations in business days
+const FLOW = {
+  r1_to_content_send: 2,      // Merlym: 2 days to write + QA
+  content_review_window: 4,   // Teacher: 4 business days to review
+  r2_to_adjustments: 1,       // Merlym: 1 day adjustments
+  adjustments_to_scripts: 2,  // Merlym: 2 days scripting
+  r3_to_script_adjustments: 1, // Merlym: 1 day script adjustments
+  scripts_to_production: 4,   // Team: 4 days production (2 parallel)
+  r4_to_final_adjustments: 2, // Team: up to 2 days
+  final_to_montage: 1         // 1 day montage
+};
+
+let subjects = [];
+let selectedId = null;
+let editingId = null;
+let calWeekOffset = 0;
+let calFilter = 'ALL';
+
+// ─── STORAGE ────────────────────────────────────────────────────────────────
+
+function save() {
+  try { localStorage.setItem('hackea_c2', JSON.stringify(subjects)); } catch(e) {}
+}
+
+function load() {
+  try {
+    const d = localStorage.getItem('hackea_c2');
+    if (d) subjects = JSON.parse(d);
+  } catch(e) {}
+}
+
+// ─── BUSINESS DAYS ──────────────────────────────────────────────────────────
+
+function addBD(dateStr, days) {
+  if (!dateStr) return null;
+  let d = new Date(dateStr + 'T12:00:00');
+  let added = 0;
+  while (added < days) {
+    d.setDate(d.getDate() + 1);
+    if (d.getDay() !== 0 && d.getDay() !== 6) added++;
+  }
+  return d.toISOString().split('T')[0];
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('es-CL', { day: '2-digit', month: 'short' });
+}
+
+function getWeekStart(offset = 0) {
+  const today = new Date();
+  const day = today.getDay();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - (day === 0 ? 6 : day - 1) + (offset * 7));
+  monday.setHours(0, 0, 0, 0);
+  return monday;
+}
+
+function dateToStr(d) {
+  return d.toISOString().split('T')[0];
+}
+
+// ─── COMPUTE FLOW DATES ──────────────────────────────────────────────────────
+
+function computeDates(s) {
+  const r1 = s.r1Date;
+  if (!r1) return {};
+
+  const contentSend = addBD(r1, FLOW.r1_to_content_send);
+  const r2 = addBD(contentSend, FLOW.content_review_window);
+  const adjSend = addBD(r2, FLOW.r2_to_adjustments);
+  const scriptsReady = addBD(adjSend, FLOW.adjustments_to_scripts);
+  const r3 = scriptsReady; // R3 happens when scripts are ready
+  const prodStart = addBD(r3, FLOW.r3_to_script_adjustments);
+  const prodReady = addBD(prodStart, FLOW.scripts_to_production);
+  const r4 = prodReady;
+  const montageStart = addBD(r4, FLOW.r4_to_final_adjustments);
+  const montageEnd = addBD(montageStart, FLOW.final_to_montage);
+
+  return { contentSend, r2, adjSend, scriptsReady, r3, prodStart, prodReady, r4, montageStart, montageEnd };
+}
+
+// ─── DETECT CONFLICTS ───────────────────────────────────────────────────────
+
+function getMaibeLoad() {
+  const load = {};
+  subjects.forEach(s => {
+    const dates = computeDates(s);
+    ['r1Date', 'r3', 'r4'].forEach(k => {
+      const d = k === 'r1Date' ? s.r1Date : dates[k];
+      if (d) load[d] = (load[d] || 0) + 1;
+    });
+  });
+  return load;
+}
+
+function getConflictDays() {
+  const load = getMaibeLoad();
+  return Object.entries(load).filter(([,v]) => v > 2).map(([k]) => k);
+}
+
+function getFreeDaysNear(fromDate, count = 5) {
+  if (!fromDate) return [];
+  const load = getMaibeLoad();
+  const free = [];
+  let d = new Date(fromDate + 'T12:00:00');
+  let tries = 0;
+  while (free.length < count && tries < 60) {
+    d.setDate(d.getDate() + 1);
+    tries++;
+    if (d.getDay() === 0 || d.getDay() === 6) continue;
+    const ds = d.toISOString().split('T')[0];
+    if (!load[ds] || load[ds] < 2) {
+      free.push({ date: ds, count: load[ds] || 0 });
+    }
+  }
+  return free;
+}
+
+// ─── RENDER SIDEBAR ─────────────────────────────────────────────────────────
+
+function renderSidebar() {
+  const list = document.getElementById('subjectList');
+  document.getElementById('subjectCount').textContent = subjects.length;
+
+  if (!subjects.length) {
+    list.innerHTML = '<div style="padding:24px 20px;color:var(--body);font-size:12px;text-align:center;opacity:0.7">Agrega la primera asignatura →</div>';
+    return;
+  }
+
+  const programs = ['MBA', 'MCG', 'MCEE', 'OPT'];
+  let html = '';
+
+  programs.forEach(prog => {
+    const subs = subjects.filter(s => s.program === prog);
+    if (!subs.length) return;
+
+    subs.forEach(s => {
+      const dates = computeDates(s);
+      const hasR1 = !!s.r1Date;
+      const stagePill = hasR1
+        ? `<span class="stage-pill active">En flujo</span>`
+        : `<span class="stage-pill pending">Sin agendar</span>`;
+
+      const nextEvent = hasR1 ? (formatDate(s.r1Date) || '—') : 'Sin fecha';
+      html += `
+        <div class="subject-item ${selectedId === s.id ? 'active' : ''}" onclick="selectSubject('${s.id}')">
+          <div class="s-program">${prog}</div>
+          <div class="s-name">${s.name}</div>
+          <div class="s-meta">
+            ${stagePill}
+            ${hasR1 ? `<span style="color:var(--body)">R1: ${formatDate(s.r1Date)}</span>` : ''}
+            ${s.restrictions ? `<span title="${s.restrictions.replace(/"/g,"'")}" style="cursor:help">📋</span>` : ''}
+          </div>
+        </div>`;
+    });
+  });
+
+  list.innerHTML = html;
+}
+
+// ─── RENDER DETAIL ──────────────────────────────────────────────────────────
+
+function renderDetail() {
+  const el = document.getElementById('detailContent');
+  const empty = document.getElementById('detailEmpty');
+
+  if (!selectedId) {
+    el.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  const s = subjects.find(x => x.id === selectedId);
+  if (!s) return;
+
+  const d = computeDates(s);
+  empty.style.display = 'none';
+  el.style.display = 'block';
+
+  const conflicts = getConflictDays();
+  const hasConflict = [s.r1Date, d.r3, d.r4].some(dt => dt && conflicts.includes(dt));
+
+  // Restrictions banner
+  const restrictionHtml = s.restrictions ? `
+    <div style="background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.3);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:11px;color:#7a5500;display:flex;gap:8px;align-items:flex-start">
+      <span style="flex-shrink:0">📋</span>
+      <span><strong>Restricciones del docente:</strong> ${s.restrictions}</span>
+    </div>` : '';
+
+  const steps = [
+    {
+      num: 'Reunión 1',
+      title: 'Alineación Inicial',
+      who: 'Maibe + Docente',
+      color: 'r1',
+      detail: 'Revisión de programa, bibliografía, objetivos. Se fija fecha R2.',
+      dateKey: 'r1Date',
+      dateLabel: 'Fecha reunión',
+      editable: true,
+      computed: [
+        { label: 'Envío contenido', val: d.contentSend }
+      ]
+    },
+    {
+      num: 'Proceso interno',
+      title: 'Contenido + Revisión',
+      who: 'Merlym + Docente',
+      color: 'r2',
+      detail: 'Merlym: 2 días redacción y QA. Docente: 4 días hábiles de revisión.',
+      computed: [
+        { label: 'Envío a docente', val: d.contentSend },
+        { label: 'Fecha límite doc.', val: d.r2 && addBD(d.contentSend, 4) }
+      ]
+    },
+    {
+      num: 'Reunión 2',
+      title: 'Revisión Comentarios',
+      who: 'Merlym + Docente',
+      color: 'r2',
+      detail: 'Se revisan observaciones. Merlym ajusta en 1 día. Se guioniza en 2 días.',
+      computed: [
+        { label: 'Fecha R2', val: d.r2 },
+        { label: 'Ajustes listos', val: d.adjSend },
+        { label: 'Guiones listos', val: d.scriptsReady }
+      ]
+    },
+    {
+      num: 'Reunión 3',
+      title: 'Revisión Guiones',
+      who: 'Maibe + Docente',
+      color: 'r3',
+      detail: 'Revisión de guiones. 1 día ajustes. Pasa a producción (4 días, 2 desarrolladores).',
+      computed: [
+        { label: 'Fecha R3', val: d.r3 },
+        { label: 'Prod. lista', val: d.prodReady }
+      ]
+    },
+    {
+      num: 'Reunión 4',
+      title: 'Revisión Recursos',
+      who: 'Maibe + Docente',
+      color: 'r4',
+      detail: 'Revisión recursos producidos. Hasta 2 días ajustes. Montaje 1 día. Bibliotecas.',
+      computed: [
+        { label: 'Fecha R4', val: d.r4 },
+        { label: 'Montaje', val: d.montageStart },
+        { label: 'Fin estimado', val: d.montageEnd }
+      ]
+    }
+  ];
+
+  let html = `
+    <div class="detail-header">
+      <span class="detail-program-badge">${s.program}</span>
+      <div class="detail-title">
+        <h2>${s.name}</h2>
+        <p>Docente: ${s.teacher || 'Sin asignar'}</p>
+      </div>
+      <div style="margin-left:auto">
+        <button class="btn-add" onclick="openEditModal('${s.id}')">✏️ Editar</button>
+      </div>
+    </div>`;
+
+  if (hasConflict) {
+    html += `<div class="conflict-banner show">⚠️ <strong>Conflicto de agenda detectado</strong> Una o más reuniones de Maibe en esta asignatura caen en días con más de 2 reuniones. Revisa el calendario.</div>`;
+  }
+
+  html += restrictionHtml;
+
+  html += `<div class="flow-grid">`;
+
+  steps.forEach((step, i) => {
+    html += `<div class="flow-step ${s.r1Date ? 'step-active' : ''}">
+      <div class="flow-step-num">${step.num}</div>
+      <div class="flow-step-title">${step.title}</div>
+      <div class="flow-step-detail" style="color:var(--blue);font-weight:600;margin-bottom:4px">${step.who}</div>
+      <div class="flow-step-detail">${step.detail}</div>
+      ${step.editable ? `
+      <div class="flow-date-input" style="margin-top:10px">
+        <label>Fecha R1</label>
+        <input type="date" value="${s.r1Date || ''}" onchange="updateR1('${s.id}', this.value)">
+      </div>` : ''}
+      ${step.computed && step.computed.length ? `
+      <div class="computed-dates">
+        ${step.computed.filter(c => c.val).map(c => `
+          <div class="computed-row">
+            <span>${c.label}</span>
+            <span>${formatDate(c.val)}</span>
+          </div>`).join('')}
+      </div>` : ''}
+    </div>`;
+  });
+
+  html += `</div>`;
+
+  // Summary timeline
+  if (s.r1Date) {
+    html += `
+    <div style="background:var(--white);border-radius:10px;padding:16px 20px;margin-top:16px">
+      <div class="section-title">Línea de tiempo estimada</div>
+      <div style="display:flex;gap:0;align-items:center;overflow-x:auto;padding-bottom:4px">`;
+
+    const timeline = [
+      { label: 'R1', date: s.r1Date, color: 'var(--r1)' },
+      { label: 'Envío', date: d.contentSend, color: '#888' },
+      { label: 'R2', date: d.r2, color: 'var(--r2)' },
+      { label: 'Ajustes', date: d.adjSend, color: '#888' },
+      { label: 'Guiones', date: d.scriptsReady, color: '#888' },
+      { label: 'R3', date: d.r3, color: 'var(--r3)' },
+      { label: 'Producción', date: d.prodReady, color: '#888' },
+      { label: 'R4', date: d.r4, color: 'var(--r4)' },
+      { label: 'Montaje', date: d.montageEnd, color: '#888' }
+    ];
+
+    timeline.forEach((t, i) => {
+      if (!t.date) return;
+      html += `
+        <div style="flex-shrink:0;text-align:center;min-width:70px">
+          <div style="width:12px;height:12px;border-radius:50%;background:${t.color};margin:0 auto 4px"></div>
+          <div style="font-size:10px;font-weight:700;color:${t.color}">${t.label}</div>
+          <div style="font-size:9px;font-family:'DM Mono',monospace;color:var(--body)">${formatDate(t.date)}</div>
+        </div>`;
+      if (i < timeline.length - 1) {
+        html += `<div style="flex:1;height:1px;background:var(--border);min-width:12px;margin-top:6px"></div>`;
+      }
+    });
+
+    html += `</div></div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+// ─── UPDATE R1 DATE ──────────────────────────────────────────────────────────
+
+function updateR1(id, val) {
+  const s = subjects.find(x => x.id === id);
+  if (s) {
+    s.r1Date = val;
+    save();
+    renderSidebar();
+    renderDetail();
+    renderCalendar();
+    renderOverview();
+  }
+}
+
+// ─── CALENDAR ───────────────────────────────────────────────────────────────
+
+function renderCalendar() {
+  const ws = getWeekStart(calWeekOffset);
+  const days = Array.from({length: 5}, (_, i) => {
+    const d = new Date(ws);
+    d.setDate(ws.getDate() + i);
+    return d;
+  });
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  // Week label
+  const opts = { day: 'numeric', month: 'long' };
+  document.getElementById('calWeekLabel').textContent =
+    `${days[0].toLocaleDateString('es-CL', opts)} — ${days[4].toLocaleDateString('es-CL', opts)}`;
+
+  // Gather events
+  const events = [];
+  subjects.forEach(s => {
+    const d = computeDates(s);
+    const addEvt = (date, type, cls) => {
+      if (!date) return;
+      events.push({ date, label: `${type}: ${s.name.substring(0,18)}`, subject: s, cls, type });
+    };
+    addEvt(s.r1Date, 'R1', 'r1');
+    addEvt(d.r2, 'R2', 'r2');
+    addEvt(d.r3, 'R3', 'r3');
+    addEvt(d.r4, 'R4', 'r4');
+  });
+
+  // Maibe load
+  const maibeDiv = document.getElementById('maibeLoad');
+  const load = getMaibeLoad();
+  let maibeHtml = '';
+  days.forEach(d => {
+    const ds = dateToStr(d);
+    const cnt = load[ds] || 0;
+    const dayName = d.toLocaleDateString('es-CL', { weekday: 'short', day: 'numeric' });
+    const cls = cnt === 0 ? 'ok' : cnt <= 2 ? 'ok' : cnt <= 3 ? 'warn' : 'over';
+    const pct = Math.min(100, (cnt / 4) * 100);
+    maibeHtml += `
+      <div class="load-bar-row">
+        <span class="load-bar-label">${dayName}</span>
+        <div class="load-bar-track"><div class="load-bar-fill ${cls}" style="width:${pct}%"></div></div>
+        <span class="load-bar-count">${cnt}</span>
+      </div>`;
+  });
+  maibeDiv.innerHTML = maibeHtml;
+
+  // Grid
+  const grid = document.getElementById('calGrid');
+  let html = `<div class="cal-header-cell time-col">—</div>`;
+
+  days.forEach(d => {
+    const isToday = d.getTime() === today.getTime();
+    html += `<div class="cal-header-cell ${isToday ? 'today' : ''}">
+      ${d.toLocaleDateString('es-CL', {weekday:'short'})}
+      <span class="date-num">${d.getDate()}</span>
+    </div>`;
+  });
+
+  // Row labels
+  const rowLabels = ['Reuniones', 'Envíos', 'Internos'];
+  const rowFilters = {
+    'Reuniones': ['r1', 'r2', 'r3', 'r4'],
+    'Envíos': [],
+    'Internos': []
+  };
+
+  // Single row per day
+  html += `<div class="cal-cell time-label">Eventos</div>`;
+  days.forEach(d => {
+    const ds = dateToStr(d);
+    const dayEvts = events.filter(e => {
+      if (e.date !== ds) return false;
+      if (calFilter === 'ALL') return true;
+      return e.cls === calFilter.toLowerCase();
+    });
+
+    html += `<div class="cal-cell">`;
+    if (dayEvts.length > 0) {
+      dayEvts.forEach(e => {
+        html += `<div class="cal-event ${e.cls}" onclick="selectSubject('${e.subject.id}');switchTab('detail')">
+          <strong>${e.type}</strong> — ${e.subject.name.substring(0,16)}${e.subject.name.length > 16 ? '…' : ''}
+        </div>`;
+      });
+    }
+    html += `</div>`;
+  });
+
+  html += `<div class="cal-cell time-label">Entregas</div>`;
+  days.forEach(d => {
+    const ds = dateToStr(d);
+    const deliveries = subjects.flatMap(s => {
+      const dates = computeDates(s);
+      const items = [];
+      if (dates.contentSend === ds) items.push({ label: `Envío contenido: ${s.name.substring(0,14)}…`, cls: 'r2' });
+      if (dates.adjSend === ds) items.push({ label: `Ajustes: ${s.name.substring(0,16)}…`, cls: 'r2' });
+      if (dates.scriptsReady === ds) items.push({ label: `Guiones: ${s.name.substring(0,16)}…`, cls: 'r3' });
+      if (dates.prodReady === ds) items.push({ label: `Producción lista: ${s.name.substring(0,12)}…`, cls: 'r4' });
+      if (dates.montageEnd === ds) items.push({ label: `🎉 Montaje: ${s.name.substring(0,14)}…`, cls: 'r4' });
+      return items;
+    });
+
+    html += `<div class="cal-cell">`;
+    deliveries.forEach(e => {
+      html += `<div class="cal-event ${e.cls}" style="opacity:0.7">${e.label}</div>`;
+    });
+    html += `</div>`;
+  });
+
+  grid.innerHTML = html;
+}
+
+function calNav(dir) {
+  calWeekOffset += dir;
+  renderCalendar();
+}
+
+function toggleFilter(el, val) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  calFilter = val;
+  renderCalendar();
+}
+
+// ─── OVERVIEW ───────────────────────────────────────────────────────────────
+
+function renderOverview() {
+  // Progress cards
+  const withR1 = subjects.filter(s => s.r1Date).length;
+  const total = subjects.length;
+  const cardsHtml = `
+    <div class="progress-card r1">
+      <div class="p-label">Total asignaturas</div>
+      <div class="p-count">${total}</div>
+      <div class="p-sub">Ciclo 2</div>
+    </div>
+    <div class="progress-card r2">
+      <div class="p-label">Con R1 agendada</div>
+      <div class="p-count">${withR1}</div>
+      <div class="p-sub">de ${total}</div>
+    </div>
+    <div class="progress-card r3">
+      <div class="p-label">Sin agendar</div>
+      <div class="p-count">${total - withR1}</div>
+      <div class="p-sub">pendientes</div>
+    </div>
+    <div class="progress-card r4">
+      <div class="p-label">Conflictos</div>
+      <div class="p-count">${getConflictDays().length}</div>
+      <div class="p-sub">días sobrecargados</div>
+    </div>`;
+
+  document.getElementById('progressCards').innerHTML = cardsHtml;
+
+  // Table
+  const tbody = document.getElementById('overviewBody');
+  let html = '';
+
+  subjects.forEach(s => {
+    const d = computeDates(s);
+    const chip = (val, type) => val
+      ? `<span class="date-chip ${type}">${formatDate(val)}</span>`
+      : `<span class="date-chip empty">—</span>`;
+
+    html += `
+      <tr onclick="selectSubject('${s.id}');switchTab('detail')" ${selectedId === s.id ? 'class="active-row"' : ''}>
+        <td>${s.name}</td>
+        <td><span style="font-size:10px;font-weight:700;color:var(--blue)">${s.program}</span></td>
+        <td>${chip(s.r1Date, 'set')}</td>
+        <td>${chip(d.contentSend, 'computed')}</td>
+        <td>${chip(d.r2, 'computed')}</td>
+        <td>${chip(d.r3, 'computed')}</td>
+        <td>${chip(d.r4, 'computed')}</td>
+        <td><span class="stage-pill ${s.r1Date ? 'active' : 'pending'}">${s.r1Date ? 'En flujo' : 'Sin agendar'}</span></td>
+      </tr>`;
+  });
+
+  tbody.innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--body)">No hay asignaturas. Crea la primera →</td></tr>';
+}
+
+// ─── SELECT SUBJECT ──────────────────────────────────────────────────────────
+
+function selectSubject(id) {
+  selectedId = id;
+  renderSidebar();
+  renderDetail();
+  renderOverview();
+}
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+
+function switchTab(tab) {
+  ['detail', 'calendar', 'overview'].forEach(t => {
+    document.getElementById(`tab-${t}`).style.display = t === tab ? 'flex' : 'none';
+    if (t === tab) document.getElementById(`tab-${t}`).style.display = 'block';
+  });
+
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', ['detail','calendar','overview'][i] === tab);
+  });
+
+  if (tab === 'calendar') renderCalendar();
+  if (tab === 'overview') renderOverview();
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Nueva Asignatura';
+  document.getElementById('fName').value = '';
+  document.getElementById('fProgram').value = 'MBA';
+  document.getElementById('fTeacher').value = '';
+  document.getElementById('fR1Date').value = '';
+  document.getElementById('fRestrictions').value = '';
+  document.getElementById('btnDelete').style.display = 'none';
+  document.getElementById('rescheduleHelper').style.display = 'none';
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function openEditModal(id) {
+  editingId = id;
+  const s = subjects.find(x => x.id === id);
+  document.getElementById('modalTitle').textContent = 'Editar Asignatura';
+  document.getElementById('fName').value = s.name;
+  document.getElementById('fProgram').value = s.program;
+  document.getElementById('fTeacher').value = s.teacher || '';
+  document.getElementById('fR1Date').value = s.r1Date || '';
+  document.getElementById('fRestrictions').value = s.restrictions || '';
+  document.getElementById('btnDelete').style.display = 'block';
+
+  if (s.r1Date) {
+    showRescheduleSuggestions(s.r1Date);
+  }
+
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function showRescheduleSuggestions(fromDate) {
+  const helper = document.getElementById('rescheduleHelper');
+  const suggs = getFreeDaysNear(fromDate, 4);
+
+  if (suggs.length) {
+    helper.style.display = 'block';
+    document.getElementById('rescheduleSuggestions').innerHTML = suggs.map(s => `
+      <div class="reschedule-suggestion">
+        <span>${new Date(s.date + 'T12:00:00').toLocaleDateString('es-CL', {weekday:'long', day:'numeric', month:'long'})}</span>
+        <span style="font-size:10px;color:var(--body)">${s.count} reuniones</span>
+        <button class="btn-use-date" onclick="document.getElementById('fR1Date').value='${s.date}'">Usar</button>
+      </div>`).join('');
+  }
+}
+
+document.getElementById('fR1Date').addEventListener('change', function() {
+  if (this.value) showRescheduleSuggestions(this.value);
+});
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+  editingId = null;
+}
+
+function saveSubject() {
+  const name = document.getElementById('fName').value.trim();
+  if (!name) { alert('Ingresa el nombre de la asignatura.'); return; }
+
+  if (editingId) {
+    const s = subjects.find(x => x.id === editingId);
+    s.name = name;
+    s.program = document.getElementById('fProgram').value;
+    s.teacher = document.getElementById('fTeacher').value.trim();
+    s.r1Date = document.getElementById('fR1Date').value || null;
+    s.restrictions = document.getElementById('fRestrictions').value.trim();
+  } else {
+    subjects.push({
+      id: Date.now().toString(),
+      name,
+      program: document.getElementById('fProgram').value,
+      teacher: document.getElementById('fTeacher').value.trim(),
+      r1Date: document.getElementById('fR1Date').value || null,
+      restrictions: document.getElementById('fRestrictions').value.trim()
+    });
+  }
+
+  save();
+  closeModal();
+  renderSidebar();
+  renderDetail();
+  renderCalendar();
+  renderOverview();
+}
+
+function deleteSubject() {
+  if (!editingId) return;
+  if (!confirm('¿Eliminar esta asignatura?')) return;
+  subjects = subjects.filter(s => s.id !== editingId);
+  if (selectedId === editingId) selectedId = null;
+  save();
+  closeModal();
+  renderAll();
+}
+
+function renderAll() {
+  renderSidebar();
+  renderDetail();
+  renderCalendar();
+  renderOverview();
+}
+
+// Close modal on overlay click
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ─── DATE HEADER ─────────────────────────────────────────────────────────────
+
+function updateDateHeader() {
+  document.getElementById('currentDate').textContent =
+    new Date().toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// ─── SEED DATA ───────────────────────────────────────────────────────────────
+
+function seedIfEmpty() {
+  if (subjects.length) return;
+  const seedSubjects = [
+    // MBA Ciclo 2
+    {
+      name: 'Contabilidad para la Toma de Decisiones',
+      program: 'MBA', teacher: 'Felipe Zúñiga', email: 'felipe.zunigap@umayor.cl',
+      restrictions: 'Sin restricciones en marzo, abril y mayo (excepto festivos y 22 mayo). Preferencia reuniones mañana, ojalá 8:30. Mayor disponibilidad miércoles y jueves.'
+    },
+    {
+      name: 'Dirección de la Innovación',
+      program: 'MBA', teacher: 'Rodrigo Díaz', email: 'rodrigo.diaz@umayor.cl',
+      restrictions: 'Sin restricciones en marzo, abril y mayo (excepto festivos y 22 mayo). ⚠️ Mismo docente en MCG — coordinar una sola reunión.'
+    },
+    {
+      name: 'Finanzas para la Toma de Decisiones',
+      program: 'MBA', teacher: 'Carlos Gómez', email: 'carlos.gomez@umayor.cl',
+      restrictions: '🚫 No disponible en marzo. Sin restricciones en abril y mayo (excepto festivos y 22 mayo).'
+    },
+    {
+      name: 'Transformación Digital e Inteligencia de Negocios',
+      program: 'MBA', teacher: 'Fabián Palma', email: 'fabian.palma.j@gmail.com',
+      restrictions: 'Sin restricciones en marzo, abril y mayo (excepto festivos y 22 mayo). Reuniones preferentemente entre 09:00 y 15:00 hrs Chile (está en España, diferencia horaria).'
+    },
+    // MCG Ciclo 2
+    {
+      name: 'Control Estratégico',
+      program: 'MCG', teacher: 'Juan Francisco Cobo', email: 'juan.cobo@umayor.cl',
+      restrictions: 'Solo lunes, martes o miércoles entre 15:00 y 17:00.'
+    },
+    {
+      name: 'Tecnología para el Control de Gestión',
+      program: 'MCG', teacher: 'John Ríos', email: 'johnhrg@gmail.com',
+      restrictions: 'Solo jueves de 8:30 a 17:00.'
+    },
+    {
+      name: 'Dirección de la Innovación',
+      program: 'MCG', teacher: 'Rodrigo Díaz', email: 'rodrigo.diaz@umayor.cl',
+      restrictions: 'Sin restricciones en marzo, abril y mayo (excepto festivos y 22 mayo). ⚠️ Mismo docente en MBA — coordinar una sola reunión.'
+    },
+    {
+      name: 'Gestión y Desarrollo Organizacional',
+      program: 'MCG', teacher: 'Bárbara Valenzuela', email: 'barbara.valenzuela@umayor.cl',
+      restrictions: 'Martes en la mañana. Miércoles 11:00–14:00 y 17:00–19:00. Jueves tarde (después de 15:00). Viernes todo el día.'
+    },
+    {
+      name: 'Control y Riesgo Operacional',
+      program: 'MCG', teacher: 'Juan Pablo Seiffert', email: 'juan.seiffert@umayor.cl',
+      restrictions: 'Solo lunes y jueves de 17:00 a 19:00.'
+    },
+    // MCEE Ciclo 2
+    {
+      name: 'Taller de Evaluación Formativa y Retroalimentación',
+      program: 'MCEE', teacher: 'Mónica Flores', email: '',
+      restrictions: '🚫 No disponible del 29 de junio al 10 de julio (cierre de semestre y exámenes).'
+    },
+    {
+      name: 'Taller de Estrategias para la Diversificación de la Enseñanza y la Evaluación',
+      program: 'MCEE', teacher: 'Juan Jesús Torres-Gordillo', email: '',
+      restrictions: '🚫 No disponible 28 marzo–5 abril (Semana Santa). 🚫 No disponible 20–26 abril (Feria de Sevilla).'
+    },
+    {
+      name: 'Trabajo Colaborativo Interprofesional',
+      program: 'MCEE', teacher: 'Katherine Dinamarca', email: 'katherine.dinamarca@umayor.cl',
+      restrictions: '🚫 No disponible lunes ni miércoles (tiene clases esos días durante el semestre).'
+    },
+    {
+      name: 'Investigación Educativa y Gestión de Proyecto',
+      program: 'MCEE', teacher: 'Marcos López', email: '',
+      restrictions: 'Sin restricciones.'
+    },
+    // Optativos (docente por confirmar)
+    {
+      name: 'Datos, Visualización y Decisiones para el Impacto Social',
+      program: 'OPT', teacher: 'Por confirmar', email: '',
+      restrictions: 'Docente por confirmar.'
+    },
+    {
+      name: 'Inteligencia Artificial, Creatividad y Ética para la Sociedad Contemporánea',
+      program: 'OPT', teacher: 'Joaquim Giannotti', email: '',
+      restrictions: 'Sin restricciones informadas.'
+    },
+    {
+      name: 'Introducción al Diseño de Servicios',
+      program: 'OPT', teacher: 'Por confirmar', email: '',
+      restrictions: 'Docente por confirmar.'
+    },
+  ];
+
+  seedSubjects.forEach(s => {
+    subjects.push({
+      id: Date.now().toString() + Math.random(),
+      name: s.name,
+      program: s.program,
+      teacher: s.teacher,
+      email: s.email || '',
+      restrictions: s.restrictions || '',
+      r1Date: null
+    });
+  });
+  save();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+load();
+seedIfEmpty();
+updateDateHeader();
+renderAll();
+</script>
+</body>
+</html>
