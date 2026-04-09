@@ -6,219 +6,261 @@
 <title>Hackea — Planificador Ciclo 2</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap');
-:root{--blue:#0090F8;--blue-dim:rgba(0,144,248,0.12);--dark:#2A2A2A;--body:#404040;--bg:#EBECF0;--surface:#F3F3F3;--white:#FFFFFF;--border:rgba(0,0,0,0.08);--r1:#0090F8;--r2:#00C48C;--r3:#F5A623;--r4:#E84545;--ok:#00C48C;--warn:#F5A623;--delay:#E84545;--pending:#B0B3BA}
+:root{--blue:#0090F8;--bdim:rgba(0,144,248,0.10);--dark:#2A2A2A;--body:#404040;--bg:#EBECF0;--sf:#F3F3F3;--w:#FFFFFF;--bdr:rgba(0,0,0,0.08);--r1:#0090F8;--r2:#00C48C;--r3:#F5A623;--r4:#E84545;--ok:#00C48C;--warn:#F5A623;--err:#E84545;--pend:#B0B3BA;--pur:#9B59B6}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;font-size:13px}
-header{background:var(--dark);color:white;padding:11px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;border-bottom:2px solid var(--blue)}
-.logo{display:flex;align-items:center;gap:7px;font-weight:700;font-size:14px;letter-spacing:1px;flex-shrink:0}
-.logo svg{width:22px;height:22px}
+header{background:var(--dark);color:white;padding:10px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;border-bottom:2px solid var(--blue)}
+.logo{display:flex;align-items:center;gap:6px;font-weight:700;font-size:13px;letter-spacing:1px;flex-shrink:0}
+.logo svg{width:20px;height:20px}
 .logo-ea{color:var(--blue)}
-header h1{font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);border-left:1px solid rgba(255,255,255,0.15);padding-left:11px}
+header h1{font-size:10px;font-weight:600;color:rgba(255,255,255,0.4);border-left:1px solid rgba(255,255,255,0.12);padding-left:10px}
 .spacer{flex:1}
-.hdr-btns{display:flex;gap:6px;align-items:center}
-.btn-hdr{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.12);border-radius:5px;padding:3px 9px;font-size:10px;cursor:pointer;font-family:'Poppins',sans-serif;white-space:nowrap}
-.btn-hdr:hover{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)}
-.hdr-info{font-size:9px;color:rgba(255,255,255,0.35);font-family:'DM Mono',monospace;text-align:right;line-height:1.6;flex-shrink:0}
-.app{display:grid;grid-template-columns:285px 1fr;height:calc(100vh - 48px)}
+.hdr-btns{display:flex;gap:5px}
+.bh{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.1);border-radius:5px;padding:3px 8px;font-size:9px;cursor:pointer;font-family:'Poppins',sans-serif;white-space:nowrap}
+.bh:hover{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)}
+.hdr-info{font-size:8px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace;text-align:right;line-height:1.6;flex-shrink:0}
+/* APP */
+.app{display:grid;grid-template-columns:270px 1fr;height:calc(100vh - 44px)}
 /* SIDEBAR */
-.sidebar{background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-.sb-head{padding:11px 15px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
-.sb-head h2{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--body)}
-.btn-add{background:var(--blue);color:white;border:none;border-radius:5px;padding:4px 9px;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;white-space:nowrap}
-.sb-list{flex:1;overflow-y:auto;padding:3px 0}
-.sb-list::-webkit-scrollbar{width:3px}
-.sb-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-.s-item{padding:7px 15px;cursor:pointer;border-left:3px solid transparent;transition:all .12s}
-.s-item:hover{background:var(--bg)}
-.s-item.active{background:var(--blue-dim);border-left-color:var(--blue)}
-.s-prog{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--blue);margin-bottom:1px}
-.s-prog.opt{color:#9B59B6}
-.s-name{font-size:11px;font-weight:600;color:var(--dark);line-height:1.25}
-.s-meta{font-size:9px;color:var(--body);margin-top:2px;display:flex;gap:4px;align-items:center;flex-wrap:wrap}
-.pill{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:1px 5px;border-radius:20px}
-.pill.pending{background:rgba(176,179,186,.15);color:var(--pending)}
-.pill.active{background:rgba(0,144,248,.12);color:var(--blue)}
-/* urgency badge on sidebar */
-.urg-badge{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px}
-.urg-badge.high{background:rgba(232,69,69,.15);color:var(--delay)}
-.urg-badge.med{background:rgba(245,166,35,.15);color:#A07000}
+.sidebar{background:var(--w);border-right:1px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden}
+.sbh{padding:9px 13px 7px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;gap:6px}
+.sbh h2{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--body)}
+.badd{background:var(--blue);color:white;border:none;border-radius:5px;padding:3px 8px;font-size:9px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
+.sbl{flex:1;overflow-y:auto;padding:2px 0}
+.sbl::-webkit-scrollbar{width:2px}
+.sbl::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
+.si{padding:6px 13px;cursor:pointer;border-left:3px solid transparent;transition:all .1s}
+.si:hover{background:var(--bg)}
+.si.active{background:var(--bdim);border-left-color:var(--blue)}
+.sp{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--blue);margin-bottom:1px}
+.sp.opt{color:var(--pur)}
+.sn{font-size:10px;font-weight:600;color:var(--dark);line-height:1.25}
+.sm{font-size:8px;color:var(--body);margin-top:2px;display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.pill{font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:1px 5px;border-radius:20px}
+.pill.p{background:rgba(176,179,186,.15);color:var(--pend)}
+.pill.a{background:rgba(0,144,248,.12);color:var(--blue)}
+.pill.l{background:rgba(0,196,140,.12);color:var(--ok)}
+.ub{font-size:7px;font-weight:700;padding:1px 4px;border-radius:3px}
+.ub.h{background:rgba(232,69,69,.15);color:var(--err)}
+.ub.m{background:rgba(245,166,35,.15);color:#A07000}
 /* MAIN */
 .main{display:flex;flex-direction:column;overflow:hidden}
-.tabs{background:var(--white);border-bottom:1px solid var(--border);display:flex;padding:0 18px}
-.tab{padding:11px 15px;font-size:11px;font-weight:600;color:var(--body);cursor:pointer;border-bottom:2px solid transparent;transition:all .12s;margin-bottom:-1px;white-space:nowrap}
+.tabs{background:var(--w);border-bottom:1px solid var(--bdr);display:flex;padding:0 14px;overflow-x:auto}
+.tab{padding:9px 13px;font-size:10px;font-weight:600;color:var(--body);cursor:pointer;border-bottom:2px solid transparent;transition:all .1s;margin-bottom:-1px;white-space:nowrap}
 .tab:hover{color:var(--dark)}
 .tab.active{color:var(--blue);border-bottom-color:var(--blue)}
-.tab-content{flex:1;overflow-y:auto;padding:18px}
-.tab-content::-webkit-scrollbar{width:3px}
-.tab-content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-/* GUIDE TAB */
-.guide-hero{background:var(--dark);color:white;border-radius:12px;padding:24px 28px;margin-bottom:16px;position:relative;overflow:hidden}
-.guide-hero::before{content:'';position:absolute;right:-20px;top:-20px;width:140px;height:140px;border-radius:50%;border:2px solid rgba(0,144,248,.3)}
-.guide-hero::after{content:'';position:absolute;right:20px;top:20px;width:80px;height:80px;border-radius:50%;border:2px solid rgba(0,144,248,.2)}
-.guide-hero h2{font-size:18px;font-weight:700;margin-bottom:6px;position:relative}
-.guide-hero p{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.6;position:relative;max-width:560px}
-.guide-steps{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
-.guide-step{background:var(--white);border-radius:10px;padding:16px 18px;border-top:3px solid var(--border);position:relative}
-.guide-step.s1{border-top-color:var(--r1)}.guide-step.s2{border-top-color:var(--r2)}.guide-step.s3{border-top-color:var(--r3)}.guide-step.s4{border-top-color:var(--r4)}
-.guide-step-num{font-size:28px;font-weight:700;font-family:'DM Mono',monospace;color:var(--border);position:absolute;top:12px;right:14px;line-height:1}
-.guide-step h3{font-size:12px;font-weight:700;color:var(--dark);margin-bottom:6px}
-.guide-step p{font-size:11px;color:var(--body);line-height:1.6}
-.guide-step .where{display:inline-block;margin-top:8px;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--blue-dim);color:var(--blue)}
-.guide-tip{background:var(--white);border-radius:10px;padding:14px 18px;border-left:3px solid var(--blue)}
-.guide-tip h3{font-size:11px;font-weight:700;color:var(--dark);margin-bottom:8px}
-.guide-tip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.guide-tip-item{font-size:10px;color:var(--body);line-height:1.5}
-.guide-tip-item strong{display:block;color:var(--dark);margin-bottom:2px;font-size:11px}
-.guide-flow{background:var(--white);border-radius:10px;padding:14px 18px;margin-top:12px}
-.guide-flow h3{font-size:11px;font-weight:700;color:var(--dark);margin-bottom:12px}
-.gf-track{display:flex;align-items:center;overflow-x:auto;padding-bottom:6px}
-.gf-node{flex-shrink:0;text-align:center;min-width:90px}
-.gf-icon{font-size:20px;margin-bottom:4px}
-.gf-lbl{font-size:9px;font-weight:700;color:var(--dark)}
-.gf-sub{font-size:8px;color:var(--body);margin-top:1px}
-.gf-arrow{flex:1;text-align:center;color:var(--border);font-size:16px;min-width:20px;margin-top:-12px}
-/* DETAIL */
-.det-hdr{display:flex;align-items:flex-start;gap:11px;margin-bottom:14px}
-.prog-badge{color:white;font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:.4px;white-space:nowrap;margin-top:2px;background:var(--blue)}
-.prog-badge.opt{background:#9B59B6}
-.det-title h2{font-size:16px;font-weight:700;color:var(--dark);line-height:1.2}
-.det-title p{font-size:10px;color:var(--body);margin-top:2px}
-.banner{border-radius:8px;padding:9px 13px;margin-bottom:10px;font-size:11px;display:flex;gap:7px;line-height:1.5;align-items:flex-start}
-.banner.warn{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.3);color:#7a5500}
-.banner.danger{background:rgba(232,69,69,.08);border:1px solid rgba(232,69,69,.3);color:var(--delay)}
-.banner.info{background:rgba(0,144,248,.07);border:1px solid rgba(0,144,248,.2);color:#0060B0}
-.banner.same-teacher{background:rgba(155,89,182,.08);border:1px solid rgba(155,89,182,.3);color:#6B3FA0}
-/* change summary */
-.change-summary{background:rgba(0,144,248,.06);border:1px solid rgba(0,144,248,.2);border-radius:8px;padding:9px 13px;margin-bottom:10px;font-size:10px;color:#0060B0}
-.change-summary strong{display:block;margin-bottom:4px;font-size:11px}
-.change-row{display:flex;gap:8px;align-items:center;margin-bottom:2px}
-.change-row .old{text-decoration:line-through;color:var(--pending)}
-.change-row .arr{color:var(--blue)}
-.change-row .new{font-weight:600}
-.flow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px}
-.flow-step{background:var(--white);padding:12px}
-.flow-num{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--pending);margin-bottom:2px}
-.flow-step.active .flow-num{color:var(--blue)}
-.flow-ttl{font-size:11px;font-weight:700;color:var(--dark);margin-bottom:3px}
-.flow-who{font-size:10px;font-weight:600;color:var(--blue);margin-bottom:3px}
-.flow-desc{font-size:9px;color:var(--body);line-height:1.5}
-.date-row{margin-top:8px}
-.date-row label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--body);display:block;margin-bottom:3px}
-.date-row input[type=date]{border:1px solid var(--border);border-radius:6px;padding:5px 7px;font-family:'DM Mono',monospace;font-size:11px;color:var(--dark);background:var(--surface);width:100%;cursor:pointer}
-.date-row input[type=date]:focus{outline:none;border-color:var(--blue)}
-.comp-dates{margin-top:6px;display:flex;flex-direction:column;gap:3px}
-.comp-row{display:flex;justify-content:space-between;font-size:9px}
-.comp-row span:first-child{color:var(--body)}
-.comp-row span:last-child{font-family:'DM Mono',monospace;font-weight:500;color:var(--dark)}
-.tl-wrap{background:var(--white);border-radius:10px;padding:12px 16px;margin-top:10px}
-.sec-ttl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--body);margin-bottom:8px;display:flex;align-items:center;gap:7px}
-.sec-ttl::after{content:'';flex:1;height:1px;background:var(--border)}
-.tl-track{display:flex;align-items:flex-start;overflow-x:auto;padding-bottom:3px}
-.tl-dot{flex-shrink:0;text-align:center;min-width:62px}
-.tl-circle{width:9px;height:9px;border-radius:50%;margin:0 auto 3px}
-.tl-lbl{font-size:8px;font-weight:700}
-.tl-dt{font-size:8px;font-family:'DM Mono',monospace;color:var(--body)}
-.tl-line{flex:1;height:1px;background:var(--border);min-width:8px;margin-top:4px}
+.tc{flex:1;overflow-y:auto;padding:14px}
+.tc::-webkit-scrollbar{width:2px}
+.tc::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
+/* SECTION TITLE */
+.stl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--body);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.stl::after{content:'';flex:1;height:1px;background:var(--bdr)}
+/* GUIDE */
+.gh{background:var(--dark);color:white;border-radius:10px;padding:18px 22px;margin-bottom:12px;position:relative;overflow:hidden}
+.gh::before{content:'';position:absolute;right:-10px;top:-10px;width:110px;height:110px;border-radius:50%;border:2px solid rgba(0,144,248,.2)}
+.gh h2{font-size:16px;font-weight:700;margin-bottom:4px;position:relative}
+.gh p{font-size:10px;color:rgba(255,255,255,.5);line-height:1.6;position:relative;max-width:500px}
+.gsteps{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:12px}
+.gstep{background:var(--w);border-radius:9px;padding:13px 15px;border-top:3px solid var(--bdr);position:relative}
+.gstep.s1{border-top-color:var(--r1)}.gstep.s2{border-top-color:var(--r2)}.gstep.s3{border-top-color:var(--r3)}.gstep.s4{border-top-color:var(--r4)}
+.gstep-n{font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--bdr);position:absolute;top:9px;right:11px;line-height:1}
+.gstep h3{font-size:11px;font-weight:700;color:var(--dark);margin-bottom:4px}
+.gstep p{font-size:9px;color:var(--body);line-height:1.6}
+.gwhere{display:inline-block;margin-top:6px;font-size:8px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--bdim);color:var(--blue)}
+.gtips{background:var(--w);border-radius:9px;padding:12px 15px;margin-bottom:11px}
+.gtips h3{font-size:10px;font-weight:700;color:var(--dark);margin-bottom:9px}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.titem{font-size:9px;color:var(--body);line-height:1.5}
+.titem strong{display:block;color:var(--dark);margin-bottom:2px;font-size:10px}
+.gflow{background:var(--w);border-radius:9px;padding:12px 15px}
+.gflow h3{font-size:10px;font-weight:700;color:var(--dark);margin-bottom:9px}
+.gft{display:flex;align-items:flex-start;overflow-x:auto;padding-bottom:3px}
+.gfn{flex-shrink:0;text-align:center;min-width:78px}
+.gfi{font-size:16px;margin-bottom:2px}
+.gfl{font-size:8px;font-weight:700;color:var(--dark)}
+.gfs{font-size:7px;color:var(--body);margin-top:1px}
+.gfw{font-size:7px;font-weight:600;margin-top:2px;padding:1px 5px;border-radius:10px;display:inline-block}
+.gfa{flex:1;text-align:center;color:var(--bdr);font-size:13px;min-width:14px;margin-top:9px}
+/* BANNERS */
+.ban{border-radius:7px;padding:7px 11px;margin-bottom:8px;font-size:10px;display:flex;gap:6px;line-height:1.5;align-items:flex-start}
+.ban.warn{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.3);color:#7a5500}
+.ban.err{background:rgba(232,69,69,.08);border:1px solid rgba(232,69,69,.3);color:var(--err)}
+.ban.info{background:rgba(0,144,248,.07);border:1px solid rgba(0,144,248,.2);color:#005BB0}
+.ban.pur{background:rgba(155,89,182,.07);border:1px solid rgba(155,89,182,.25);color:#5B2F8A}
+.ban.ok{background:rgba(0,196,140,.07);border:1px solid rgba(0,196,140,.25);color:#007A50}
+/* IMPACT PANEL */
+.impact{background:var(--w);border-radius:9px;padding:13px 15px;margin-bottom:11px;border:1px solid rgba(245,166,35,.3)}
+.impact h4{font-size:11px;font-weight:700;color:var(--dark);margin-bottom:9px;display:flex;align-items:center;gap:5px}
+.irow{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid var(--bdr);font-size:10px}
+.irow:last-of-type{border-bottom:none}
+.ilbl{width:120px;color:var(--body);flex-shrink:0;font-size:9px}
+.iold{font-family:'DM Mono',monospace;text-decoration:line-through;color:var(--pend);font-size:9px}
+.iarr{color:var(--blue);font-size:11px}
+.inew{font-family:'DM Mono',monospace;font-weight:600;font-size:9px}
+.itype{font-size:7px;font-weight:700;padding:1px 5px;border-radius:20px;margin-left:auto;flex-shrink:0}
+.itype.int{background:rgba(0,196,140,.12);color:#007A50}
+.itype.ext{background:rgba(232,69,69,.12);color:var(--err)}
+.itype.col{background:rgba(232,69,69,.18);color:var(--err)}
+.iactions{display:flex;gap:6px;margin-top:10px;padding-top:9px;border-top:1px solid var(--bdr);flex-wrap:wrap}
+.baccept{background:var(--ok);color:white;border:none;border-radius:6px;padding:5px 12px;font-size:9px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
+.brevert{background:var(--sf);color:var(--body);border:1px solid var(--bdr);border-radius:6px;padding:5px 12px;font-size:9px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
+/* FLOW GRID */
+.fg{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr);border-radius:9px;overflow:hidden;margin-bottom:13px}
+.fs{background:var(--w);padding:10px}
+.fn{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--pend);margin-bottom:2px}
+.fs.active .fn{color:var(--blue)}
+.ft{font-size:10px;font-weight:700;color:var(--dark);margin-bottom:2px}
+.fw{font-size:9px;font-weight:600;color:var(--blue);margin-bottom:3px}
+.fd{font-size:9px;color:var(--body);line-height:1.5}
+.dr{margin-top:7px}
+.dr label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--body);display:block;margin-bottom:2px}
+.dr input[type=date]{border:1px solid var(--bdr);border-radius:5px;padding:4px 6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--dark);background:var(--sf);width:100%;cursor:pointer}
+.dr input[type=date]:focus{outline:none;border-color:var(--blue)}
+.dr input.locked{background:rgba(0,196,140,.06);border-color:rgba(0,196,140,.3);color:#007A50}
+.cd{margin-top:5px;display:flex;flex-direction:column;gap:3px}
+.cr{display:flex;justify-content:space-between;font-size:9px}
+.cr span:first-child{color:var(--body)}
+.cr span:last-child{font-family:'DM Mono',monospace;font-weight:500}
+.lbtn{font-size:8px;padding:2px 6px;border-radius:4px;cursor:pointer;border:none;font-family:'Poppins',sans-serif;font-weight:600;margin-top:3px;width:100%}
+.lbtn.unl{background:rgba(0,144,248,.1);color:var(--blue)}
+.lbtn.lkd{background:rgba(0,196,140,.12);color:#007A50}
+.tlw{background:var(--w);border-radius:9px;padding:10px 14px;margin-top:9px}
+.tlt{display:flex;align-items:flex-start;overflow-x:auto;padding-bottom:3px}
+.tld{flex-shrink:0;text-align:center;min-width:58px}
+.tlc{width:8px;height:8px;border-radius:50%;margin:0 auto 2px}
+.tll{font-size:8px;font-weight:700}
+.tldt{font-size:7px;font-family:'DM Mono',monospace;color:var(--body)}
+.tln{flex:1;height:1px;background:var(--bdr);min-width:7px;margin-top:4px}
 /* CALENDAR */
-.cal-ctrl{display:flex;align-items:center;gap:8px;margin-bottom:11px;flex-wrap:wrap}
-.cal-nav button{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:4px 9px;cursor:pointer;font-size:13px}
-.cal-nav button:hover{border-color:var(--blue);color:var(--blue)}
-.cal-week{font-size:12px;font-weight:700;color:var(--dark)}
-.filters{display:flex;gap:5px;margin-left:auto;flex-wrap:wrap}
-.fchip{font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;cursor:pointer;border:1px solid var(--border);background:var(--white);transition:all .12s;letter-spacing:.3px}
-.fchip.active{background:var(--blue);color:white;border-color:var(--blue)}
-.load-sec{background:var(--white);border-radius:10px;padding:11px 15px;margin-bottom:11px}
-.load-row{display:flex;align-items:center;gap:7px;margin-bottom:4px}
-.load-lbl{font-size:9px;color:var(--body);width:60px;font-family:'DM Mono',monospace;flex-shrink:0}
-.load-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
-.load-fill{height:100%;border-radius:3px;transition:width .3s}
-.load-fill.ok{background:var(--ok)}.load-fill.warn{background:var(--warn)}.load-fill.over{background:var(--delay)}
-.load-cnt{font-size:9px;font-family:'DM Mono',monospace;color:var(--dark);width:14px;text-align:right}
-.cal-grid{display:grid;grid-template-columns:64px repeat(5,1fr);gap:1px;background:var(--border);border-radius:10px;overflow:hidden}
-.cal-hdr{background:var(--dark);color:white;padding:7px 5px;text-align:center;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-.cal-hdr .dn{font-size:15px;font-weight:700;display:block;margin-top:1px;font-family:'DM Mono',monospace}
-.cal-hdr.today{background:var(--blue)}
-.cal-cell{background:var(--white);min-height:72px;padding:4px;overflow:hidden}
-.cal-cell.time-lbl{background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:8px;font-family:'DM Mono',monospace;color:var(--body);font-weight:500;text-align:center;padding:4px;line-height:1.4}
+.cc{display:flex;align-items:center;gap:7px;margin-bottom:9px;flex-wrap:wrap}
+.cn button{background:var(--w);border:1px solid var(--bdr);border-radius:5px;padding:3px 7px;cursor:pointer;font-size:12px}
+.cn button:hover{border-color:var(--blue);color:var(--blue)}
+.cw{font-size:11px;font-weight:700;color:var(--dark)}
+.filt{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.fc{font-size:8px;font-weight:700;padding:2px 7px;border-radius:20px;cursor:pointer;border:1px solid var(--bdr);background:var(--w)}
+.fc.active{background:var(--blue);color:white;border-color:var(--blue)}
+.lsec{background:var(--w);border-radius:9px;padding:9px 13px;margin-bottom:9px}
+.lr{display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.ll{font-size:8px;color:var(--body);width:56px;font-family:'DM Mono',monospace;flex-shrink:0}
+.lt{flex:1;height:4px;background:var(--bdr);border-radius:3px;overflow:hidden}
+.lf{height:100%;border-radius:3px;transition:width .3s}
+.lf.ok{background:var(--ok)}.lf.warn{background:var(--warn)}.lf.over{background:var(--err)}
+.lc{font-size:8px;font-family:'DM Mono',monospace;color:var(--dark);width:14px;text-align:right}
+.cg{display:grid;grid-template-columns:58px repeat(5,1fr);gap:1px;background:var(--bdr);border-radius:9px;overflow:hidden}
+.ch{background:var(--dark);color:white;padding:6px 4px;text-align:center;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.ch .dn{font-size:13px;font-weight:700;display:block;margin-top:1px;font-family:'DM Mono',monospace}
+.ch.today{background:var(--blue)}
+.cell{background:var(--w);min-height:68px;padding:3px;overflow:hidden}
+.cell.tlbl{background:var(--sf);display:flex;align-items:center;justify-content:center;font-size:7px;font-family:'DM Mono',monospace;color:var(--body);font-weight:500;text-align:center;padding:3px;line-height:1.4}
 .ev{border-radius:3px;padding:2px 4px;margin-bottom:2px;font-size:8px;font-weight:600;cursor:pointer;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ev:hover{opacity:.75}
 .ev.r1{background:rgba(0,144,248,.15);color:#0060B0;border-left:2px solid var(--r1)}
 .ev.r2{background:rgba(0,196,140,.15);color:#007A50;border-left:2px solid var(--r2)}
 .ev.r3{background:rgba(245,166,35,.15);color:#A07000;border-left:2px solid var(--r3)}
 .ev.r4{background:rgba(232,69,69,.15);color:#B01010;border-left:2px solid var(--r4)}
-.ev.restrict{background:rgba(232,69,69,.07);color:#B01010;border-left:2px solid #E84545;font-style:italic}
-.ev.delivery{opacity:.55;cursor:default}
-.ev.shared{border:1px dashed rgba(155,89,182,.5);background:rgba(155,89,182,.07);color:#6B3FA0}
-.more-evs{font-size:8px;color:var(--body);padding:1px 4px;font-style:italic}
-.cal-legend{margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;font-size:9px;color:var(--body)}
+.ev.rs{background:rgba(232,69,69,.06);color:#B01010;border-left:2px solid #E84545;font-style:italic}
+.ev.dl{opacity:.5;cursor:default;font-weight:500}
+.ev.sh{border-left-color:var(--pur);background:rgba(155,89,182,.12);color:#5B2F8A}
+.mev{font-size:7px;color:var(--body);padding:1px 3px;font-style:italic}
+.cleg{margin-top:8px;display:flex;gap:10px;flex-wrap:wrap;font-size:8px;color:var(--body)}
 /* OVERVIEW */
-.prog-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:16px}
-.prog-card{background:var(--white);border-radius:10px;padding:11px 13px;border-top:3px solid var(--border)}
-.prog-card.c1{border-top-color:var(--r1)}.prog-card.c2{border-top-color:var(--r2)}.prog-card.c3{border-top-color:var(--r3)}.prog-card.c4{border-top-color:var(--r4)}
-.pc-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--body);margin-bottom:2px}
-.pc-num{font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--dark);line-height:1}
-.pc-sub{font-size:9px;color:var(--body);margin-top:2px}
-.ov-table{width:100%;border-collapse:collapse;font-size:10px}
-.ov-table th{background:var(--dark);color:white;padding:7px 8px;text-align:left;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-.ov-table td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--body);vertical-align:middle}
-.ov-table tr:hover td{background:var(--blue-dim);cursor:pointer}
-.ov-table td:first-child{font-weight:600;color:var(--dark)}
-.dchip{font-family:'DM Mono',monospace;font-size:8px;background:var(--surface);padding:2px 5px;border-radius:3px;white-space:nowrap}
-.dchip.set{background:var(--blue-dim);color:var(--blue)}
-.dchip.comp{background:rgba(0,196,140,.1);color:#007A50}
-.dchip.empty{color:var(--pending);background:transparent}
-/* PLAN */
-.plan-intro{background:var(--white);border-radius:10px;padding:13px 16px;margin-bottom:13px;font-size:11px;color:var(--body);line-height:1.6}
-.plan-intro strong{color:var(--dark)}
-.plan-sort{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-.sort-btn{font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:pointer;border:1px solid var(--border);background:var(--white);transition:all .12s}
-.sort-btn.active{background:var(--dark);color:white;border-color:var(--dark)}
-.plan-grid{display:flex;flex-direction:column;gap:6px}
-.plan-row{background:var(--white);border-radius:8px;padding:10px 13px;display:grid;grid-template-columns:22px 1fr 108px 86px 80px;gap:9px;align-items:center;border-left:3px solid var(--border);transition:border-color .2s}
-.plan-row.has-date{border-left-color:var(--ok)}
-.plan-row.conflict{border-left-color:var(--delay)}
-.plan-row.no-teacher{border-left-color:var(--pending)}
-.plan-row.shared-teacher{border-left-color:#9B59B6}
-.plan-num{font-size:10px;font-weight:700;color:var(--body);font-family:'DM Mono',monospace}
-.plan-info .pn{font-size:11px;font-weight:600;color:var(--dark);line-height:1.3}
-.plan-info .pt{font-size:9px;color:var(--body);margin-top:1px}
-.plan-info .pr{font-size:9px;color:#A07000;margin-top:2px;line-height:1.4}
-.plan-info .pst{font-size:9px;margin-top:3px;line-height:1.4}
-.plan-badge{font-size:8px;font-weight:700;padding:1px 6px;border-radius:20px;display:inline-block;margin-left:4px;vertical-align:middle}
-.plan-badge.mba{background:rgba(0,144,248,.12);color:var(--blue)}
-.plan-badge.mcg{background:rgba(0,196,140,.12);color:#007A50}
-.plan-badge.mcee{background:rgba(245,166,35,.12);color:#A07000}
-.plan-badge.opt{background:rgba(155,89,182,.12);color:#9B59B6}
-.plan-date-input{border:1px solid var(--border);border-radius:6px;padding:5px 7px;font-family:'DM Mono',monospace;font-size:11px;color:var(--dark);background:var(--surface);width:100%;cursor:pointer}
-.plan-date-input:focus{outline:none;border-color:var(--blue)}
-.plan-date-input.conflict{border-color:var(--delay);background:rgba(232,69,69,.05)}
-.plan-date-input.ok{border-color:var(--ok)}
+.pc{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.pcard{background:var(--w);border-radius:9px;padding:10px 12px;border-top:3px solid var(--bdr)}
+.pcard.c1{border-top-color:var(--r1)}.pcard.c2{border-top-color:var(--r2)}.pcard.c3{border-top-color:var(--r3)}.pcard.c4{border-top-color:var(--r4)}
+.pcl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--body);margin-bottom:1px}
+.pcn{font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--dark);line-height:1}
+.pcs{font-size:9px;color:var(--body);margin-top:1px}
+.ot{width:100%;border-collapse:collapse;font-size:10px}
+.ot th{background:var(--dark);color:white;padding:6px 7px;text-align:left;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.ot td{padding:5px 7px;border-bottom:1px solid var(--bdr);color:var(--body);vertical-align:middle}
+.ot tr:hover td{background:var(--bdim);cursor:pointer}
+.ot td:first-child{font-weight:600;color:var(--dark)}
+.dc{font-family:'DM Mono',monospace;font-size:8px;background:var(--sf);padding:2px 4px;border-radius:3px;white-space:nowrap}
+.dc.s{background:var(--bdim);color:var(--blue)}
+.dc.c{background:rgba(0,196,140,.1);color:#007A50}
+.dc.e{color:var(--pend);background:transparent}
+/* PLAN TAB */
+.pi{background:var(--w);border-radius:9px;padding:11px 14px;margin-bottom:11px;font-size:10px;color:var(--body);line-height:1.6}
+.pi strong{color:var(--dark)}
+.psort{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
+.sb{font-size:8px;font-weight:700;padding:2px 8px;border-radius:20px;cursor:pointer;border:1px solid var(--bdr);background:var(--w)}
+.sb.active{background:var(--dark);color:white;border-color:var(--dark)}
+.pgrid{display:flex;flex-direction:column;gap:4px}
+.pr{background:var(--w);border-radius:7px;padding:8px 11px;display:grid;grid-template-columns:18px 1fr 100px 76px 74px;gap:7px;align-items:center;border-left:3px solid var(--bdr)}
+.pr.ok{border-left-color:var(--ok)}.pr.err{border-left-color:var(--err)}.pr.nt{border-left-color:var(--pend)}.pr.sh{border-left-color:var(--pur)}
+.pnum{font-size:9px;font-weight:700;color:var(--body);font-family:'DM Mono',monospace}
+.pn{font-size:10px;font-weight:600;color:var(--dark);line-height:1.3}
+.pt{font-size:9px;color:var(--body);margin-top:1px}
+.px{font-size:8px;color:#A07000;margin-top:2px;line-height:1.4}
+.pst{font-size:8px;margin-top:2px;line-height:1.4}
+.pb{font-size:7px;font-weight:700;padding:1px 5px;border-radius:20px;display:inline-block;margin-left:3px;vertical-align:middle}
+.pb.mba{background:rgba(0,144,248,.12);color:var(--blue)}
+.pb.mcg{background:rgba(0,196,140,.12);color:#007A50}
+.pb.mcee{background:rgba(245,166,35,.12);color:#A07000}
+.pb.opt{background:rgba(155,89,182,.12);color:var(--pur)}
+.pdi{border:1px solid var(--bdr);border-radius:5px;padding:4px 6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--dark);background:var(--sf);width:100%;cursor:pointer}
+.pdi:focus{outline:none;border-color:var(--blue)}
+.pdi.ei{border-color:var(--err);background:rgba(232,69,69,.05)}
+.pdi.oi{border-color:var(--ok)}
+/* IDEAL PLAN */
+.ih{background:var(--dark);color:white;border-radius:10px;padding:16px 20px;margin-bottom:12px;position:relative;overflow:hidden}
+.ih::before{content:'';position:absolute;right:-8px;bottom:-8px;width:90px;height:90px;border-radius:50%;border:2px solid rgba(0,144,248,.18)}
+.ih h2{font-size:14px;font-weight:700;margin-bottom:3px;position:relative}
+.ih p{font-size:9px;color:rgba(255,255,255,.5);line-height:1.6;max-width:480px;position:relative}
+.ist{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.isc{background:var(--w);border-radius:9px;padding:11px 13px;text-align:center}
+.isn{font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--dark);line-height:1}
+.isl{font-size:8px;color:var(--body);margin-top:2px;line-height:1.4}
+.isc.ok .isn{color:var(--ok)}.isc.warn .isn{color:var(--warn)}.isc.err .isn{color:var(--err)}
+.scen{display:flex;gap:7px;margin-bottom:11px}
+.st{background:var(--w);border:2px solid var(--bdr);border-radius:8px;padding:9px 13px;cursor:pointer;flex:1;text-align:center}
+.st.active{border-color:var(--blue);background:var(--bdim)}
+.st h4{font-size:10px;font-weight:700;color:var(--dark);margin-bottom:2px}
+.st p{font-size:9px;color:var(--body)}
+.st.active h4{color:var(--blue)}
+.it{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:12px}
+.it th{background:var(--dark);color:white;padding:6px 8px;text-align:left;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.it td{padding:5px 8px;border-bottom:1px solid var(--bdr);color:var(--body);vertical-align:middle}
+.it tr:hover td{background:var(--bdim)}
+.it td:first-child{font-weight:600;color:var(--dark);font-size:10px}
+.id{font-family:'DM Mono',monospace;font-size:9px;white-space:nowrap}
+.id.ok{color:var(--ok)}.id.end{color:var(--blue);font-weight:700}.id.sh{color:var(--pur)}
+.apbtn{display:flex;justify-content:center;padding:12px 0}
+.apbtn button{background:var(--blue);color:white;border:none;border-radius:8px;padding:9px 22px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
+.apbtn button:hover{opacity:.85}
+/* SETTINGS */
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+.sc{background:var(--w);border-radius:9px;padding:13px 15px}
+.sc h3{font-size:10px;font-weight:700;color:var(--dark);margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid var(--bdr)}
+.sr{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.sr label{font-size:9px;color:var(--body);width:80px;flex-shrink:0}
+.sr input{flex:1;border:1px solid var(--bdr);border-radius:5px;padding:5px 7px;font-family:'Poppins',sans-serif;font-size:10px;color:var(--dark);background:var(--sf)}
+.sr input:focus{outline:none;border-color:var(--blue)}
+.bss{background:var(--blue);color:white;border:none;border-radius:5px;padding:5px 12px;font-size:9px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;margin-top:7px}
 /* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center}
-.modal-overlay.show{display:flex}
-.modal{background:var(--white);border-radius:12px;padding:20px;width:460px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto}
-.modal h3{font-size:14px;font-weight:700;margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--border)}
-.form-group{margin-bottom:9px}
-.form-group label{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--body);margin-bottom:3px}
-.form-group input,.form-group select,.form-group textarea{width:100%;border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-family:'Poppins',sans-serif;font-size:11px;color:var(--dark);background:var(--surface);transition:border-color .12s}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--blue)}
-.form-group textarea{resize:vertical;min-height:52px;font-size:10px}
-.modal-actions{display:flex;gap:7px;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
-.btn-sec{background:var(--surface);color:var(--body);border:1px solid var(--border);border-radius:7px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
-.btn-pri{background:var(--blue);color:white;border:none;border-radius:7px;padding:6px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
-.btn-del{background:rgba(232,69,69,.1);color:var(--delay);border:1px solid rgba(232,69,69,.2);border-radius:7px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;margin-right:auto}
-.resch-box{background:var(--bg);border-radius:8px;padding:10px;margin-top:8px}
-.resch-box h4{font-size:10px;font-weight:700;color:var(--dark);margin-bottom:6px}
-.resch-row{background:var(--white);border:1px solid var(--border);border-radius:5px;padding:6px 9px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;font-size:10px}
-.resch-row.over{border-color:rgba(232,69,69,.3);background:rgba(232,69,69,.04)}
-.btn-use{background:var(--blue);color:white;border:none;border-radius:4px;padding:2px 7px;font-size:9px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif}
-.no-teacher-warn{background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:6px;padding:7px 10px;font-size:10px;color:#7a5500;margin-bottom:9px;display:none}
-.empty-state{text-align:center;padding:40px 20px;color:var(--body)}
-.empty-state .ei{font-size:30px;margin-bottom:8px;opacity:.4}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center}
+.mo.show{display:flex}
+.md{background:var(--w);border-radius:10px;padding:16px;width:430px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto}
+.md h3{font-size:13px;font-weight:700;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--bdr)}
+.fg2{margin-bottom:8px}
+.fg2 label{display:block;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--body);margin-bottom:2px}
+.fg2 input,.fg2 select,.fg2 textarea{width:100%;border:1px solid var(--bdr);border-radius:5px;padding:6px 8px;font-family:'Poppins',sans-serif;font-size:11px;color:var(--dark);background:var(--sf)}
+.fg2 input:focus,.fg2 select:focus,.fg2 textarea:focus{outline:none;border-color:var(--blue)}
+.fg2 textarea{resize:vertical;min-height:48px;font-size:10px}
+.mact{display:flex;gap:6px;justify-content:flex-end;margin-top:12px;padding-top:10px;border-top:1px solid var(--bdr)}
+.bsec{background:var(--sf);color:var(--body);border:1px solid var(--bdr);border-radius:5px;padding:5px 10px;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
+.bpri{background:var(--blue);color:white;border:none;border-radius:5px;padding:5px 13px;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
+.bdel{background:rgba(232,69,69,.1);color:var(--err);border:1px solid rgba(232,69,69,.2);border-radius:5px;padding:5px 10px;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;margin-right:auto}
+.rb{background:var(--bg);border-radius:7px;padding:8px;margin-top:6px}
+.rb h4{font-size:9px;font-weight:700;color:var(--dark);margin-bottom:5px}
+.rrow{background:var(--w);border:1px solid var(--bdr);border-radius:4px;padding:5px 7px;margin-bottom:3px;display:flex;justify-content:space-between;align-items:center;font-size:9px}
+.rrow.ov{border-color:rgba(232,69,69,.3);background:rgba(232,69,69,.03)}
+.bu{background:var(--blue);color:white;border:none;border-radius:3px;padding:2px 6px;font-size:8px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif}
+.ntn{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:5px;padding:5px 8px;font-size:9px;color:#7a5500;margin-bottom:7px;display:none}
+.es{text-align:center;padding:32px 16px;color:var(--body)}
+.es .ei{font-size:26px;margin-bottom:6px;opacity:.4}
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">
     <svg viewBox="0 0 28 28" fill="none">
@@ -233,21 +275,22 @@ header h1{font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);border-left
   <h1>Planificador Ciclo 2</h1>
   <div class="spacer"></div>
   <div class="hdr-btns">
-    <button class="btn-hdr" onclick="switchTab('guide')">📖 Guía de uso</button>
-    <button class="btn-hdr" onclick="resetData()">↺ Reset datos</button>
+    <button class="bh" onclick="switchTab('guide')">📖 Guía</button>
+    <button class="bh" onclick="switchTab('ideal')">🎯 Plan Ideal</button>
+    <button class="bh" onclick="switchTab('settings')">⚙️ Equipo</button>
+    <button class="bh" onclick="resetData()">↺ Reset</button>
   </div>
   <div class="hdr-info" id="hdrDate"></div>
 </header>
 
 <div class="app">
   <aside class="sidebar">
-    <div class="sb-head">
-      <h2>Asignaturas (<span id="sbCount">0</span>)</h2>
-      <button class="btn-add" onclick="openAdd()">+ Nueva</button>
+    <div class="sbh">
+      <h2>Asignaturas (<span id="sbCnt">0</span>)</h2>
+      <button class="badd" onclick="openAdd()">+ Nueva</button>
     </div>
-    <div class="sb-list" id="sbList"></div>
+    <div class="sbl" id="sbList"></div>
   </aside>
-
   <main class="main">
     <div class="tabs">
       <div class="tab" onclick="switchTab('guide')">📖 Guía</div>
@@ -255,702 +298,793 @@ header h1{font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);border-left
       <div class="tab" onclick="switchTab('calendar')">Calendario</div>
       <div class="tab" onclick="switchTab('detail')">Detalle</div>
       <div class="tab" onclick="switchTab('overview')">Vista General</div>
+      <div class="tab" onclick="switchTab('ideal')">🎯 Plan Ideal</div>
+      <div class="tab" onclick="switchTab('settings')">⚙️ Equipo</div>
     </div>
 
     <!-- GUIDE -->
-    <div class="tab-content active" id="tab-guide">
-      <div class="guide-hero">
+    <div class="tc" id="tab-guide">
+      <div class="gh">
         <h2>Bienvenida al Planificador Hackea — Ciclo 2</h2>
-        <p>Esta herramienta te ayuda a coordinar las 16 asignaturas en paralelo, gestionar la agenda de Maibe y detectar conflictos antes de que ocurran. Sigue los pasos en orden.</p>
+        <p>Coordina las 16 asignaturas en paralelo, gestiona la agenda del equipo y detecta conflictos antes de que ocurran. Sigue los pasos en orden.</p>
       </div>
-      <div class="guide-steps">
-        <div class="guide-step s1">
-          <div class="guide-step-num">1</div>
-          <h3>Empieza en Planificación</h3>
-          <p>Primero revisa la pestaña <strong>📅 Planificación</strong>. Aparecen todas las asignaturas ordenadas por urgencia: primero las que tienen restricciones de fecha más críticas (docentes bloqueados en fechas próximas). Asigna la fecha de Reunión 1 a cada una directamente desde ahí, de arriba hacia abajo.</p>
-          <span class="where">→ Pestaña: 📅 Planificación</span>
-        </div>
-        <div class="guide-step s2">
-          <div class="guide-step-num">2</div>
-          <h3>Verifica el Calendario</h3>
-          <p>Una vez que hayas asignado varias fechas, ve al <strong>Calendario</strong> para ver la semana completa. La barra de carga de Maibe te muestra cuántas reuniones tiene cada día: verde = libre, amarillo = 1 reunión, rojo = 2 reuniones (límite). Si un día está lleno, vuelve a Planificación y cambia esa fecha.</p>
-          <span class="where">→ Pestaña: Calendario</span>
-        </div>
-        <div class="guide-step s3">
-          <div class="guide-step-num">3</div>
-          <h3>Revisa el Detalle de cada asignatura</h3>
-          <p>Haz clic en cualquier asignatura del panel izquierdo para ver su flujo completo. Verás todas las fechas calculadas automáticamente: cuándo Merlym envía el contenido, cuándo es la R2, cuándo están los guiones, etc. Si el docente cambia la fecha, edítala aquí y todo se actualiza solo.</p>
-          <span class="where">→ Panel izquierdo + Pestaña: Detalle</span>
-        </div>
-        <div class="guide-step s4">
-          <div class="guide-step-num">4</div>
-          <h3>Monitorea en Vista General</h3>
-          <p>La <strong>Vista General</strong> te muestra todas las asignaturas en una tabla con sus fechas clave de un vistazo. Úsala para hacer seguimiento semanal con Maibe: qué está en flujo, qué falta agendar y cuándo termina cada asignatura.</p>
-          <span class="where">→ Pestaña: Vista General</span>
-        </div>
+      <div class="gsteps">
+        <div class="gstep s1"><div class="gstep-n">1</div><h3>Empieza en Planificación</h3><p>Ve a <strong>📅 Planificación</strong>. Las asignaturas aparecen ordenadas por urgencia (docentes con ventanas más estrechas primero). Asigna la fecha de R1 a cada una directamente desde ahí, de arriba hacia abajo.</p><span class="gwhere">→ Pestaña: 📅 Planificación</span></div>
+        <div class="gstep s2"><div class="gstep-n">2</div><h3>Verifica el Calendario</h3><p>Con varias fechas asignadas, ve al <strong>Calendario</strong>. La barra de carga del Guionista muestra cuántas reuniones tiene por día (máx 2). Si un día está lleno, vuelve a Planificación y cambia esa fecha.</p><span class="gwhere">→ Pestaña: Calendario</span></div>
+        <div class="gstep s3"><div class="gstep-n">3</div><h3>Detalle por asignatura</h3><p>Haz clic en cualquier asignatura del panel izquierdo. Verás el flujo completo con todas las fechas calculadas automáticamente. Si el docente cambia la fecha, el sistema muestra exactamente qué otras fechas se mueven y si requieren reconfirmación.</p><span class="gwhere">→ Panel izquierdo + Pestaña: Detalle</span></div>
+        <div class="gstep s4"><div class="gstep-n">4</div><h3>Plan Ideal como referencia</h3><p>La pestaña <strong>🎯 Plan Ideal</strong> muestra la planificación óptima calculada con los recursos del equipo. Úsala como referencia para ver si van bien o cuánto margen tienen frente a lo acordado.</p><span class="gwhere">→ Pestaña: 🎯 Plan Ideal</span></div>
       </div>
-      <div class="guide-tip">
+      <div class="gtips">
         <h3>⚡ Cosas importantes que debes saber</h3>
-        <div class="guide-tip-grid">
-          <div class="guide-tip-item"><strong>🟢 🟡 🔴 Colores en el sidebar</strong>Borde azul = tiene R1 agendada. ⚠️ = Maibe sobrecargada ese día. 🚫 = docente tiene restricción en esa fecha.</div>
-          <div class="guide-tip-item"><strong>📋 El ícono de restricciones</strong>Cuando ves 📋 junto al nombre de una asignatura, pasa el mouse por encima para ver qué restricciones tiene el docente sin tener que entrar.</div>
-          <div class="guide-tip-item"><strong>🟣 Rodrigo Díaz (MBA y MCG)</strong>Este docente aparece en dos asignaturas. El sistema te avisa cuando agendas ambas. En la práctica es una sola reunión — agenda ambas el mismo día.</div>
-          <div class="guide-tip-item"><strong>↺ Si el docente cambia de fecha</strong>Ve al Detalle de la asignatura o a Planificación, cambia la fecha de R1 y el sistema recalcula todo. También te muestra qué fechas cambiaron.</div>
-          <div class="guide-tip-item"><strong>22 de mayo — festivo</strong>El sistema ya lo tiene bloqueado como día no hábil. Ninguna fecha calculada caerá ese día.</div>
-          <div class="guide-tip-item"><strong>Maibe está en México (UTC-6)</strong>Tiene 3 horas menos que Chile. Para R1, R3 y R4 (que requieren a Maibe), procura que las reuniones sean en horario que funcione para ambas zonas horarias.</div>
+        <div class="tgrid">
+          <div class="titem"><strong>🟢 🟡 🔴 Colores en el sidebar</strong>⚠️ = Guionista sobrecargada ese día. 🚫 = docente con restricción en esa fecha. 🟣 = docente compartido entre dos asignaturas.</div>
+          <div class="titem"><strong>📋 Restricciones del docente</strong>Cuando ves 📋 junto al nombre, pasa el mouse por encima para ver qué restricciones tiene sin entrar al detalle.</div>
+          <div class="titem"><strong>🟣 Rodrigo Díaz (MBA + MCG)</strong>Aparece en dos asignaturas. En la práctica es una sola reunión. El sistema te recuerda coordinarlas el mismo día.</div>
+          <div class="titem"><strong>Cambio de fecha con impacto</strong>Si cambias una R1, el sistema muestra qué fechas cambian, cuáles son internas (sin problema) y cuáles requieren reconfirmación con el docente.</div>
+          <div class="titem"><strong>🔒 Bloquear fechas acordadas</strong>Cuando una R2, R3 o R4 ya está coordinada con el docente, puedes bloquearla en el Detalle para que no se mueva sola aunque cambies otras fechas.</div>
+          <div class="titem"><strong>22 mayo y festivos</strong>El sistema los tiene bloqueados. Ninguna fecha calculada caerá en un día no hábil.</div>
         </div>
       </div>
-      <div class="guide-flow">
-        <h3>Flujo de producción de cada asignatura</h3>
-        <div class="gf-track">
-          <div class="gf-node"><div class="gf-icon">👥</div><div class="gf-lbl" style="color:var(--r1)">R1 Inicial</div><div class="gf-sub">Maibe + Docente</div></div>
-          <div class="gf-arrow">→</div>
-          <div class="gf-node"><div class="gf-icon">✍️</div><div class="gf-lbl">Merlym redacta</div><div class="gf-sub">2 días hábiles</div></div>
-          <div class="gf-arrow">→</div>
-          <div class="gf-node"><div class="gf-icon">📖</div><div class="gf-lbl">Docente revisa</div><div class="gf-sub">4 días hábiles</div></div>
-          <div class="gf-arrow">→</div>
-          <div class="gf-node"><div class="gf-icon">👥</div><div class="gf-lbl" style="color:var(--r2)">R2 Comentarios</div><div class="gf-sub">Merlym + Docente</div></div>
-          <div class="gf-arrow">→</div>
-          <div class="gf-node"><div class="gf-icon">📝</div><div class="gf-lbl">Merlym guioniza</div><div class="gf-sub">1+2 días</div></div>
-          <div class="gf-arrow">→</div>
-          <div class="gf-node"><div class="gf-icon">👥</div><div class="gf-lbl" style="color:var(--r3)">R3 Guiones</div><div class="gf-sub">Maibe + Docente</div></div>
-          <div class="gf-arrow">→</div>
-          <div class="gf-node"><div class="gf-icon">🎬</div><div class="gf-lbl">Producción</div><div class="gf-sub">4 días (x2 devs)</div></div>
-          <div class="gf-arrow">→</div>
-          <div class="gf-node"><div class="gf-icon">👥</div><div class="gf-lbl" style="color:var(--r4)">R4 Recursos</div><div class="gf-sub">Maibe + Docente</div></div>
-          <div class="gf-arrow">→</div>
-          <div class="gf-node"><div class="gf-icon">🏁</div><div class="gf-lbl">Montaje</div><div class="gf-sub">1 día + Biblio.</div></div>
+      <div class="gflow">
+        <h3>Flujo de producción por asignatura — ¿quién hace qué?</h3>
+        <div class="gft">
+          <div class="gfn"><div class="gfi">👥</div><div class="gfl" style="color:var(--r1)">R1 Inicial</div><div class="gfs">Guionista + Docente</div><div class="gfw" style="background:rgba(0,144,248,.1);color:var(--blue)">Guionista</div></div>
+          <div class="gfa">→</div>
+          <div class="gfn"><div class="gfi">✍️</div><div class="gfl">Desarrolla contenido</div><div class="gfs">2 días hábiles</div><div class="gfw" style="background:rgba(0,196,140,.1);color:#007A50">Contenidista</div></div>
+          <div class="gfa">→</div>
+          <div class="gfn"><div class="gfi">📖</div><div class="gfl">Docente revisa</div><div class="gfs">mín 4 días hábiles</div><div class="gfw" style="background:rgba(245,166,35,.1);color:#A07000">Docente</div></div>
+          <div class="gfa">→</div>
+          <div class="gfn"><div class="gfi">👥</div><div class="gfl" style="color:var(--r2)">R2 Comentarios</div><div class="gfs">Guionista + Docente</div><div class="gfw" style="background:rgba(0,144,248,.1);color:var(--blue)">Guionista</div></div>
+          <div class="gfa">→</div>
+          <div class="gfn"><div class="gfi">✏️</div><div class="gfl">Ajusta + Guioniza</div><div class="gfs">1+2 días</div><div class="gfw" style="background:rgba(0,196,140,.1);color:#007A50">Contenidista→Guionista</div></div>
+          <div class="gfa">→</div>
+          <div class="gfn"><div class="gfi">👥</div><div class="gfl" style="color:var(--r3)">R3 Guiones</div><div class="gfs">mín 2d después envío</div><div class="gfw" style="background:rgba(0,144,248,.1);color:var(--blue)">Guionista</div></div>
+          <div class="gfa">→</div>
+          <div class="gfn"><div class="gfi">🎬</div><div class="gfl">Producción</div><div class="gfs">4 días (2 devs)</div><div class="gfw" style="background:rgba(155,89,182,.1);color:var(--pur)">Dev A / Dev B</div></div>
+          <div class="gfa">→</div>
+          <div class="gfn"><div class="gfi">👥</div><div class="gfl" style="color:var(--r4)">R4 Recursos</div><div class="gfs">mín 2d después prod.</div><div class="gfw" style="background:rgba(0,144,248,.1);color:var(--blue)">Guionista</div></div>
+          <div class="gfa">→</div>
+          <div class="gfn"><div class="gfi">🏁</div><div class="gfl">Montaje</div><div class="gfs">1 día + Bibliotecas</div><div class="gfw" style="background:rgba(155,89,182,.1);color:var(--pur)">Dev A / Dev B</div></div>
         </div>
       </div>
-      <div style="text-align:center;margin-top:16px">
-        <button class="btn-pri" style="padding:10px 24px;font-size:12px" onclick="switchTab('plan')">Entendido — ir a Planificación →</button>
+      <div style="text-align:center;margin-top:14px">
+        <button class="bpri" style="padding:9px 22px;font-size:11px" onclick="switchTab('plan')">Entendido — ir a Planificación →</button>
       </div>
     </div>
 
     <!-- PLAN -->
-    <div class="tab-content" id="tab-plan" style="display:none">
-      <div class="plan-intro">
-        <strong>Paso 1: Asigna las fechas de R1 desde aquí, de arriba hacia abajo.</strong> Las asignaturas están ordenadas por urgencia (primero las que tienen ventanas de tiempo más críticas). Usa el campo de fecha de cada fila para agendar. El sistema detecta conflictos automáticamente.<br><br>
-        <span style="color:var(--delay);font-weight:600">🔴</span> Conflicto &nbsp;|&nbsp; <span style="color:#9B59B6;font-weight:600">🟣</span> Docente compartido &nbsp;|&nbsp; <span style="color:var(--ok);font-weight:600">🟢</span> OK &nbsp;|&nbsp; <span style="color:var(--pending);font-weight:600">⬜</span> Sin fecha
+    <div class="tc" id="tab-plan" style="display:none">
+      <div class="pi">
+        <strong>Asigna las fechas de R1 de arriba hacia abajo.</strong> Las asignaturas están ordenadas por urgencia (primero las que tienen ventanas de tiempo más críticas). Si hay un conflicto de agenda o restricción del docente, el sistema te lo indica en el momento.<br>
+        <span style="color:var(--err);font-weight:600">🔴 Conflicto</span> &nbsp;|&nbsp; <span style="color:var(--pur);font-weight:600">🟣 Docente compartido</span> &nbsp;|&nbsp; <span style="color:var(--ok);font-weight:600">🟢 OK</span> &nbsp;|&nbsp; <span style="color:var(--pend);font-weight:600">⬜ Sin fecha</span>
       </div>
-      <div class="plan-sort">
-        <span style="font-size:10px;color:var(--body);align-self:center">Ordenar por:</span>
-        <button class="sort-btn active" onclick="setPlanSort('urgency',this)">🚨 Urgencia</button>
-        <button class="sort-btn" onclick="setPlanSort('program',this)">Programa</button>
-        <button class="sort-btn" onclick="setPlanSort('date',this)">Fecha R1</button>
-        <button class="sort-btn" onclick="setPlanSort('end',this)">Fin estimado</button>
+      <div class="psort">
+        <span style="font-size:9px;color:var(--body);align-self:center">Ordenar:</span>
+        <button class="sb active" onclick="setSort('urg',this)">🚨 Urgencia</button>
+        <button class="sb" onclick="setSort('prog',this)">Programa</button>
+        <button class="sb" onclick="setSort('date',this)">Fecha R1</button>
+        <button class="sb" onclick="setSort('end',this)">Fin estimado</button>
       </div>
-      <div class="plan-grid" id="planGrid"></div>
+      <div class="pgrid" id="planGrid"></div>
     </div>
 
     <!-- CALENDAR -->
-    <div class="tab-content" id="tab-calendar" style="display:none">
-      <div class="cal-ctrl">
-        <div class="cal-nav"><button onclick="calNav(-1)">‹</button><button onclick="calNav(1)">›</button></div>
-        <span class="cal-week" id="calWeek"></span>
-        <div class="filters">
-          <div class="fchip active" onclick="setFilter(this,'ALL')">Todas</div>
-          <div class="fchip" onclick="setFilter(this,'r1')" style="color:var(--r1);border-color:var(--r1)">R1</div>
-          <div class="fchip" onclick="setFilter(this,'r2')" style="color:var(--r2);border-color:var(--r2)">R2</div>
-          <div class="fchip" onclick="setFilter(this,'r3')" style="color:var(--r3);border-color:var(--r3)">R3</div>
-          <div class="fchip" onclick="setFilter(this,'r4')" style="color:var(--r4);border-color:var(--r4)">R4</div>
+    <div class="tc" id="tab-calendar" style="display:none">
+      <div class="cc">
+        <div class="cn"><button onclick="calNav(-1)">‹</button><button onclick="calNav(1)">›</button></div>
+        <span class="cw" id="calWeek"></span>
+        <div class="filt">
+          <div class="fc active" onclick="setFilt(this,'ALL')">Todas</div>
+          <div class="fc" onclick="setFilt(this,'r1')" style="color:var(--r1);border-color:var(--r1)">R1</div>
+          <div class="fc" onclick="setFilt(this,'r2')" style="color:var(--r2);border-color:var(--r2)">R2</div>
+          <div class="fc" onclick="setFilt(this,'r3')" style="color:var(--r3);border-color:var(--r3)">R3</div>
+          <div class="fc" onclick="setFilt(this,'r4')" style="color:var(--r4);border-color:var(--r4)">R4</div>
         </div>
       </div>
-      <div class="load-sec">
-        <div class="sec-ttl">Carga de reuniones Maibe esta semana</div>
-        <div id="maibeLoad"></div>
-        <div style="font-size:9px;color:var(--body);margin-top:5px">🟢 Libre &nbsp;|&nbsp; 🟡 1 reunión (cómodo) &nbsp;|&nbsp; 🔴 2 reuniones (límite diario recomendado)</div>
+      <div class="lsec">
+        <div class="stl">Carga del Guionista esta semana (máx 2 reuniones/día)</div>
+        <div id="guionLoad"></div>
+        <div style="font-size:8px;color:var(--body);margin-top:4px">🟢 Libre &nbsp;|&nbsp; 🟡 1 reunión (cómodo) &nbsp;|&nbsp; 🔴 2 reuniones (límite) &nbsp;|&nbsp; ⛔ >2 (sobrecargado)</div>
       </div>
-      <div id="calGrid" class="cal-grid"></div>
-      <div class="cal-legend">
-        <span><span style="display:inline-block;width:9px;height:9px;background:rgba(0,144,248,.15);border-left:2px solid var(--r1);margin-right:3px"></span>R1 Inicial (Maibe+Docente)</span>
-        <span><span style="display:inline-block;width:9px;height:9px;background:rgba(0,196,140,.15);border-left:2px solid var(--r2);margin-right:3px"></span>R2 Comentarios (Merlym+Docente)</span>
-        <span><span style="display:inline-block;width:9px;height:9px;background:rgba(245,166,35,.15);border-left:2px solid var(--r3);margin-right:3px"></span>R3 Guiones (Maibe+Docente)</span>
-        <span><span style="display:inline-block;width:9px;height:9px;background:rgba(232,69,69,.15);border-left:2px solid var(--r4);margin-right:3px"></span>R4 Recursos (Maibe+Docente)</span>
-        <span><span style="display:inline-block;width:9px;height:9px;background:rgba(232,69,69,.07);border-left:2px solid #E84545;margin-right:3px"></span>🚫 Restricción docente</span>
-        <span style="opacity:.55">Colores tenues = entregas internas (sin docente)</span>
+      <div id="calGrid" class="cg"></div>
+      <div class="cleg">
+        <span><span style="display:inline-block;width:8px;height:8px;background:rgba(0,144,248,.15);border-left:2px solid var(--r1);margin-right:2px"></span>R1 (Guionista+Docente)</span>
+        <span><span style="display:inline-block;width:8px;height:8px;background:rgba(0,196,140,.15);border-left:2px solid var(--r2);margin-right:2px"></span>R2 (Guionista+Docente)</span>
+        <span><span style="display:inline-block;width:8px;height:8px;background:rgba(245,166,35,.15);border-left:2px solid var(--r3);margin-right:2px"></span>R3 (Guionista+Docente)</span>
+        <span><span style="display:inline-block;width:8px;height:8px;background:rgba(232,69,69,.15);border-left:2px solid var(--r4);margin-right:2px"></span>R4 (Guionista+Docente)</span>
+        <span><span style="display:inline-block;width:8px;height:8px;background:rgba(232,69,69,.06);border-left:2px solid #E84545;margin-right:2px"></span>🚫 Restricción docente</span>
+        <span style="opacity:.5">Tenue = entregas internas (sin docente)</span>
       </div>
     </div>
 
     <!-- DETAIL -->
-    <div class="tab-content" id="tab-detail" style="display:none">
-      <div class="empty-state" id="detEmpty"><div class="ei">📋</div><p>Selecciona una asignatura del panel izquierdo.</p></div>
+    <div class="tc" id="tab-detail" style="display:none">
+      <div class="es" id="detEmpty"><div class="ei">📋</div><p>Selecciona una asignatura del panel izquierdo.</p></div>
       <div id="detContent" style="display:none"></div>
     </div>
 
     <!-- OVERVIEW -->
-    <div class="tab-content" id="tab-overview" style="display:none">
-      <div class="prog-cards" id="progCards"></div>
-      <div class="sec-ttl">Todas las asignaturas</div>
-      <table class="ov-table">
-        <thead><tr><th>Asignatura</th><th>Prog.</th><th>Docente</th><th>R1</th><th>Envío</th><th>R2</th><th>R3</th><th>R4</th><th>Fin</th><th>Estado</th></tr></thead>
+    <div class="tc" id="tab-overview" style="display:none">
+      <div class="pc" id="progCards"></div>
+      <div class="stl">Todas las asignaturas</div>
+      <table class="ot">
+        <thead><tr><th>Asignatura</th><th>Prog</th><th>Rol Docente</th><th>R1</th><th>Envío</th><th>R2</th><th>R3</th><th>R4</th><th>Fin</th><th>Estado</th></tr></thead>
         <tbody id="ovBody"></tbody>
       </table>
+    </div>
+
+    <!-- IDEAL -->
+    <div class="tc" id="tab-ideal" style="display:none">
+      <div class="ih">
+        <h2>🎯 Planificación Ideal del Ciclo 2</h2>
+        <p>Calculada con los recursos reales del equipo: Guionista (máx 2 reuniones/día), Contenidista (máx 3 asignaturas en fases distintas), 2 Desarrolladores E-Learning (1 asignatura c/u simultáneo). Arranca el <strong>lunes 13 de abril</strong>.</p>
+      </div>
+      <div class="ist">
+        <div class="isc ok"><div class="isn">16</div><div class="isl">asignaturas en el ciclo</div></div>
+        <div class="isc ok"><div class="isn">7</div><div class="isl">semanas sin buffer<br>(hasta 2 jun)</div></div>
+        <div class="isc warn"><div class="isn">8</div><div class="isl">semanas con buffer +1d<br>(hasta 9 jun)</div></div>
+        <div class="isc"><div class="isn">0</div><div class="isl">días con Guionista<br>sobrecargada</div></div>
+      </div>
+      <div class="scen" id="scenTabs">
+        <div class="st active" onclick="setScen('normal',this)"><h4>📋 Sin buffer</h4><p>Todo funciona al 100%. Fin: <strong>2 junio 2026</strong></p></div>
+        <div class="st" onclick="setScen('buffer',this)"><h4>🛡️ Con buffer (+1 día por etapa interna)</h4><p>Margen de seguridad por imprevistos. Fin: <strong>9 junio 2026</strong></p></div>
+      </div>
+      <table class="it" id="idealTable">
+        <thead><tr><th>#</th><th>Asignatura</th><th>Prog</th><th>R1 sugerida</th><th>Envío contenido</th><th>R2</th><th>Scripts enviados</th><th>R3</th><th>Producción lista</th><th>R4</th><th>Fin estimado</th></tr></thead>
+        <tbody id="idealBody"></tbody>
+      </table>
+      <div class="apbtn">
+        <button onclick="applyIdealPlan()">Aplicar Plan Ideal a la planificación →</button>
+      </div>
+      <div style="background:var(--w);border-radius:9px;padding:13px 15px;margin-top:2px">
+        <div class="stl">Notas sobre la planificación ideal</div>
+        <div style="font-size:10px;color:var(--body);line-height:1.7">
+          <p>• <strong>Rodrigo Díaz (MBA + MCG)</strong> tiene R1 el mismo día 13 abril — una sola reunión, dos asignaturas procesadas juntas por la Contenidista en secuencia.</p>
+          <p>• <strong>Katherine Dinamarca</strong> (Trabajo Colaborativo) solo puede tues/jue/vie — por eso queda R1 el 14 de abril.</p>
+          <p>• <strong>Juan Jesús Torres-Gordillo</strong> (Taller Estrategias) tiene bloqueado 20-26 abril (Feria de Sevilla) — su R1 queda el 13 de abril antes del bloqueo.</p>
+          <p>• <strong>John Ríos</strong> (Tecnología Control Gestión) solo puede jueves — R1 el 23 de abril (primer jueves disponible con cupo).</p>
+          <p>• <strong>Juan Pablo Seiffert</strong> (Control Riesgo) solo puede lunes o jueves — R1 el 16 de abril (jueves).</p>
+          <p>• Los <strong>optativos sin docente</strong> están al final. En cuanto se confirmen los docentes, pueden arrancar sin mover nada más.</p>
+          <p>• Los 2 Desarrolladores E-Learning trabajan en asignaturas distintas simultáneamente. El plan los tiene plenamente ocupados desde fines de abril hasta mediados de junio.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="tc" id="tab-settings" style="display:none">
+      <div class="stl">Configuración del equipo</div>
+      <div class="sgrid">
+        <div class="sc">
+          <h3>Roles del equipo</h3>
+          <div class="sr"><label>Guionista</label><input id="rGuionista" placeholder="Nombre del Guionista"></div>
+          <div class="sr"><label>Contenidista</label><input id="rContenidista" placeholder="Nombre del Contenidista"></div>
+          <div class="sr"><label>Desarrollador A</label><input id="rDevA" placeholder="Nombre Desarrollador E-Learning A"></div>
+          <div class="sr"><label>Desarrollador B</label><input id="rDevB" placeholder="Nombre Desarrollador E-Learning B"></div>
+          <div class="sr"><label>Gestión</label><input id="rGestion" placeholder="Nombre de Gestión"></div>
+          <button class="bss" onclick="saveSettings()">Guardar</button>
+        </div>
+        <div class="sc">
+          <h3>Capacidad del equipo</h3>
+          <div class="sr"><label>Máx reuniones Guionista/día</label><input id="cGuionMax" type="number" value="2" min="1" max="5"></div>
+          <div class="sr"><label>Máx asignaturas Contenidista</label><input id="cContenMax" type="number" value="3" min="1" max="6"></div>
+          <div class="sr"><label>Días contenido</label><input id="cContentDays" type="number" value="2" min="1" max="5"></div>
+          <div class="sr"><label>Días revisión docente</label><input id="cTeacherDays" type="number" value="4" min="2" max="10"></div>
+          <div class="sr"><label>Días ajustes</label><input id="cAdjDays" type="number" value="1" min="1" max="3"></div>
+          <div class="sr"><label>Días guionización</label><input id="cScriptDays" type="number" value="2" min="1" max="5"></div>
+          <div class="sr"><label>Gap mín antes R3 (días)</label><input id="cR3Gap" type="number" value="2" min="1" max="5"></div>
+          <div class="sr"><label>Días producción</label><input id="cProdDays" type="number" value="4" min="2" max="8"></div>
+          <div class="sr"><label>Gap mín antes R4 (días)</label><input id="cR4Gap" type="number" value="2" min="1" max="5"></div>
+          <button class="bss" onclick="saveSettings()">Guardar</button>
+        </div>
+      </div>
     </div>
   </main>
 </div>
 
 <!-- MODAL -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <h3 id="modalTitle">Nueva Asignatura</h3>
-    <div class="no-teacher-warn" id="noTeacherWarn">⚠️ Este docente está marcado como "Por confirmar". Podrás agendar, pero recuerda actualizar el nombre cuando lo tengas.</div>
-    <div class="form-group"><label>Nombre de la asignatura</label><input type="text" id="fName"></div>
-    <div class="form-group"><label>Programa</label>
-      <select id="fProgram">
-        <option value="MBA">MBA</option><option value="MCG">Magíster Control de Gestión</option>
-        <option value="MCEE">Magíster Currículum y Evaluación</option><option value="OPT">Optativo</option>
-      </select>
+<div class="mo" id="modalOv">
+  <div class="md">
+    <h3 id="mdTitle">Nueva Asignatura</h3>
+    <div class="ntn" id="ntNote">⚠️ Docente por confirmar. Podrás agendar, pero actualiza el nombre cuando lo tengas.</div>
+    <div class="fg2"><label>Nombre de la asignatura</label><input type="text" id="fName"></div>
+    <div class="fg2"><label>Programa</label>
+      <select id="fProg"><option value="MBA">MBA</option><option value="MCG">MCG — Magíster Control de Gestión</option><option value="MCEE">MCEE — Magíster Currículum y Evaluación</option><option value="OPT">Optativo</option></select>
     </div>
-    <div class="form-group"><label>Docente</label><input type="text" id="fTeacher" placeholder="Nombre del docente (o 'Por confirmar')" oninput="checkTeacher(this.value)"></div>
-    <div class="form-group"><label>Email docente</label><input type="text" id="fEmail" placeholder="correo@umayor.cl"></div>
-    <div class="form-group"><label>Fecha Reunión 1 con Maibe</label><input type="date" id="fR1Date"></div>
-    <div class="form-group"><label>Restricciones de disponibilidad del docente</label><textarea id="fRestrictions" placeholder="Ej: No disponible lunes. Prefiere mañanas. Bloqueado Semana Santa..."></textarea></div>
-    <div id="reschBox" class="resch-box" style="display:none">
-      <h4>⚡ Opciones de fecha disponibles para Maibe</h4>
+    <div class="fg2"><label>Docente</label><input type="text" id="fTeacher" oninput="chkTeacher(this.value)" placeholder="Nombre del docente"></div>
+    <div class="fg2"><label>Email docente</label><input type="text" id="fEmail" placeholder="correo@umayor.cl"></div>
+    <div class="fg2"><label>Fecha Reunión 1 con Guionista</label><input type="date" id="fR1"></div>
+    <div class="fg2"><label>Restricciones de disponibilidad</label><textarea id="fRestr" placeholder="Ej: Solo jueves. No disponible en marzo. Bloqueado Semana Santa..."></textarea></div>
+    <div id="reschBox" class="rb" style="display:none">
+      <h4>⚡ Opciones de fecha para el Guionista</h4>
       <div id="reschRows"></div>
     </div>
-    <div class="modal-actions">
-      <button class="btn-del" id="btnDel" onclick="deleteSubject()" style="display:none">Eliminar</button>
-      <button class="btn-sec" onclick="closeModal()">Cancelar</button>
-      <button class="btn-pri" onclick="saveSubject()">Guardar</button>
+    <div class="mact">
+      <button class="bdel" id="btnDel" onclick="deleteSub()" style="display:none">Eliminar</button>
+      <button class="bsec" onclick="closeModal()">Cancelar</button>
+      <button class="bpri" onclick="saveSub()">Guardar</button>
     </div>
   </div>
 </div>
 
 <script>
-let subjects=[], selectedId=null, editingId=null, calOffset=0, calFilter='ALL', planSort='urgency';
-let prevDates={}; // track previous computed dates for change summary
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let subjects=[], selId=null, editId=null, calOff=0, calFilt='ALL', planSortMode='urg', scenMode='normal';
+let prevR1={}; // for change impact tracking
+let lockedDates={}; // subjectId -> {r2:bool, r3:bool, r4:bool}
+let roles={guionista:'',contenidista:'',devA:'',devB:'',gestion:''};
+let caps={guionMax:2,contenMax:3,contentDays:2,teacherDays:4,adjDays:1,scriptDays:2,r3gap:2,prodDays:4,r4gap:2};
 
-// FIX #2: Added 22-may-2026 to holidays
-const HOLIDAYS=['2026-01-01','2026-04-03','2026-04-04','2026-05-01','2026-05-21','2026-05-22',
-  '2026-06-29','2026-07-16','2026-08-15','2026-09-18','2026-09-19','2026-10-12',
-  '2026-10-31','2026-11-01','2026-12-08','2026-12-25'];
+const HOLS=new Set(['2026-01-01','2026-04-03','2026-04-04','2026-05-01','2026-05-21','2026-05-22','2026-06-29','2026-07-16','2026-08-15','2026-09-18','2026-09-19','2026-10-12','2026-10-31','2026-11-01','2026-12-08','2026-12-25']);
 
-const FLOW={r1_to_content:2,content_review:4,r2_to_adj:1,adj_to_scripts:2,r3_to_prod:1,production:4,r4_to_final:2,final_to_montage:1};
+// ─── IDEAL PLAN DATA (precomputed) ────────────────────────────────────────────
+const IDEAL_NORMAL=[
+  {id:'s11',name:'Taller Estrategias Diversificación',prog:'MCEE',teacher:'Juan Jesús Torres-Gordillo',shared:null,r1:'2026-04-13',content_send:'2026-04-15',r2:'2026-04-21',adj_done:'2026-04-22',scripts_sent:'2026-04-24',r3:'2026-04-28',prod_done:'2026-05-05',r4:'2026-05-07',final_adj:'2026-05-08',montage:'2026-05-11'},
+  {id:'s12',name:'Trabajo Colaborativo Interprofesional',prog:'MCEE',teacher:'Katherine Dinamarca',shared:null,r1:'2026-04-14',content_send:'2026-04-16',r2:'2026-04-22',adj_done:'2026-04-23',scripts_sent:'2026-04-27',r3:'2026-04-29',prod_done:'2026-05-06',r4:'2026-05-08',final_adj:'2026-05-11',montage:'2026-05-12'},
+  {id:'s5',name:'Control Estratégico',prog:'MCG',teacher:'Juan Francisco Cobo',shared:null,r1:'2026-04-20',content_send:'2026-04-22',r2:'2026-04-28',adj_done:'2026-04-29',scripts_sent:'2026-05-04',r3:'2026-05-06',prod_done:'2026-05-12',r4:'2026-05-14',final_adj:'2026-05-15',montage:'2026-05-18'},
+  {id:'s9',name:'Control y Riesgo Operacional',prog:'MCG',teacher:'Juan Pablo Seiffert',shared:null,r1:'2026-04-16',content_send:'2026-04-20',r2:'2026-04-24',adj_done:'2026-04-27',scripts_sent:'2026-04-29',r3:'2026-05-04',prod_done:'2026-05-08',r4:'2026-05-12',final_adj:'2026-05-13',montage:'2026-05-14'},
+  {id:'s6',name:'Tecnología Control de Gestión',prog:'MCG',teacher:'John Ríos',shared:null,r1:'2026-04-23',content_send:'2026-04-27',r2:'2026-05-04',adj_done:'2026-05-05',scripts_sent:'2026-05-07',r3:'2026-05-11',prod_done:'2026-05-15',r4:'2026-05-19',final_adj:'2026-05-20',montage:'2026-05-25'},
+  {id:'s2',name:'Dirección de la Innovación',prog:'MBA',teacher:'Rodrigo Díaz',shared:'s7',r1:'2026-04-13',content_send:'2026-04-15',r2:'2026-04-21',adj_done:'2026-04-22',scripts_sent:'2026-04-24',r3:'2026-04-28',prod_done:'2026-05-05',r4:'2026-05-07',final_adj:'2026-05-08',montage:'2026-05-11'},
+  {id:'s7',name:'Dirección de la Innovación',prog:'MCG',teacher:'Rodrigo Díaz',shared:'s2',r1:'2026-04-13',content_send:'2026-04-15',r2:'2026-04-21',adj_done:'2026-04-22',scripts_sent:'2026-04-24',r3:'2026-04-28',prod_done:'2026-05-05',r4:'2026-05-07',final_adj:'2026-05-08',montage:'2026-05-11'},
+  {id:'s1',name:'Contabilidad Toma de Decisiones',prog:'MBA',teacher:'Felipe Zúñiga',shared:null,r1:'2026-04-17',content_send:'2026-04-21',r2:'2026-04-27',adj_done:'2026-04-28',scripts_sent:'2026-04-30',r3:'2026-05-05',prod_done:'2026-05-11',r4:'2026-05-13',final_adj:'2026-05-14',montage:'2026-05-15'},
+  {id:'s4',name:'Transformación Digital e IA',prog:'MBA',teacher:'Fabián Palma',shared:null,r1:'2026-04-21',content_send:'2026-04-23',r2:'2026-04-29',adj_done:'2026-04-30',scripts_sent:'2026-05-05',r3:'2026-05-07',prod_done:'2026-05-13',r4:'2026-05-15',final_adj:'2026-05-18',montage:'2026-05-19'},
+  {id:'s3',name:'Finanzas Toma de Decisiones',prog:'MBA',teacher:'Carlos Gómez',shared:null,r1:'2026-04-22',content_send:'2026-04-24',r2:'2026-04-30',adj_done:'2026-05-04',scripts_sent:'2026-05-06',r3:'2026-05-08',prod_done:'2026-05-14',r4:'2026-05-18',final_adj:'2026-05-19',montage:'2026-05-20'},
+  {id:'s8',name:'Gestión y Desarrollo Organizacional',prog:'MCG',teacher:'Bárbara Valenzuela',shared:null,r1:'2026-04-24',content_send:'2026-04-28',r2:'2026-05-05',adj_done:'2026-05-06',scripts_sent:'2026-05-08',r3:'2026-05-12',prod_done:'2026-05-18',r4:'2026-05-20',final_adj:'2026-05-25',montage:'2026-05-26'},
+  {id:'s13',name:'Investigación Educativa y Gestión',prog:'MCEE',teacher:'Marcos López',shared:null,r1:'2026-04-27',content_send:'2026-04-29',r2:'2026-05-06',adj_done:'2026-05-07',scripts_sent:'2026-05-11',r3:'2026-05-13',prod_done:'2026-05-19',r4:'2026-05-25',final_adj:'2026-05-26',montage:'2026-05-27'},
+  {id:'s10',name:'Taller Evaluación Formativa',prog:'MCEE',teacher:'Mónica Flores',shared:null,r1:'2026-04-28',content_send:'2026-04-30',r2:'2026-05-07',adj_done:'2026-05-08',scripts_sent:'2026-05-12',r3:'2026-05-14',prod_done:'2026-05-20',r4:'2026-05-26',final_adj:'2026-05-27',montage:'2026-05-28'},
+  {id:'s14',name:'Optativo: Datos y Visualización',prog:'OPT',teacher:'Por confirmar',shared:null,r1:'2026-04-29',content_send:'2026-05-04',r2:'2026-05-08',adj_done:'2026-05-11',scripts_sent:'2026-05-13',r3:'2026-05-15',prod_done:'2026-05-25',r4:'2026-05-27',final_adj:'2026-05-28',montage:'2026-05-29'},
+  {id:'s15',name:'Optativo: IA Creatividad y Ética',prog:'OPT',teacher:'Joaquim Giannotti',shared:null,r1:'2026-04-30',content_send:'2026-05-05',r2:'2026-05-11',adj_done:'2026-05-12',scripts_sent:'2026-05-14',r3:'2026-05-18',prod_done:'2026-05-26',r4:'2026-05-28',final_adj:'2026-05-29',montage:'2026-06-01'},
+  {id:'s16',name:'Optativo: Diseño de Servicios',prog:'OPT',teacher:'Por confirmar',shared:null,r1:'2026-05-04',content_send:'2026-05-06',r2:'2026-05-12',adj_done:'2026-05-13',scripts_sent:'2026-05-15',r3:'2026-05-19',prod_done:'2026-05-27',r4:'2026-05-29',final_adj:'2026-06-01',montage:'2026-06-02'}
+];
 
-function save(){try{localStorage.setItem('hackea_c2_v4',JSON.stringify(subjects));}catch(e){}}
-function load(){try{const d=localStorage.getItem('hackea_c2_v4');if(d)subjects=JSON.parse(d);}catch(e){}}
-function resetData(){if(!confirm('¿Resetear todos los datos del Ciclo 2?'))return;localStorage.removeItem('hackea_c2_v4');subjects=[];prevDates={};seedData();renderAll();}
+// Buffer version: +1 day on internal stages
+function computeIdealBuffer(d){
+  const r1=d.r1;
+  const cs=addBD(r1,caps.contentDays+1);
+  const r2=addBD(cs,caps.teacherDays);
+  const adj=addBD(r2,caps.adjDays+1);
+  const sc=addBD(adj,caps.scriptDays+1);
+  const r3=addBD(sc,caps.r3gap);
+  const pd=addBD(r3,caps.prodDays+1);
+  const r4=addBD(pd,caps.r4gap);
+  const fa=addBD(r4,2);
+  const m=addBD(fa,1);
+  return{...d,r1:d.r1,content_send:cs,r2,adj_done:adj,scripts_sent:sc,r3,prod_done:pd,r4,final_adj:fa,montage:m};
+}
 
-function isWorkDay(d){if(d.getDay()===0||d.getDay()===6)return false;return!HOLIDAYS.includes(d.toISOString().split('T')[0]);}
-function addBD(ds,n){if(!ds)return null;let d=new Date(ds+'T12:00:00'),c=0;while(c<n){d.setDate(d.getDate()+1);if(isWorkDay(d))c++;}return d.toISOString().split('T')[0];}
-function fmtDate(ds){if(!ds)return null;return new Date(ds+'T12:00:00').toLocaleDateString('es-CL',{day:'2-digit',month:'short'});}
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function save(){try{localStorage.setItem('hackea_c2_v5',JSON.stringify({subjects,lockedDates,roles,caps}));}catch(e){}}
+function load(){try{const d=localStorage.getItem('hackea_c2_v5');if(d){const p=JSON.parse(d);subjects=p.subjects||[];lockedDates=p.lockedDates||{};roles=p.roles||roles;caps=p.caps||caps;}}catch(e){}}
+function resetData(){if(!confirm('¿Resetear todos los datos?'))return;localStorage.removeItem('hackea_c2_v5');subjects=[];lockedDates={};prevR1={};seedData();renderAll();}
+
+function isWD(ds){const d=new Date(ds+'T12:00:00');return d.getDay()>0&&d.getDay()<6&&!HOLS.has(ds);}
+function addBD(ds,n){if(!ds)return null;let d=new Date(ds+'T12:00:00'),c=0;while(c<n){d.setDate(d.getDate()+1);if(isWD(d.toISOString().split('T')[0]))c++;}return d.toISOString().split('T')[0];}
+function fmt(ds){if(!ds)return null;return new Date(ds+'T12:00:00').toLocaleDateString('es-CL',{day:'2-digit',month:'short'});}
 function fmtFull(ds){if(!ds)return null;return new Date(ds+'T12:00:00').toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long'});}
-function dStr(d){return d.toISOString().split('T')[0];}
-function todayStr(){return new Date().toISOString().split('T')[0];}
-function getWeekStart(off){const t=new Date(),day=t.getDay(),m=new Date(t);m.setDate(t.getDate()-(day===0?6:day-1)+off*7);m.setHours(0,0,0,0);return m;}
+function ds(d){return d.toISOString().split('T')[0];}
+function todayS(){return new Date().toISOString().split('T')[0];}
+function getWS(off){const t=new Date(),dw=t.getDay(),m=new Date(t);m.setDate(t.getDate()-(dw===0?6:dw-1)+off*7);m.setHours(0,0,0,0);return m;}
 
 function computeDates(s){
   const r1=s.r1Date;if(!r1)return{};
-  const contentSend=addBD(r1,FLOW.r1_to_content);
-  const r2=addBD(contentSend,FLOW.content_review);
-  const adjSend=addBD(r2,FLOW.r2_to_adj);
-  const scriptsReady=addBD(adjSend,FLOW.adj_to_scripts);
-  const r3=scriptsReady;
-  const prodStart=addBD(r3,FLOW.r3_to_prod);
-  const prodReady=addBD(prodStart,FLOW.production);
-  const r4=prodReady;
-  const finalAdj=addBD(r4,FLOW.r4_to_final);
-  const montageEnd=addBD(finalAdj,FLOW.final_to_montage);
-  return{contentSend,r2,adjSend,scriptsReady,r3,prodStart,prodReady,r4,finalAdj,montageEnd};
+  const cs=addBD(r1,caps.contentDays);
+  const r2=addBD(cs,caps.teacherDays);
+  const adj=addBD(r2,caps.adjDays);
+  const sc=addBD(adj,caps.scriptDays);
+  const r3=addBD(sc,caps.r3gap);
+  const pd=addBD(r3,caps.prodDays);
+  const r4=addBD(pd,caps.r4gap);
+  const fa=addBD(r4,1);
+  const m=addBD(fa,1);
+  return{contentSend:cs,r2,adjDone:adj,scriptsSent:sc,r3,prodDone:pd,r4,finalAdj:fa,montage:m};
 }
 
-function getMaibeLoad(){
+function getGuionLoad(){
   const load={};
-  subjects.forEach(s=>{const d=computeDates(s);[s.r1Date,d.r3,d.r4].forEach(dt=>{if(dt)load[dt]=(load[dt]||0)+1;});});
+  subjects.forEach(s=>{
+    const d=computeDates(s);
+    [s.r1Date,d.r3,d.r4].forEach(dt=>{if(dt)load[dt]=(load[dt]||0)+1;});
+  });
   return load;
 }
 
-// FIX #3: Detect shared teacher
-function getSharedTeachers(){
-  const map={};
-  subjects.forEach(s=>{
-    if(!s.teacher||s.teacher==='Por confirmar')return;
-    const key=s.teacher.toLowerCase().trim();
-    if(!map[key])map[key]=[];
-    map[key].push(s.id);
-  });
-  return map;
+function isShared(s){
+  const k=(s.teacher||'').toLowerCase().trim();
+  if(!k||k==='por confirmar')return false;
+  return subjects.filter(x=>(x.teacher||'').toLowerCase().trim()===k).length>1;
 }
-function isSharedTeacher(s){
-  const map=getSharedTeachers();
-  const key=(s.teacher||'').toLowerCase().trim();
-  return map[key]&&map[key].length>1;
-}
-function getSharedSiblings(s){
-  const map=getSharedTeachers();
-  const key=(s.teacher||'').toLowerCase().trim();
-  if(!map[key])return[];
-  return subjects.filter(x=>x.id!==s.id&&(x.teacher||'').toLowerCase().trim()===key);
+function getSiblings(s){
+  const k=(s.teacher||'').toLowerCase().trim();
+  return subjects.filter(x=>x.id!==s.id&&(x.teacher||'').toLowerCase().trim()===k);
 }
 
-// FIX #7: Restriction checker
-function checkRestriction(dateStr,restrictions){
-  if(!restrictions||!dateStr)return null;
-  const r=restrictions.toLowerCase();
-  const d=new Date(dateStr+'T12:00:00');
-  const month=d.getMonth()+1,dayW=d.getDay();
-  if(r.includes('no disponible en marzo')&&month===3)return'Docente no disponible en marzo';
-  if(r.includes('29 de junio')&&((month===6&&d.getDate()>=29)||(month===7&&d.getDate()<=10)))return'Docente no disponible (cierre semestre)';
-  const dObj=new Date(dateStr+'T12:00:00');
-  if((r.includes('semana santa')||r.includes('28 de marzo'))&&dObj>=new Date('2026-03-28')&&dObj<=new Date('2026-04-05'))return'Semana Santa — docente no disponible';
-  if((r.includes('feria de sevilla')||r.includes('20–26 abril'))&&dObj>=new Date('2026-04-20')&&dObj<=new Date('2026-04-26'))return'Feria de Sevilla — docente no disponible';
-  if((r.includes('lunes y miércoles')||r.includes('lunes y miercoles'))&&r.includes('clases')){
-    if(dayW===1)return'Docente no disponible los lunes (tiene clases)';
-    if(dayW===3)return'Docente no disponible los miércoles (tiene clases)';
+function checkRestr(ds,r){
+  if(!r||!ds)return null;
+  const rl=r.toLowerCase();
+  const d=new Date(ds+'T12:00:00'),m=d.getMonth()+1,dw=d.getDay();
+  if(rl.includes('no disponible en marzo')&&m===3)return'Docente no disponible en marzo';
+  const dobj=new Date(ds+'T12:00:00');
+  if((rl.includes('semana santa')||rl.includes('28 de marzo'))&&dobj>=new Date('2026-03-28')&&dobj<=new Date('2026-04-05'))return'Semana Santa — no disponible';
+  if((rl.includes('feria de sevilla')||rl.includes('20–26 abril'))&&dobj>=new Date('2026-04-20')&&dobj<=new Date('2026-04-26'))return'Feria de Sevilla — no disponible';
+  if((rl.includes('lunes y miércoles')||rl.includes('lunes y miercoles'))&&rl.includes('clases')){
+    if(dw===1)return'No disponible lunes (tiene clases)';
+    if(dw===3)return'No disponible miércoles (tiene clases)';
   }
-  if(r.includes('no disponible lunes')&&dayW===1)return'Docente no disponible los lunes';
+  if(rl.includes('no disponible lunes')&&dw===1)return'No disponible lunes';
+  if(rl.includes('29 de junio')&&((m===6&&d.getDate()>=29)||(m===7&&d.getDate()<=10)))return'Bloqueado fin de semestre';
   return null;
 }
 
-// FIX #1: Urgency score for sorting
-function getUrgencyScore(s){
+function getUrgency(s){
   const r=(s.restrictions||'').toLowerCase();
-  let score=0;
-  if(!s.teacher||s.teacher==='Por confirmar')score+=5;
-  if(r.includes('no disponible en marzo'))score+=30; // window closed soon
-  if(r.includes('semana santa'))score+=20;
-  if(r.includes('feria de sevilla'))score+=18;
-  if(r.includes('29 de junio')||r.includes('cierre'))score+=10;
-  if(r.includes('solo lunes')||r.includes('solo jueves')||r.includes('solo martes'))score+=15; // narrow window
-  if(r.includes('lunes y miércoles')&&r.includes('clases'))score+=12;
-  if(isSharedTeacher(s))score+=8;
-  return score;
+  let sc=0;
+  if(!s.teacher||s.teacher==='Por confirmar')sc+=5;
+  if(r.includes('no disponible en marzo'))sc+=30;
+  if(r.includes('semana santa'))sc+=20;
+  if(r.includes('feria de sevilla'))sc+=18;
+  if(r.includes('solo jueves')||r.includes('solo lunes')||r.includes('solo martes'))sc+=15;
+  if(r.includes('lunes y miércoles')&&r.includes('clases'))sc+=12;
+  if(isShared(s))sc+=8;
+  return sc;
 }
 
-// FIX #5: Change summary
-function buildChangeSummary(id, newR1){
+function getFreeDays(from,n){
+  const load=getGuionLoad();const res=[];
+  if(!from)return res;
+  let d=new Date(from+'T12:00:00');d.setDate(d.getDate()-7);
+  let t=0;
+  while(res.length<n&&t<90){t++;const dss=ds(d);if(isWD(dss))res.push({date:dss,count:load[dss]||0});d.setDate(d.getDate()+1);}
+  return res;
+}
+
+// Change impact calculation
+function getImpact(id,newR1){
   const s=subjects.find(x=>x.id===id);
   if(!s||!s.r1Date||!newR1||s.r1Date===newR1)return null;
-  const oldDates=computeDates({...s,r1Date:s.r1Date});
-  const newDates=computeDates({...s,r1Date:newR1});
+  const oldD=computeDates({...s,r1Date:s.r1Date});
+  const newD=computeDates({...s,r1Date:newR1});
+  const lk=lockedDates[id]||{};
+  const load=getGuionLoad();
   const changes=[];
-  const labels={r2:'R2 Comentarios',r3:'R3 Guiones',r4:'R4 Recursos',montageEnd:'Fin estimado'};
-  Object.entries(labels).forEach(([k,lbl])=>{
-    if(oldDates[k]&&newDates[k]&&oldDates[k]!==newDates[k])
-      changes.push({label:lbl,old:fmtDate(oldDates[k]),newv:fmtDate(newDates[k])});
+  const map=[
+    {k:'contentSend',lbl:'Envío de contenido',type:'int'},
+    {k:'r2',lbl:'R2 Comentarios',type:'ext'},
+    {k:'adjDone',lbl:'Ajustes listos',type:'int'},
+    {k:'scriptsSent',lbl:'Guiones enviados',type:'int'},
+    {k:'r3',lbl:'R3 Guiones',type:'ext'},
+    {k:'prodDone',lbl:'Producción lista',type:'int'},
+    {k:'r4',lbl:'R4 Recursos',type:'ext'},
+    {k:'montage',lbl:'Fin / Montaje',type:'int'},
+  ];
+  map.forEach(({k,lbl,type})=>{
+    if(oldD[k]&&newD[k]&&oldD[k]!==newD[k]){
+      const isLocked=(k==='r2'&&lk.r2)||(k==='r3'&&lk.r3)||(k==='r4'&&lk.r4);
+      const newLoad=load[newD[k]]||0;
+      const conflict=type==='ext'&&newLoad>=caps.guionMax;
+      changes.push({label:lbl,old:fmt(oldD[k]),newv:fmt(newD[k]),type:isLocked?'locked':conflict?'conflict':type});
+    }
   });
   return changes.length?changes:null;
 }
 
-function getFreeDays(fromDate,n){
-  const load=getMaibeLoad();const free=[];
-  if(!fromDate)return free;
-  let d=new Date(fromDate+'T12:00:00');d.setDate(d.getDate()-7);
-  let tries=0;
-  while(free.length<n&&tries<90){tries++;if(isWorkDay(d)){const ds=dStr(d);free.push({date:ds,count:load[ds]||0});}d.setDate(d.getDate()+1);}
-  return free;
-}
-
-// ─── SIDEBAR ─────────────────────────────────────────────────────────────────
+// ─── SIDEBAR ──────────────────────────────────────────────────────────────────
 function renderSidebar(){
-  document.getElementById('sbCount').textContent=subjects.length;
-  const list=document.getElementById('sbList');
-  if(!subjects.length){list.innerHTML='<div style="padding:16px;color:var(--body);font-size:10px;opacity:.7;text-align:center">Agrega asignaturas →</div>';return;}
-  const load=getMaibeLoad();
-  let html='';
+  document.getElementById('sbCnt').textContent=subjects.length;
+  const el=document.getElementById('sbList');
+  if(!subjects.length){el.innerHTML='<div style="padding:14px;color:var(--body);font-size:9px;opacity:.7;text-align:center">Agrega asignaturas →</div>';return;}
+  const load=getGuionLoad();
+  let h='';
   ['MBA','MCG','MCEE','OPT'].forEach(prog=>{
     subjects.filter(s=>s.program===prog).forEach(s=>{
       const d=computeDates(s);
-      const over=[s.r1Date,d.r3,d.r4].some(dt=>dt&&(load[dt]||0)>2);
-      const rWarn=s.r1Date?checkRestriction(s.r1Date,s.restrictions):null;
-      const shared=isSharedTeacher(s);
-      const urg=getUrgencyScore(s);
-      html+=`<div class="s-item ${selectedId===s.id?'active':''}" onclick="selectSubject('${s.id}')">
-        <div class="s-prog ${prog==='OPT'?'opt':''}">${prog}</div>
-        <div class="s-name">${s.name}</div>
-        <div class="s-meta">
-          <span class="pill ${s.r1Date?'active':'pending'}">${s.r1Date?'En flujo':'Sin agendar'}</span>
-          ${s.r1Date?`<span>${fmtDate(s.r1Date)}</span>`:''}
+      const over=[s.r1Date,d.r3,d.r4].some(dt=>dt&&(load[dt]||0)>caps.guionMax);
+      const rw=s.r1Date?checkRestr(s.r1Date,s.restrictions):null;
+      const sh=isShared(s);
+      const urg=getUrgency(s);
+      h+=`<div class="si ${selId===s.id?'active':''}" onclick="selSub('${s.id}')">
+        <div class="sp ${prog==='OPT'?'opt':''}">${prog}</div>
+        <div class="sn">${s.name}</div>
+        <div class="sm">
+          <span class="pill ${s.r1Date?'a':'p'}">${s.r1Date?'En flujo':'Sin agendar'}</span>
+          ${s.r1Date?`<span>${fmt(s.r1Date)}</span>`:''}
           ${s.restrictions?`<span title="${(s.restrictions||'').replace(/"/g,"'")}">📋</span>`:''}
-          ${shared?`<span title="Comparte docente con otra asignatura" style="color:#9B59B6">🟣</span>`:''}
-          ${over?`<span title="Maibe sobrecargada ese día" style="color:var(--delay)">⚠️</span>`:''}
-          ${rWarn?`<span title="${rWarn}" style="color:var(--delay)">🚫</span>`:''}
-          ${!s.r1Date&&urg>=15?`<span class="urg-badge high">URGENTE</span>`:!s.r1Date&&urg>=8?`<span class="urg-badge med">PRIORIDAD</span>`:''}
+          ${sh?`<span title="Docente compartido" style="color:var(--pur)">🟣</span>`:''}
+          ${over?`<span title="Guionista sobrecargada" style="color:var(--err)">⚠️</span>`:''}
+          ${rw?`<span title="${rw}" style="color:var(--err)">🚫</span>`:''}
+          ${!s.r1Date&&urg>=15?`<span class="ub h">URGENTE</span>`:!s.r1Date&&urg>=8?`<span class="ub m">PRIO</span>`:''}
         </div>
       </div>`;
     });
   });
-  list.innerHTML=html;
+  el.innerHTML=h;
 }
 
 // ─── DETAIL ──────────────────────────────────────────────────────────────────
 function renderDetail(){
-  const el=document.getElementById('detContent'),empty=document.getElementById('detEmpty');
-  if(!selectedId){el.style.display='none';empty.style.display='block';return;}
-  const s=subjects.find(x=>x.id===selectedId);
-  if(!s)return;
-  empty.style.display='none';el.style.display='block';
+  const el=document.getElementById('detContent'),em=document.getElementById('detEmpty');
+  if(!selId){el.style.display='none';em.style.display='block';return;}
+  const s=subjects.find(x=>x.id===selId);if(!s)return;
+  em.style.display='none';el.style.display='block';
   const d=computeDates(s);
-  const load=getMaibeLoad();
-  const over=[s.r1Date,d.r3,d.r4].some(dt=>dt&&(load[dt]||0)>2);
-  const rWarn=s.r1Date?checkRestriction(s.r1Date,s.restrictions):null;
-  const shared=isSharedTeacher(s);
-  const siblings=getSharedSiblings(s);
+  const load=getGuionLoad();
+  const over=[s.r1Date,d.r3,d.r4].some(dt=>dt&&(load[dt]||0)>caps.guionMax);
+  const rw=s.r1Date?checkRestr(s.r1Date,s.restrictions):null;
+  const sh=isShared(s);
+  const sibs=getSiblings(s);
+  const lk=lockedDates[s.id]||{};
+  const rn=roles;
 
-  let html=`<div class="det-hdr">
-    <span class="prog-badge ${s.program==='OPT'?'opt':''}">${s.program}</span>
-    <div class="det-title"><h2>${s.name}</h2><p>👤 ${s.teacher||'Por confirmar'}${s.email?' · '+s.email:''}</p></div>
-    <div style="margin-left:auto"><button class="btn-add" onclick="openEdit('${s.id}')">✏️ Editar</button></div>
+  let h=`<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:11px">
+    <span class="prog-badge ${s.program==='OPT'?'opt':''}" style="color:white;font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px;background:${s.program==='OPT'?'var(--pur)':'var(--blue)'}">${s.program}</span>
+    <div><h2 style="font-size:15px;font-weight:700;color:var(--dark);line-height:1.2">${s.name}</h2><p style="font-size:9px;color:var(--body);margin-top:2px">👤 ${s.teacher||'Por confirmar'}${s.email?' · '+s.email:''}</p></div>
+    <div style="margin-left:auto"><button class="badd" onclick="openEdit('${s.id}')">✏️ Editar</button></div>
   </div>`;
 
-  if(s.restrictions)html+=`<div class="banner warn"><span>📋</span><span><strong>Restricciones del docente:</strong> ${s.restrictions}</span></div>`;
+  if(s.restrictions)h+=`<div class="ban warn"><span>📋</span><span><strong>Restricciones del docente:</strong> ${s.restrictions}</span></div>`;
+  if(sh&&sibs.length)h+=`<div class="ban pur"><span>🟣</span><span><strong>${s.teacher} también aparece en:</strong> ${sibs.map(x=>`${x.name} (${x.program})`).join(', ')}. Es una sola reunión — agenda ambas el mismo día.</span></div>`;
+  if(over)h+=`<div class="ban err"><strong>⚠️ Guionista sobrecargada</strong> Ya tiene ${caps.guionMax} reuniones ese día. Cambia la fecha de R1.</div>`;
+  if(rw)h+=`<div class="ban err"><strong>🚫 Restricción activa:</strong> ${rw}</div>`;
+  if(!s.teacher||s.teacher==='Por confirmar')h+=`<div class="ban info"><span>ℹ️</span><span>Docente por confirmar. Actualiza el nombre cuando lo tengas.</span></div>`;
 
-  // FIX #3: shared teacher banner
-  if(shared&&siblings.length){
-    html+=`<div class="banner same-teacher"><span>🟣</span><span><strong>${s.teacher} también aparece en:</strong> ${siblings.map(x=>`${x.name} (${x.program})`).join(', ')}. En la práctica es una sola reunión — coordina que ambas queden el mismo día.</span></div>`;
-  }
-  if(over)html+=`<div class="banner danger"><strong>⚠️ Maibe sobrecargada ese día</strong>Ya tiene 2 reuniones agendadas ese día. Considera cambiar la fecha de R1.</div>`;
-  if(rWarn)html+=`<div class="banner danger"><strong>🚫 Restricción del docente activa</strong>${rWarn} — cambia la fecha de R1.</div>`;
-  if(!s.teacher||s.teacher==='Por confirmar')html+=`<div class="banner info"><span>ℹ️</span><span>Docente aún no confirmado. Puedes planificar, pero recuerda actualizar el nombre cuando lo tengas.</span></div>`;
-
-  // FIX #5: change summary (stored in prevDates)
-  const prev=prevDates[s.id];
-  if(prev&&s.r1Date&&prev!==s.r1Date){
-    const changes=buildChangeSummary(s.id,s.r1Date);
+  // Impact of last change
+  if(prevR1[s.id]&&s.r1Date&&prevR1[s.id]!==s.r1Date){
+    const changes=getImpact(s.id,s.r1Date);
     if(changes&&changes.length){
-      html+=`<div class="change-summary"><strong>📅 Al cambiar R1 de ${fmtDate(prev)} a ${fmtDate(s.r1Date)}, estas fechas se actualizaron:</strong>`;
-      changes.forEach(c=>{html+=`<div class="change-row"><span class="old">${c.label}: ${c.old}</span><span class="arr">→</span><span class="new">${c.newv}</span></div>`;});
-      html+=`</div>`;
+      h+=`<div class="impact"><h4>📅 Impacto del cambio de R1: ${fmt(prevR1[s.id])} → ${fmt(s.r1Date)}</h4>`;
+      changes.forEach(c=>{
+        const typeLabel=c.type==='int'?'Interno (sin docente)':c.type==='locked'?'⚠️ Bloqueada — reconfirmar':c.type==='conflict'?'⚠️ Conflicto de agenda':'Requiere reconfirmar con docente';
+        const typeCls=c.type==='int'?'int':c.type==='conflict'||c.type==='locked'?'col':'ext';
+        h+=`<div class="irow"><span class="ilbl">${c.label}</span><span class="iold">${c.old}</span><span class="iarr">→</span><span class="inew">${c.newv}</span><span class="itype ${typeCls}">${typeLabel}</span></div>`;
+      });
+      h+=`<div class="iactions">
+        <button class="baccept" onclick="acceptChange('${s.id}')">✅ Entendido, aplicar cambio</button>
+        <button class="brevert" onclick="revertChange('${s.id}')">↩️ Revertir al ${fmt(prevR1[s.id])}</button>
+      </div></div>`;
     }
   }
 
   const steps=[
-    {num:'Reunión 1',title:'Alineación Inicial',who:'Maibe + Docente',desc:'Revisión de programa, bibliografía y objetivos. Se agenda R2 en esta misma instancia.',editable:true,
-     comp:d.contentSend?[{l:'Merlym envía contenido',v:d.contentSend}]:[]},
-    {num:'Proceso interno',title:'Contenido + Revisión',who:'Merlym → Docente',desc:'Merlym: 2 días redacción + QA. Docente: 4 días hábiles para revisar en Google Doc compartido.',
-     comp:[{l:'Envío a docente',v:d.contentSend},{l:'Límite revisión',v:d.r2}]},
-    {num:'Reunión 2',title:'Revisión Comentarios',who:'Merlym + Docente',desc:'Se revisan observaciones. Merlym ajusta 1 día y guioniza 2 días. Se agenda R3.',
-     comp:[{l:'Fecha R2',v:d.r2},{l:'Ajustes listos',v:d.adjSend},{l:'Guiones / R3',v:d.scriptsReady}]},
-    {num:'Reunión 3',title:'Revisión Guiones',who:'Maibe + Docente',desc:'Revisión de guiones. 1 día ajustes. Producción 4 días (2 devs en paralelo). Se agenda R4.',
-     comp:[{l:'Fecha R3',v:d.r3},{l:'Producción lista / R4',v:d.prodReady}]},
-    {num:'Reunión 4',title:'Revisión Recursos',who:'Maibe + Docente',desc:'Revisión de recursos producidos. Hasta 2 días ajustes. Montaje 1 día. Revisión Bibliotecas U. Mayor.',
-     comp:[{l:'Fecha R4',v:d.r4},{l:'Montaje',v:d.finalAdj},{l:'Fin estimado',v:d.montageEnd}]}
+    {num:'Reunión 1',title:'Alineación Inicial',who:`${rn.guionista||'Guionista'} + Docente`,desc:'Revisión de programa, bibliografía y objetivos. Se agenda la R2 en esta instancia.',edit:true,
+     comp:d.contentSend?[{l:`${rn.contenidista||'Contenidista'} envía contenido`,v:d.contentSend}]:[]},
+    {num:'Proceso interno',title:'Contenido + Revisión',who:`${rn.contenidista||'Contenidista'} → Docente`,desc:`Contenidista: ${caps.contentDays} días desarrolla contenido. Docente: mín ${caps.teacherDays} días hábiles para revisar y comentar en Google Doc.`,
+     comp:[{l:'Envío a docente',v:d.contentSend},{l:'Límite revisión docente',v:d.r2}]},
+    {num:'Reunión 2',title:'Revisión Comentarios',who:`${rn.guionista||'Guionista'} + Docente`,desc:`Revisión de observaciones. Contenidista ajusta ${caps.adjDays} día. Guionista guioniza ${caps.scriptDays} días. Se agenda R3.`,lockKey:'r2',
+     comp:[{l:'Fecha R2',v:d.r2},{l:'Ajustes listos',v:d.adjDone},{l:'Guiones enviados',v:d.scriptsSent}]},
+    {num:'Reunión 3',title:'Revisión Guiones',who:`${rn.guionista||'Guionista'} + Docente`,desc:`Revisión de guiones. Producción ${caps.prodDays} días (${rn.devA||'Desarrollador A'} y ${rn.devB||'Desarrollador B'} en paralelo si disponibles). Se agenda R4.`,lockKey:'r3',
+     comp:[{l:'Fecha R3',v:d.r3},{l:'Producción lista',v:d.prodDone}]},
+    {num:'Reunión 4',title:'Revisión Recursos',who:`${rn.guionista||'Guionista'} + Docente`,desc:'Revisión de recursos producidos. Ajustes finales. Montaje 1 día. Luego revisión Bibliotecas U. Mayor.',lockKey:'r4',
+     comp:[{l:'Fecha R4',v:d.r4},{l:'Montaje',v:d.finalAdj},{l:'Fin estimado',v:d.montage}]}
   ];
 
-  html+=`<div class="flow-grid">`;
+  h+=`<div class="fg">`;
   steps.forEach(step=>{
-    html+=`<div class="flow-step ${s.r1Date?'active':''}">
-      <div class="flow-num">${step.num}</div><div class="flow-ttl">${step.title}</div>
-      <div class="flow-who">${step.who}</div><div class="flow-desc">${step.desc}</div>
-      ${step.editable?`<div class="date-row" style="margin-top:8px"><label>Fecha R1 — si cambia el docente, cámbiala aquí</label><input type="date" value="${s.r1Date||''}" onchange="updateR1('${s.id}',this.value)"></div>`:''}
-      ${step.comp&&step.comp.filter(c=>c.v).length?`<div class="comp-dates">${step.comp.filter(c=>c.v).map(c=>`<div class="comp-row"><span>${c.l}</span><span>${fmtDate(c.v)}</span></div>`).join('')}</div>`:''}
+    h+=`<div class="fs ${s.r1Date?'active':''}">
+      <div class="fn">${step.num}</div><div class="ft">${step.title}</div>
+      <div class="fw">${step.who}</div><div class="fd">${step.desc}</div>
+      ${step.edit?`<div class="dr" style="margin-top:7px"><label>Fecha R1 — cambia si el docente no puede</label><input type="date" value="${s.r1Date||''}" onchange="updateR1('${s.id}',this.value)"></div>`:''}
+      ${step.lockKey?`<button class="lbtn ${lk[step.lockKey]?'lkd':'unl'}" onclick="toggleLock('${s.id}','${step.lockKey}')">${lk[step.lockKey]?'🔒 Bloqueada (acuerdo con docente)':'🔓 Marcar como acordada con docente'}</button>`:''}
+      ${step.comp&&step.comp.filter(c=>c.v).length?`<div class="cd">${step.comp.filter(c=>c.v).map(c=>`<div class="cr"><span>${c.l}</span><span>${fmt(c.v)}</span></div>`).join('')}</div>`:''}
     </div>`;
   });
-  html+=`</div>`;
+  h+=`</div>`;
 
   if(s.r1Date){
-    const tl=[{l:'R1',v:s.r1Date,c:'var(--r1)'},{l:'Envío',v:d.contentSend,c:'#aaa'},{l:'R2',v:d.r2,c:'var(--r2)'},{l:'Ajustes',v:d.adjSend,c:'#aaa'},{l:'R3',v:d.r3,c:'var(--r3)'},{l:'Produc.',v:d.prodReady,c:'#aaa'},{l:'R4',v:d.r4,c:'var(--r4)'},{l:'Montaje',v:d.montageEnd,c:'#aaa'}].filter(t=>t.v);
-    html+=`<div class="tl-wrap"><div class="sec-ttl">Línea de tiempo estimada</div><div class="tl-track">`;
+    const tl=[{l:'R1',v:s.r1Date,c:'var(--r1)'},{l:'Envío',v:d.contentSend,c:'#aaa'},{l:'R2',v:d.r2,c:'var(--r2)'},{l:'R3',v:d.r3,c:'var(--r3)'},{l:'Prod.',v:d.prodDone,c:'#aaa'},{l:'R4',v:d.r4,c:'var(--r4)'},{l:'Fin',v:d.montage,c:'#aaa'}].filter(t=>t.v);
+    h+=`<div class="tlw"><div class="stl">Línea de tiempo estimada</div><div class="tlt">`;
     tl.forEach((t,i)=>{
-      html+=`<div class="tl-dot"><div class="tl-circle" style="background:${t.c}"></div><div class="tl-lbl" style="color:${t.c}">${t.l}</div><div class="tl-dt">${fmtDate(t.v)}</div></div>`;
-      if(i<tl.length-1)html+=`<div class="tl-line"></div>`;
+      h+=`<div class="tld"><div class="tlc" style="background:${t.c}"></div><div class="tll" style="color:${t.c}">${t.l}</div><div class="tldt">${fmt(t.v)}</div></div>`;
+      if(i<tl.length-1)h+=`<div class="tln"></div>`;
     });
-    html+=`</div></div>`;
+    h+=`</div></div>`;
   }
-  el.innerHTML=html;
+  el.innerHTML=h;
+}
+
+function toggleLock(id,key){
+  if(!lockedDates[id])lockedDates[id]={};
+  lockedDates[id][key]=!lockedDates[id][key];
+  save();renderDetail();
 }
 
 function updateR1(id,val){
   const s=subjects.find(x=>x.id===id);if(!s)return;
-  // FIX #5: store previous date for change summary
-  if(s.r1Date)prevDates[id]=s.r1Date;
+  if(s.r1Date)prevR1[id]=s.r1Date;
   s.r1Date=val||null;
+  save();renderAll();
+}
+function acceptChange(id){delete prevR1[id];renderDetail();}
+function revertChange(id){
+  const s=subjects.find(x=>x.id===id);if(!s||!prevR1[id])return;
+  s.r1Date=prevR1[id];delete prevR1[id];
   save();renderAll();
 }
 
 // ─── CALENDAR ─────────────────────────────────────────────────────────────────
 function renderCalendar(){
-  const ws=getWeekStart(calOffset);
+  const ws=getWS(calOff);
   const days=Array.from({length:5},(_,i)=>{const d=new Date(ws);d.setDate(ws.getDate()+i);return d;});
-  const tod=todayStr();
+  const tod=todayS();
   document.getElementById('calWeek').textContent=days[0].toLocaleDateString('es-CL',{day:'numeric',month:'long'})+' — '+days[4].toLocaleDateString('es-CL',{day:'numeric',month:'long'});
 
-  // FIX #4: load bar — 1 = warn, 2+ = over
-  const load=getMaibeLoad();
-  let maibeHtml='';
+  const load=getGuionLoad();
+  let mh='';
   days.forEach(d=>{
-    const ds=dStr(d),cnt=load[ds]||0;
+    const dss=ds(d),cnt=load[dss]||0;
     const lbl=d.toLocaleDateString('es-CL',{weekday:'short',day:'numeric'});
     const cls=cnt===0?'ok':cnt===1?'warn':'over';
     const pct=Math.min(100,(cnt/4)*100);
-    maibeHtml+=`<div class="load-row"><span class="load-lbl">${lbl}</span><div class="load-track"><div class="load-fill ${cls}" style="width:${pct}%"></div></div><span class="load-cnt">${cnt}</span></div>`;
+    mh+=`<div class="lr"><span class="ll">${lbl}</span><div class="lt"><div class="lf ${cls}" style="width:${pct}%"></div></div><span class="lc">${cnt}</span></div>`;
   });
-  document.getElementById('maibeLoad').innerHTML=maibeHtml;
+  document.getElementById('guionLoad').innerHTML=mh;
 
-  const events=[];
+  const evts=[];
   subjects.forEach(s=>{
     const d=computeDates(s);
-    const add=(dt,type,cls)=>{if(dt)events.push({date:dt,subj:s,cls,type,shared:isSharedTeacher(s)});};
-    if(calFilter==='ALL'||calFilter==='r1')add(s.r1Date,'R1','r1');
-    if(calFilter==='ALL'||calFilter==='r2')add(d.r2,'R2','r2');
-    if(calFilter==='ALL'||calFilter==='r3')add(d.r3,'R3','r3');
-    if(calFilter==='ALL'||calFilter==='r4')add(d.r4,'R4','r4');
+    const add=(dt,t,cl)=>{if(dt)evts.push({date:dt,subj:s,cls:cl,type:t});};
+    if(calFilt==='ALL'||calFilt==='r1')add(s.r1Date,'R1','r1');
+    if(calFilt==='ALL'||calFilt==='r2')add(d.r2,'R2','r2');
+    if(calFilt==='ALL'||calFilt==='r3')add(d.r3,'R3','r3');
+    if(calFilt==='ALL'||calFilt==='r4')add(d.r4,'R4','r4');
   });
 
-  let html=`<div class="cal-hdr">—</div>`;
-  days.forEach(d=>{const ds=dStr(d);html+=`<div class="cal-hdr ${ds===tod?'today':''}">${d.toLocaleDateString('es-CL',{weekday:'short'})}<span class="dn">${d.getDate()}</span></div>`;});
+  const MX=4;
+  let h=`<div class="ch">—</div>`;
+  days.forEach(d=>{const dss=ds(d);h+=`<div class="ch ${dss===tod?'today':''}">${d.toLocaleDateString('es-CL',{weekday:'short'})}<span class="dn">${d.getDate()}</span></div>`;});
 
-  // FIX #6: limit visible events, show "+N more"
-  const MAX_VISIBLE=4;
-
-  // Reunion row
-  html+=`<div class="cal-cell time-lbl">Reuniones<br>con docente</div>`;
+  h+=`<div class="cell tlbl">Reuniones</div>`;
   days.forEach(d=>{
-    const ds=dStr(d);
-    const dayEvts=events.filter(e=>e.date===ds);
-    const restricts=subjects.filter(s=>s.r1Date===ds&&checkRestriction(ds,s.restrictions));
-    const allItems=[...restricts.map(s=>({type:'restrict',s})),...dayEvts.map(e=>({type:'ev',e}))];
-    const visible=allItems.slice(0,MAX_VISIBLE);
-    const hidden=allItems.length-MAX_VISIBLE;
-    html+=`<div class="cal-cell">`;
-    visible.forEach(item=>{
-      if(item.type==='restrict')html+=`<div class="ev restrict" title="${checkRestriction(ds,item.s.restrictions)||''}">🚫 ${item.s.name.substring(0,11)}…</div>`;
-      else{
-        const cls=item.e.shared&&(item.e.type==='R1')?'r1 shared':item.e.cls;
-        html+=`<div class="ev ${cls}" onclick="selectSubject('${item.e.subj.id}');switchTab('detail')" title="${item.e.subj.name}"><strong>${item.e.type}</strong> ${item.e.subj.name.substring(0,11)}${item.e.subj.name.length>11?'…':''}</div>`;
-      }
+    const dss=ds(d);
+    const de=evts.filter(e=>e.date===dss);
+    const re=subjects.filter(s=>s.r1Date===dss&&checkRestr(dss,s.restrictions));
+    const all=[...re.map(s=>({t:'rs',s})),...de.map(e=>({t:'ev',e}))];
+    const vis=all.slice(0,MX),hid=all.length-MX;
+    h+=`<div class="cell">`;
+    vis.forEach(it=>{
+      if(it.t==='rs')h+=`<div class="ev rs" title="${checkRestr(dss,it.s.restrictions)||''}">🚫 ${it.s.name.substring(0,11)}…</div>`;
+      else{const sh=isShared(it.e.subj)&&it.e.type==='R1';h+=`<div class="ev ${it.e.cls}${sh?' sh':''}" onclick="selSub('${it.e.subj.id}');switchTab('detail')" title="${it.e.subj.name}"><strong>${it.e.type}</strong> ${it.e.subj.name.substring(0,10)}${it.e.subj.name.length>10?'…':''}</div>`;}
     });
-    if(hidden>0)html+=`<div class="more-evs">+${hidden} más...</div>`;
-    html+=`</div>`;
+    if(hid>0)h+=`<div class="mev">+${hid} más…</div>`;
+    h+=`</div>`;
   });
 
-  // Entregas row
-  html+=`<div class="cal-cell time-lbl">Entregas<br>internas</div>`;
+  h+=`<div class="cell tlbl">Entregas internas</div>`;
   days.forEach(d=>{
-    const ds=dStr(d);
-    const deliveries=[];
+    const dss=ds(d);const dl=[];
     subjects.forEach(s=>{
       const dt=computeDates(s);
-      if(dt.contentSend===ds)deliveries.push({cls:'r2',label:`📄 Envío: ${s.name.substring(0,11)}…`});
-      if(dt.adjSend===ds)deliveries.push({cls:'r2',label:`✏️ Ajustes: ${s.name.substring(0,9)}…`});
-      if(dt.scriptsReady===ds)deliveries.push({cls:'r3',label:`📝 Guiones: ${s.name.substring(0,9)}…`});
-      if(dt.prodReady===ds)deliveries.push({cls:'r4',label:`🎬 Prod: ${s.name.substring(0,11)}…`});
-      if(dt.montageEnd===ds)deliveries.push({cls:'r4',label:`🎉 Montaje: ${s.name.substring(0,9)}…`});
+      if(dt.contentSend===dss)dl.push({cls:'r2',l:`📄 ${s.name.substring(0,10)}…`});
+      if(dt.adjDone===dss)dl.push({cls:'r2',l:`✏️ Ajustes: ${s.name.substring(0,8)}…`});
+      if(dt.scriptsSent===dss)dl.push({cls:'r3',l:`📝 Guiones: ${s.name.substring(0,8)}…`});
+      if(dt.prodDone===dss)dl.push({cls:'r4',l:`🎬 Prod: ${s.name.substring(0,10)}…`});
+      if(dt.montage===dss)dl.push({cls:'r4',l:`🏁 Montaje: ${s.name.substring(0,8)}…`});
     });
-    const vis=deliveries.slice(0,MAX_VISIBLE);
-    const hid=deliveries.length-MAX_VISIBLE;
-    html+=`<div class="cal-cell">`;
-    vis.forEach(e=>html+=`<div class="ev ${e.cls} delivery">${e.label}</div>`);
-    if(hid>0)html+=`<div class="more-evs">+${hid} más...</div>`;
-    html+=`</div>`;
+    const vis=dl.slice(0,MX),hid=dl.length-MX;
+    h+=`<div class="cell">`;
+    vis.forEach(e=>h+=`<div class="ev ${e.cls} dl">${e.l}</div>`);
+    if(hid>0)h+=`<div class="mev">+${hid} más…</div>`;
+    h+=`</div>`;
   });
 
-  document.getElementById('calGrid').innerHTML=html;
+  document.getElementById('calGrid').innerHTML=h;
 }
-
-function calNav(dir){calOffset+=dir;renderCalendar();}
-function setFilter(el,val){document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('active'));el.classList.add('active');calFilter=val;renderCalendar();}
+function calNav(dir){calOff+=dir;renderCalendar();}
+function setFilt(el,v){document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));el.classList.add('active');calFilt=v;renderCalendar();}
 
 // ─── OVERVIEW ─────────────────────────────────────────────────────────────────
 function renderOverview(){
-  const total=subjects.length,withDate=subjects.filter(s=>s.r1Date).length;
-  const load=getMaibeLoad();const conflicts=Object.values(load).filter(v=>v>2).length;
+  const tot=subjects.length,wd=subjects.filter(s=>s.r1Date).length;
+  const load=getGuionLoad();const conf=Object.values(load).filter(v=>v>caps.guionMax).length;
   document.getElementById('progCards').innerHTML=`
-    <div class="prog-card c1"><div class="pc-lbl">Total asignaturas</div><div class="pc-num">${total}</div><div class="pc-sub">Ciclo 2</div></div>
-    <div class="prog-card c2"><div class="pc-lbl">Con R1 agendada</div><div class="pc-num">${withDate}</div><div class="pc-sub">de ${total}</div></div>
-    <div class="prog-card c3"><div class="pc-lbl">Sin agendar</div><div class="pc-num">${total-withDate}</div><div class="pc-sub">pendientes</div></div>
-    <div class="prog-card c4"><div class="pc-lbl">Días sobrecargados</div><div class="pc-num">${conflicts}</div><div class="pc-sub">Maibe >2 reuniones</div></div>`;
-  const chip=(v,t)=>v?`<span class="dchip ${t}">${fmtDate(v)}</span>`:`<span class="dchip empty">—</span>`;
+    <div class="pcard c1"><div class="pcl">Total asignaturas</div><div class="pcn">${tot}</div><div class="pcs">Ciclo 2</div></div>
+    <div class="pcard c2"><div class="pcl">Con R1 agendada</div><div class="pcn">${wd}</div><div class="pcs">de ${tot}</div></div>
+    <div class="pcard c3"><div class="pcl">Sin agendar</div><div class="pcn">${tot-wd}</div><div class="pcs">pendientes</div></div>
+    <div class="pcard c4"><div class="pcl">Días con conflicto</div><div class="pcn">${conf}</div><div class="pcs">Guionista sobrecargada</div></div>`;
+  const chip=(v,t)=>v?`<span class="dc ${t}">${fmt(v)}</span>`:`<span class="dc e">—</span>`;
   let rows='';
   subjects.forEach(s=>{
     const d=computeDates(s);
-    rows+=`<tr onclick="selectSubject('${s.id}');switchTab('detail')" ${selectedId===s.id?'style="background:var(--blue-dim)"':''}>
-      <td>${s.name}${isSharedTeacher(s)?'<span style="color:#9B59B6;font-size:9px;margin-left:4px">🟣</span>':''}</td>
-      <td><span style="font-size:8px;font-weight:700;color:${s.program==='OPT'?'#9B59B6':'var(--blue)'}">${s.program}</span></td>
+    rows+=`<tr onclick="selSub('${s.id}');switchTab('detail')" ${selId===s.id?'style="background:var(--bdim)"':''}>
+      <td>${s.name}${isShared(s)?'<span style="color:var(--pur);font-size:9px;margin-left:3px">🟣</span>':''}</td>
+      <td><span style="font-size:8px;font-weight:700;color:${s.program==='OPT'?'var(--pur)':'var(--blue)'}">${s.program}</span></td>
       <td style="font-size:9px">${s.teacher||'—'}</td>
-      <td>${chip(s.r1Date,'set')}</td><td>${chip(d.contentSend,'comp')}</td><td>${chip(d.r2,'comp')}</td>
-      <td>${chip(d.r3,'comp')}</td><td>${chip(d.r4,'comp')}</td><td>${chip(d.montageEnd,'comp')}</td>
-      <td><span class="pill ${s.r1Date?'active':'pending'}">${s.r1Date?'En flujo':'Sin agendar'}</span></td>
+      <td>${chip(s.r1Date,'s')}</td><td>${chip(d.contentSend,'c')}</td><td>${chip(d.r2,'c')}</td>
+      <td>${chip(d.r3,'c')}</td><td>${chip(d.r4,'c')}</td><td>${chip(d.montage,'c')}</td>
+      <td><span class="pill ${s.r1Date?'a':'p'}">${s.r1Date?'En flujo':'Sin agendar'}</span></td>
     </tr>`;
   });
-  document.getElementById('ovBody').innerHTML=rows||'<tr><td colspan="10" style="text-align:center;padding:18px;color:var(--body)">No hay asignaturas</td></tr>';
+  document.getElementById('ovBody').innerHTML=rows||'<tr><td colspan="10" style="text-align:center;padding:16px;color:var(--body)">No hay asignaturas</td></tr>';
 }
 
 // ─── PLAN TAB ─────────────────────────────────────────────────────────────────
-let planSortMode='urgency';
-function setPlanSort(mode,el){
-  planSortMode=mode;
-  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  renderPlan();
-}
-
+function setSort(m,el){planSortMode=m;document.querySelectorAll('.sb').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderPlan();}
 function renderPlan(){
-  const load=getMaibeLoad();
-  // FIX #1: Sort by urgency
+  const load=getGuionLoad();
   let sorted=[...subjects];
-  if(planSortMode==='urgency'){
-    sorted.sort((a,b)=>{
-      // No-date first, then by urgency score desc
-      if(!a.r1Date&&b.r1Date)return-1;if(a.r1Date&&!b.r1Date)return 1;
-      return getUrgencyScore(b)-getUrgencyScore(a);
-    });
-  } else if(planSortMode==='program'){
-    const order={MBA:0,MCG:1,MCEE:2,OPT:3};
-    sorted.sort((a,b)=>(order[a.program]||0)-(order[b.program]||0));
-  } else if(planSortMode==='date'){
-    sorted.sort((a,b)=>{if(!a.r1Date&&!b.r1Date)return 0;if(!a.r1Date)return 1;if(!b.r1Date)return-1;return a.r1Date.localeCompare(b.r1Date);});
-  } else if(planSortMode==='end'){
-    sorted.sort((a,b)=>{const da=computeDates(a).montageEnd,db=computeDates(b).montageEnd;if(!da&&!db)return 0;if(!da)return 1;if(!db)return-1;return da.localeCompare(db);});
-  }
+  if(planSortMode==='urg')sorted.sort((a,b)=>{if(!a.r1Date&&b.r1Date)return-1;if(a.r1Date&&!b.r1Date)return 1;return getUrgency(b)-getUrgency(a);});
+  else if(planSortMode==='prog'){const o={MBA:0,MCG:1,MCEE:2,OPT:3};sorted.sort((a,b)=>(o[a.program]||0)-(o[b.program]||0));}
+  else if(planSortMode==='date')sorted.sort((a,b)=>{if(!a.r1Date&&!b.r1Date)return 0;if(!a.r1Date)return 1;if(!b.r1Date)return-1;return a.r1Date.localeCompare(b.r1Date);});
+  else if(planSortMode==='end')sorted.sort((a,b)=>{const da=computeDates(a).montage,db=computeDates(b).montage;if(!da&&!db)return 0;if(!da)return 1;if(!db)return-1;return da.localeCompare(db);});
 
-  let html='';
+  let h='';
   sorted.forEach((s,i)=>{
     const d=computeDates(s);
-    const hasDate=!!s.r1Date;
-    const over=hasDate&&(load[s.r1Date]||0)>2;
-    const rWarn=hasDate?checkRestriction(s.r1Date,s.restrictions):null;
-    const shared=isSharedTeacher(s);
-    const noTeacher=!s.teacher||s.teacher==='Por confirmar';
-    const urg=getUrgencyScore(s);
-    const siblings=shared?getSharedSiblings(s):[];
-    const rowClass=over||rWarn?'conflict':shared&&hasDate?'shared-teacher':hasDate?'has-date':noTeacher?'no-teacher':'';
-    const pb=`<span class="plan-badge ${s.program.toLowerCase()}">${s.program}</span>`;
-    const inputClass=over||rWarn?'conflict':hasDate?'ok':'';
-
+    const hasD=!!s.r1Date;
+    const over=hasD&&(load[s.r1Date]||0)>caps.guionMax;
+    const rw=hasD?checkRestr(s.r1Date,s.restrictions):null;
+    const sh=isShared(s);
+    const nt=!s.teacher||s.teacher==='Por confirmar';
+    const urg=getUrgency(s);
+    const sibs=sh?getSiblings(s):[];
+    const rc=over||rw?'err':sh&&hasD?'sh':hasD?'ok':nt?'nt':'';
+    const ic=over||rw?'ei':hasD?'oi':'';
+    const pb=`<span class="pb ${s.program.toLowerCase()}">${s.program}</span>`;
     let status='';
-    if(over)status=`<div class="pst" style="color:var(--delay)">⚠️ Maibe ya tiene ${load[s.r1Date]} reuniones ese día</div>`;
-    else if(rWarn)status=`<div class="pst" style="color:var(--delay)">🚫 ${rWarn}</div>`;
-    else if(shared&&hasDate)status=`<div class="pst" style="color:#9B59B6">🟣 ${s.teacher} también en: ${siblings.map(x=>x.program).join(', ')} — coordinar misma fecha</div>`;
-    else if(hasDate)status=`<div class="pst" style="color:var(--ok)">✅ Sin conflictos</div>`;
-    else if(noTeacher)status=`<div class="pst" style="color:var(--pending)">⏳ Docente por confirmar</div>`;
-    else if(!hasDate&&urg>=15)status=`<div class="pst" style="color:var(--delay)">🚨 Ventana limitada — agendar pronto</div>`;
-
-    html+=`<div class="plan-row ${rowClass}">
-      <div class="plan-num">${i+1}</div>
-      <div class="plan-info">
-        <div class="pn">${s.name}${pb}</div>
-        <div class="pt">👤 ${s.teacher||'Por confirmar'}</div>
-        ${s.restrictions?`<div class="pr">📋 ${s.restrictions.substring(0,88)}${s.restrictions.length>88?'…':''}</div>`:''}
-        ${status}
-      </div>
-      <div>
-        <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--body);margin-bottom:3px">Fecha R1</div>
-        <input class="plan-date-input ${inputClass}" type="date" value="${s.r1Date||''}" onchange="updateR1('${s.id}',this.value)">
-      </div>
-      <div style="font-size:10px;font-family:'DM Mono',monospace">
-        ${hasDate?`<div style="font-size:8px;color:var(--body);margin-bottom:1px">Fin estimado</div><div style="font-weight:700;font-size:11px;color:${over||rWarn?'var(--delay)':'var(--ok)'}">${fmtDate(d.montageEnd)||'—'}</div>`:'<div style="font-size:9px;color:var(--pending)">Sin fecha</div>'}
-      </div>
-      <div style="font-size:9px;font-family:'DM Mono',monospace">
-        ${hasDate?`<div style="font-size:8px;color:var(--body)">R2 / R3 / R4</div><div>${fmtDate(d.r2)||'—'}</div><div>${fmtDate(d.r3)||'—'}</div><div>${fmtDate(d.r4)||'—'}</div>`:''}
-      </div>
+    if(over)status=`<div class="pst" style="color:var(--err)">⚠️ Guionista tiene ${load[s.r1Date]} reuniones ese día</div>`;
+    else if(rw)status=`<div class="pst" style="color:var(--err)">🚫 ${rw}</div>`;
+    else if(sh&&hasD)status=`<div class="pst" style="color:var(--pur)">🟣 ${s.teacher} también en ${sibs.map(x=>x.program).join('+')} — usa la misma fecha</div>`;
+    else if(hasD)status=`<div class="pst" style="color:var(--ok)">✅ Sin conflictos detectados</div>`;
+    else if(nt)status=`<div class="pst" style="color:var(--pend)">⏳ Docente por confirmar</div>`;
+    else if(!hasD&&urg>=15)status=`<div class="pst" style="color:var(--err)">🚨 Ventana limitada — agendar pronto</div>`;
+    h+=`<div class="pr ${rc}">
+      <div class="pnum">${i+1}</div>
+      <div><div class="pn">${s.name}${pb}</div><div class="pt">👤 ${s.teacher||'Por confirmar'}</div>${s.restrictions?`<div class="px">📋 ${s.restrictions.substring(0,85)}${s.restrictions.length>85?'…':''}</div>`:''}${status}</div>
+      <div><div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--body);margin-bottom:2px">Fecha R1</div><input class="pdi ${ic}" type="date" value="${s.r1Date||''}" onchange="updateR1('${s.id}',this.value)"></div>
+      <div style="font-size:9px;font-family:'DM Mono',monospace">${hasD?`<div style="font-size:8px;color:var(--body)">Fin estimado</div><div style="font-weight:700;color:${over||rw?'var(--err)':'var(--ok)'}">${fmt(d.montage)||'—'}</div>`:'<div style="font-size:8px;color:var(--pend)">Sin fecha</div>'}</div>
+      <div style="font-size:8px;font-family:'DM Mono',monospace">${hasD?`<div style="color:var(--body)">R2/R3/R4</div><div>${fmt(d.r2)||'—'}</div><div>${fmt(d.r3)||'—'}</div><div>${fmt(d.r4)||'—'}</div>`:''}</div>
     </div>`;
   });
-  document.getElementById('planGrid').innerHTML=html||'<div style="padding:18px;text-align:center;color:var(--body)">No hay asignaturas</div>';
+  document.getElementById('planGrid').innerHTML=h||'<div style="padding:16px;text-align:center;color:var(--body)">No hay asignaturas</div>';
+}
+
+// ─── IDEAL TAB ────────────────────────────────────────────────────────────────
+function setScen(m,el){scenMode=m;document.querySelectorAll('.st').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderIdeal();}
+function renderIdeal(){
+  const data=scenMode==='buffer'?IDEAL_NORMAL.map(computeIdealBuffer):IDEAL_NORMAL;
+  let h='';
+  data.forEach((d,i)=>{
+    const sh=d.shared;
+    h+=`<tr>
+      <td class="id">${i+1}</td>
+      <td>${d.name}${sh?'<span style="color:var(--pur);font-size:9px;margin-left:3px">🟣</span>':''}</td>
+      <td><span style="font-size:8px;font-weight:700;color:${d.prog==='OPT'?'var(--pur)':'var(--blue)'}">${d.prog}</span></td>
+      <td class="id ${sh?'sh':''}">${fmt(d.r1)}</td>
+      <td class="id">${fmt(d.content_send)}</td>
+      <td class="id">${fmt(d.r2)}</td>
+      <td class="id">${fmt(d.scripts_sent)}</td>
+      <td class="id">${fmt(d.r3)}</td>
+      <td class="id">${fmt(d.prod_done)}</td>
+      <td class="id">${fmt(d.r4)}</td>
+      <td class="id end">${fmt(d.montage)}</td>
+    </tr>`;
+  });
+  document.getElementById('idealBody').innerHTML=h;
+}
+function applyIdealPlan(){
+  if(!confirm('¿Aplicar el Plan Ideal? Esto asignará las fechas de R1 sugeridas a todas las asignaturas que aún no tienen fecha.\n\nLas que ya tienen fecha asignada NO se modificarán.'))return;
+  IDEAL_NORMAL.forEach(ideal=>{
+    const s=subjects.find(x=>x.name.toLowerCase().includes(ideal.name.toLowerCase().substring(0,15))||x.teacher===ideal.teacher);
+    if(s&&!s.r1Date){s.r1Date=ideal.r1;}
+  });
+  save();renderAll();switchTab('plan');
 }
 
 // ─── SELECT & TABS ────────────────────────────────────────────────────────────
-function selectSubject(id){selectedId=id;renderSidebar();renderDetail();renderOverview();}
+function selSub(id){selId=id;renderSidebar();renderDetail();renderOverview();}
 function switchTab(tab){
-  ['guide','plan','calendar','detail','overview'].forEach(t=>{
-    const el=document.getElementById('tab-'+t);
-    if(el)el.style.display=t===tab?'block':'none';
+  ['guide','plan','calendar','detail','overview','ideal','settings'].forEach(t=>{
+    const el=document.getElementById('tab-'+t);if(el)el.style.display=t===tab?'block':'none';
   });
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['guide','plan','calendar','detail','overview'][i]===tab));
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['guide','plan','calendar','detail','overview','ideal','settings'][i]===tab));
   if(tab==='calendar')renderCalendar();
   if(tab==='overview')renderOverview();
   if(tab==='plan')renderPlan();
+  if(tab==='ideal')renderIdeal();
+  if(tab==='settings')loadSettings();
+}
+
+// ─── SETTINGS ─────────────────────────────────────────────────────────────────
+function loadSettings(){
+  document.getElementById('rGuionista').value=roles.guionista||'';
+  document.getElementById('rContenidista').value=roles.contenidista||'';
+  document.getElementById('rDevA').value=roles.devA||'';
+  document.getElementById('rDevB').value=roles.devB||'';
+  document.getElementById('rGestion').value=roles.gestion||'';
+  document.getElementById('cGuionMax').value=caps.guionMax;
+  document.getElementById('cContenMax').value=caps.contenMax;
+  document.getElementById('cContentDays').value=caps.contentDays;
+  document.getElementById('cTeacherDays').value=caps.teacherDays;
+  document.getElementById('cAdjDays').value=caps.adjDays;
+  document.getElementById('cScriptDays').value=caps.scriptDays;
+  document.getElementById('cR3Gap').value=caps.r3gap;
+  document.getElementById('cProdDays').value=caps.prodDays;
+  document.getElementById('cR4Gap').value=caps.r4gap;
+}
+function saveSettings(){
+  roles={guionista:document.getElementById('rGuionista').value.trim(),contenidista:document.getElementById('rContenidista').value.trim(),devA:document.getElementById('rDevA').value.trim(),devB:document.getElementById('rDevB').value.trim(),gestion:document.getElementById('rGestion').value.trim()};
+  caps={guionMax:+document.getElementById('cGuionMax').value,contenMax:+document.getElementById('cContenMax').value,contentDays:+document.getElementById('cContentDays').value,teacherDays:+document.getElementById('cTeacherDays').value,adjDays:+document.getElementById('cAdjDays').value,scriptDays:+document.getElementById('cScriptDays').value,r3gap:+document.getElementById('cR3Gap').value,prodDays:+document.getElementById('cProdDays').value,r4gap:+document.getElementById('cR4Gap').value};
+  save();alert('✅ Configuración guardada');renderAll();
 }
 
 // ─── MODAL ────────────────────────────────────────────────────────────────────
-// FIX #8: warn when no teacher
-function checkTeacher(val){
-  document.getElementById('noTeacherWarn').style.display=(val.toLowerCase().includes('confirmar')||val.trim()==='')&&val.trim()!==''?'block':'none';
-}
+function chkTeacher(v){document.getElementById('ntNote').style.display=(v.toLowerCase().includes('confirmar'))&&v.trim()?'block':'none';}
 function openAdd(){
-  editingId=null;
-  document.getElementById('modalTitle').textContent='Nueva Asignatura';
-  ['fName','fTeacher','fEmail','fRestrictions'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('fProgram').value='MBA';document.getElementById('fR1Date').value='';
+  editId=null;
+  document.getElementById('mdTitle').textContent='Nueva Asignatura';
+  ['fName','fTeacher','fEmail','fRestr'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fProg').value='MBA';document.getElementById('fR1').value='';
   document.getElementById('btnDel').style.display='none';document.getElementById('reschBox').style.display='none';
-  document.getElementById('noTeacherWarn').style.display='none';
-  document.getElementById('modalOverlay').classList.add('show');
+  document.getElementById('ntNote').style.display='none';
+  document.getElementById('modalOv').classList.add('show');
 }
 function openEdit(id){
-  editingId=id;const s=subjects.find(x=>x.id===id);
-  document.getElementById('modalTitle').textContent='Editar Asignatura';
-  document.getElementById('fName').value=s.name;document.getElementById('fProgram').value=s.program;
+  editId=id;const s=subjects.find(x=>x.id===id);
+  document.getElementById('mdTitle').textContent='Editar Asignatura';
+  document.getElementById('fName').value=s.name;document.getElementById('fProg').value=s.program;
   document.getElementById('fTeacher').value=s.teacher||'';document.getElementById('fEmail').value=s.email||'';
-  document.getElementById('fR1Date').value=s.r1Date||'';document.getElementById('fRestrictions').value=s.restrictions||'';
+  document.getElementById('fR1').value=s.r1Date||'';document.getElementById('fRestr').value=s.restrictions||'';
   document.getElementById('btnDel').style.display='block';
-  document.getElementById('noTeacherWarn').style.display=(!s.teacher||s.teacher==='Por confirmar')?'block':'none';
-  showResch(s.r1Date||todayStr());
-  document.getElementById('modalOverlay').classList.add('show');
+  document.getElementById('ntNote').style.display=(!s.teacher||s.teacher==='Por confirmar')?'block':'none';
+  showResch(s.r1Date||todayS());
+  document.getElementById('modalOv').classList.add('show');
 }
-function showResch(fromDate){
+function showResch(from){
   const box=document.getElementById('reschBox'),rows=document.getElementById('reschRows');
-  const days=getFreeDays(fromDate||todayStr(),8);
+  const days=getFreeDays(from||todayS(),8);
   if(!days.length){box.style.display='none';return;}
   box.style.display='block';
   rows.innerHTML=days.map(d=>{
-    const cls=d.count>=2?'over':'';
-    const warn=d.count===0?'✅ Libre':d.count===1?'🟡 1 reunión (OK)':'⚠️ '+d.count+' reuniones (lleno)';
-    return`<div class="resch-row ${cls}"><span>${fmtFull(d.date)}</span><span style="font-size:9px;color:var(--body)">${warn}</span><button class="btn-use" onclick="document.getElementById('fR1Date').value='${d.date}';showResch('${d.date}')">Usar</button></div>`;
+    const cls=d.count>=caps.guionMax?'ov':'';
+    const w=d.count===0?'✅ Libre':d.count===1?'🟡 1 reunión':d.count>=caps.guionMax?`⚠️ ${d.count} (lleno)`:d.count+' reuniones';
+    return`<div class="rrow ${cls}"><span>${fmtFull(d.date)}</span><span style="font-size:8px;color:var(--body)">${w}</span><button class="bu" onclick="document.getElementById('fR1').value='${d.date}';showResch('${d.date}')">Usar</button></div>`;
   }).join('');
 }
-document.getElementById('fR1Date').addEventListener('change',function(){showResch(this.value);});
-function closeModal(){document.getElementById('modalOverlay').classList.remove('show');editingId=null;}
-document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target.id==='modalOverlay')closeModal();});
-function saveSubject(){
+document.getElementById('fR1').addEventListener('change',function(){showResch(this.value);});
+function closeModal(){document.getElementById('modalOv').classList.remove('show');editId=null;}
+document.getElementById('modalOv').addEventListener('click',e=>{if(e.target.id==='modalOv')closeModal();});
+function saveSub(){
   const name=document.getElementById('fName').value.trim();
-  if(!name){alert('Ingresa el nombre de la asignatura.');return;}
-  const data={name,program:document.getElementById('fProgram').value,teacher:document.getElementById('fTeacher').value.trim(),email:document.getElementById('fEmail').value.trim(),r1Date:document.getElementById('fR1Date').value||null,restrictions:document.getElementById('fRestrictions').value.trim()};
-  // FIX #8: warn if scheduling without teacher
-  if((!data.teacher||data.teacher==='Por confirmar')&&data.r1Date){
-    if(!confirm('Estás agendando una fecha sin docente confirmado. ¿Continuar?'))return;
-  }
-  if(editingId)Object.assign(subjects.find(x=>x.id===editingId),data);
+  if(!name){alert('Ingresa el nombre.');return;}
+  const t=document.getElementById('fTeacher').value.trim();
+  const r1=document.getElementById('fR1').value||null;
+  if((!t||t==='Por confirmar')&&r1){if(!confirm('Agendando sin docente confirmado. ¿Continuar?'))return;}
+  const data={name,program:document.getElementById('fProg').value,teacher:t,email:document.getElementById('fEmail').value.trim(),r1Date:r1,restrictions:document.getElementById('fRestr').value.trim()};
+  if(editId)Object.assign(subjects.find(x=>x.id===editId),data);
   else subjects.push({id:Date.now().toString()+Math.random(),...data});
   save();closeModal();renderAll();
 }
-function deleteSubject(){
-  if(!editingId||!confirm('¿Eliminar esta asignatura?'))return;
-  subjects=subjects.filter(s=>s.id!==editingId);
-  if(selectedId===editingId)selectedId=null;
+function deleteSub(){
+  if(!editId||!confirm('¿Eliminar?'))return;
+  subjects=subjects.filter(s=>s.id!==editId);
+  if(selId===editId)selId=null;
   save();closeModal();renderAll();
 }
-function renderAll(){
-  renderSidebar();renderDetail();
-  ['guide','plan','calendar','overview'].forEach(t=>{
-    const el=document.getElementById('tab-'+t);
-    if(el&&el.style.display!=='none'){
-      if(t==='calendar')renderCalendar();
-      if(t==='overview')renderOverview();
-      if(t==='plan')renderPlan();
-    }
-  });
-}
+function renderAll(){renderSidebar();renderDetail();['plan','calendar','overview','ideal'].forEach(t=>{const el=document.getElementById('tab-'+t);if(el&&el.style.display!=='none'){if(t==='calendar')renderCalendar();if(t==='overview')renderOverview();if(t==='plan')renderPlan();if(t==='ideal')renderIdeal();}});}
 
 // ─── SEED DATA ────────────────────────────────────────────────────────────────
 function seedData(){
   if(subjects.length)return;
-  [
-    {name:'Contabilidad para la Toma de Decisiones',program:'MBA',teacher:'Felipe Zúñiga',email:'felipe.zunigap@umayor.cl',restrictions:'Sin restricciones en marzo, abril y mayo (excepto festivos y 22 mayo). Prefiere reuniones en la mañana, ojalá 8:30. Mayor disponibilidad miércoles y jueves.'},
-    {name:'Dirección de la Innovación',program:'MBA',teacher:'Rodrigo Díaz',email:'rodrigo.diaz@umayor.cl',restrictions:'Sin restricciones en marzo, abril y mayo (excepto festivos y 22 mayo). ⚠️ Mismo docente en MCG — coordinar una sola reunión para ambas asignaturas.'},
-    {name:'Finanzas para la Toma de Decisiones',program:'MBA',teacher:'Carlos Gómez',email:'carlos.gomez@umayor.cl',restrictions:'No disponible en marzo. Sin restricciones en abril y mayo (excepto festivos y 22 mayo).'},
-    {name:'Transformación Digital e Inteligencia de Negocios',program:'MBA',teacher:'Fabián Palma',email:'fabian.palma.j@gmail.com',restrictions:'Sin restricciones en marzo, abril y mayo (excepto festivos y 22 mayo). Reuniones entre 09:00 y 15:00 hrs Chile (está en España, diferencia horaria).'},
-    {name:'Control Estratégico',program:'MCG',teacher:'Juan Francisco Cobo',email:'juan.cobo@umayor.cl',restrictions:'Solo lunes, martes o miércoles entre 15:00 y 17:00.'},
-    {name:'Tecnología para el Control de Gestión',program:'MCG',teacher:'John Ríos',email:'johnhrg@gmail.com',restrictions:'Solo jueves de 8:30 a 17:00.'},
-    {name:'Dirección de la Innovación',program:'MCG',teacher:'Rodrigo Díaz',email:'rodrigo.diaz@umayor.cl',restrictions:'Sin restricciones en marzo, abril y mayo (excepto festivos y 22 mayo). ⚠️ Mismo docente en MBA — coordinar una sola reunión para ambas asignaturas.'},
-    {name:'Gestión y Desarrollo Organizacional',program:'MCG',teacher:'Bárbara Valenzuela',email:'barbara.valenzuela@umayor.cl',restrictions:'Martes en la mañana. Miércoles 11:00–14:00 y 17:00–19:00. Jueves tarde (después de 15:00). Viernes todo el día.'},
-    {name:'Control y Riesgo Operacional',program:'MCG',teacher:'Juan Pablo Seiffert',email:'juan.seiffert@umayor.cl',restrictions:'Solo lunes y jueves de 17:00 a 19:00.'},
-    {name:'Taller de Evaluación Formativa y Retroalimentación',program:'MCEE',teacher:'Mónica Flores',email:'',restrictions:'No disponible del 29 de junio al 10 de julio (cierre de semestre y período de exámenes).'},
-    {name:'Taller de Estrategias para la Diversificación de la Enseñanza y la Evaluación',program:'MCEE',teacher:'Juan Jesús Torres-Gordillo',email:'',restrictions:'No disponible 28 marzo–5 abril (Semana Santa). No disponible 20–26 abril (Feria de Sevilla).'},
-    {name:'Trabajo Colaborativo Interprofesional',program:'MCEE',teacher:'Katherine Dinamarca',email:'katherine.dinamarca@umayor.cl',restrictions:'No disponible lunes y miércoles del semestre (tiene clases esos días).'},
-    {name:'Investigación Educativa y Gestión de Proyecto',program:'MCEE',teacher:'Marcos López',email:'',restrictions:'Sin restricciones informadas.'},
-    {name:'Datos, Visualización y Decisiones para el Impacto Social',program:'OPT',teacher:'Por confirmar',email:'',restrictions:'Docente por confirmar.'},
-    {name:'Inteligencia Artificial, Creatividad y Ética para la Sociedad Contemporánea',program:'OPT',teacher:'Joaquim Giannotti',email:'',restrictions:'Sin restricciones informadas.'},
-    {name:'Introducción al Diseño de Servicios',program:'OPT',teacher:'Por confirmar',email:'',restrictions:'Docente por confirmar.'},
+  [{name:'Contabilidad para la Toma de Decisiones',program:'MBA',teacher:'Felipe Zúñiga',email:'felipe.zunigap@umayor.cl',restrictions:'Sin restricciones en marzo, abril y mayo (excepto festivos y 22 mayo). Prefiere reuniones en la mañana, ojalá 8:30. Mayor disponibilidad miércoles y jueves.'},
+   {name:'Dirección de la Innovación',program:'MBA',teacher:'Rodrigo Díaz',email:'rodrigo.diaz@umayor.cl',restrictions:'Sin restricciones en marzo, abril y mayo (excepto festivos y 22 mayo). ⚠️ Mismo docente en MCG — coordinar una sola reunión para ambas asignaturas.'},
+   {name:'Finanzas para la Toma de Decisiones',program:'MBA',teacher:'Carlos Gómez',email:'carlos.gomez@umayor.cl',restrictions:'No disponible en marzo. Sin restricciones en abril y mayo (excepto festivos y 22 mayo).'},
+   {name:'Transformación Digital e Inteligencia de Negocios',program:'MBA',teacher:'Fabián Palma',email:'fabian.palma.j@gmail.com',restrictions:'Sin restricciones en marzo, abril y mayo (excepto festivos y 22 mayo). Reuniones entre 09:00 y 15:00 hrs Chile (está en España, diferencia horaria).'},
+   {name:'Control Estratégico',program:'MCG',teacher:'Juan Francisco Cobo',email:'juan.cobo@umayor.cl',restrictions:'Solo lunes, martes o miércoles entre 15:00 y 17:00.'},
+   {name:'Tecnología para el Control de Gestión',program:'MCG',teacher:'John Ríos',email:'johnhrg@gmail.com',restrictions:'Solo jueves de 8:30 a 17:00.'},
+   {name:'Dirección de la Innovación',program:'MCG',teacher:'Rodrigo Díaz',email:'rodrigo.diaz@umayor.cl',restrictions:'Sin restricciones en marzo, abril y mayo (excepto festivos y 22 mayo). ⚠️ Mismo docente en MBA — coordinar una sola reunión para ambas asignaturas.'},
+   {name:'Gestión y Desarrollo Organizacional',program:'MCG',teacher:'Bárbara Valenzuela',email:'barbara.valenzuela@umayor.cl',restrictions:'Martes en la mañana. Miércoles 11:00–14:00 y 17:00–19:00. Jueves tarde (después de 15:00). Viernes todo el día.'},
+   {name:'Control y Riesgo Operacional',program:'MCG',teacher:'Juan Pablo Seiffert',email:'juan.seiffert@umayor.cl',restrictions:'Solo lunes y jueves de 17:00 a 19:00.'},
+   {name:'Taller de Evaluación Formativa y Retroalimentación',program:'MCEE',teacher:'Mónica Flores',email:'',restrictions:'No disponible del 29 de junio al 10 de julio (cierre de semestre y período de exámenes).'},
+   {name:'Taller de Estrategias para la Diversificación de la Enseñanza y la Evaluación',program:'MCEE',teacher:'Juan Jesús Torres-Gordillo',email:'',restrictions:'No disponible 28 marzo–5 abril (Semana Santa). No disponible 20–26 abril (Feria de Sevilla).'},
+   {name:'Trabajo Colaborativo Interprofesional',program:'MCEE',teacher:'Katherine Dinamarca',email:'katherine.dinamarca@umayor.cl',restrictions:'No disponible lunes y miércoles del semestre (tiene clases esos días).'},
+   {name:'Investigación Educativa y Gestión de Proyecto',program:'MCEE',teacher:'Marcos López',email:'',restrictions:'Sin restricciones informadas.'},
+   {name:'Optativo: Datos, Visualización y Decisiones',program:'OPT',teacher:'Por confirmar',email:'',restrictions:'Docente por confirmar.'},
+   {name:'Optativo: IA, Creatividad y Ética',program:'OPT',teacher:'Joaquim Giannotti',email:'',restrictions:'Sin restricciones informadas.'},
+   {name:'Optativo: Introducción al Diseño de Servicios',program:'OPT',teacher:'Por confirmar',email:'',restrictions:'Docente por confirmar.'},
   ].forEach(s=>subjects.push({id:Date.now().toString()+Math.random(),r1Date:null,...s}));
   save();
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-document.getElementById('hdrDate').innerHTML=new Date().toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'<br>Maibe: México UTC−6 <span style="background:rgba(245,166,35,.2);color:#B07800;padding:1px 5px;border-radius:3px;font-size:8px">−3h Chile</span>';
+document.getElementById('hdrDate').innerHTML=new Date().toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'<br><span style="color:rgba(255,255,255,.25)">Guionista en México UTC−6 · −3h Chile</span>';
 load();seedData();
-// Start on guide tab
 switchTab('guide');
 renderSidebar();
 </script>
