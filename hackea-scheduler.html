@@ -7,304 +7,268 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap');
 :root{
-  --blue:#0090F8;--bdim:rgba(0,144,248,.10);
+  --blue:#0090F8;--bdim:rgba(0,144,248,.09);
   --dark:#2A2A2A;--body:#404040;--bg:#EBECF0;--sf:#F3F3F3;--w:#FFF;--bdr:rgba(0,0,0,.08);
-  --r1:#0090F8;--r2:#00C48C;--r3:#F5A623;--r4:#E84545;
   --ok:#00C48C;--warn:#F5A623;--err:#E84545;--pend:#B0B3BA;--pur:#9B59B6;
+  --b1:#0090F8;--b2:#00C48C;--b3:#F5A623;--b4:#E84545;--b5:#9B59B6;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dark);font-size:13px;min-height:100vh}
 
-/* ── HEADER ── */
-header{background:var(--dark);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;border-bottom:2px solid var(--blue)}
+/* HEADER */
+header{background:var(--dark);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200;border-bottom:2px solid var(--blue)}
 .logo{display:flex;align-items:center;gap:7px;font-weight:700;font-size:14px;letter-spacing:1px;flex-shrink:0}
 .logo svg{width:22px;height:22px}
 .logo-ea{color:var(--blue)}
-.h1{font-size:10px;font-weight:600;color:rgba(255,255,255,.4);border-left:1px solid rgba(255,255,255,.12);padding-left:12px}
+.htitle{font-size:10px;font-weight:600;color:rgba(255,255,255,.4);border-left:1px solid rgba(255,255,255,.12);padding-left:12px}
 .spacer{flex:1}
 .htabs{display:flex;gap:2px}
-.htab{padding:6px 14px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.45);border:1px solid transparent;transition:all .15s}
+.htab{padding:6px 14px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.45);border:1px solid transparent;transition:all .15s;font-family:'Poppins',sans-serif;background:none}
 .htab:hover{color:rgba(255,255,255,.8);background:rgba(255,255,255,.07)}
-.htab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.htab.on{background:var(--blue);color:#fff}
+.hbadge{display:inline-block;background:var(--err);color:#fff;border-radius:20px;padding:0 5px;font-size:8px;margin-left:3px;vertical-align:middle}
 .hinfo{font-size:8px;color:rgba(255,255,255,.25);font-family:'DM Mono',monospace;text-align:right;line-height:1.7;flex-shrink:0;margin-left:10px}
 
-/* ── VIEWS ── */
+/* VIEWS */
 .view{display:none;height:calc(100vh - 48px)}
-.view.active{display:flex}
+.view.on{display:flex}
 
-/* ══════════════════════════════════════════════
-   VIEW 1 — PLANIFICAR  (sidebar + main)
-══════════════════════════════════════════════ */
-#v-plan{flex-direction:row}
-
-/* sidebar */
-.sb{width:260px;background:var(--w);border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0}
-.sb-head{padding:12px 14px 10px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
-.sb-head h2{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--body)}
-.badd{background:var(--blue);color:#fff;border:none;border-radius:5px;padding:4px 10px;font-size:9px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
-.sb-list{flex:1;overflow-y:auto;padding:3px 0}
-.sb-list::-webkit-scrollbar{width:3px}
-.sb-list::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
-.si{padding:8px 14px;cursor:pointer;border-left:3px solid transparent;transition:all .1s}
-.si:hover{background:var(--bg)}
-.si.active{background:var(--bdim);border-left-color:var(--blue)}
+/* ── PLAN VIEW ── */
+#vp{flex-direction:row}
+.sb{width:256px;background:var(--w);border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.sbh{padding:11px 13px 9px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.sbh h2{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--body)}
+.badd{background:var(--blue);color:#fff;border:none;border-radius:5px;padding:3px 9px;font-size:9px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
+.sbl{flex:1;overflow-y:auto;padding:2px 0}
+.sbl::-webkit-scrollbar{width:2px}
+.sbl::-webkit-scrollbar-thumb{background:var(--bdr)}
+.si{padding:7px 13px;cursor:pointer;border-left:3px solid transparent;transition:all .1s}
+.si:hover{background:var(--bg)}.si.on{background:var(--bdim);border-left-color:var(--blue)}
 .si-prog{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--blue)}
 .si-prog.opt{color:var(--pur)}
-.si-name{font-size:10px;font-weight:600;color:var(--dark);line-height:1.3;margin-top:1px}
-.si-meta{display:flex;gap:4px;align-items:center;margin-top:3px;flex-wrap:wrap}
+.si-name{font-size:10px;font-weight:600;color:var(--dark);line-height:1.25;margin-top:1px}
+.si-meta{display:flex;gap:3px;align-items:center;margin-top:3px;flex-wrap:wrap}
 .chip{font-size:7px;font-weight:700;padding:1px 5px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px}
-.chip.pend{background:rgba(176,179,186,.15);color:var(--pend)}
-.chip.active-c{background:rgba(0,144,248,.12);color:var(--blue)}
-.chip.paused{background:rgba(232,69,69,.12);color:var(--err)}
-.urg{font-size:7px;font-weight:700;padding:1px 4px;border-radius:3px}
-.urg.h{background:rgba(232,69,69,.15);color:var(--err)}
-.urg.m{background:rgba(245,166,35,.15);color:#A07000}
+.chip.p{background:rgba(176,179,186,.15);color:var(--pend)}
+.chip.a{background:rgba(0,144,248,.12);color:var(--blue)}
+.chip.done{background:rgba(0,196,140,.12);color:var(--ok)}
+.chip.ps{background:rgba(232,69,69,.12);color:var(--err)}
+.si-progress{height:3px;background:var(--bdr);border-radius:2px;margin-top:4px;overflow:hidden}
+.si-progress-fill{height:100%;border-radius:2px;background:var(--blue);transition:width .3s}
 
-/* main panel */
-.plan-main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
-.plan-main::-webkit-scrollbar{width:3px}
-.plan-main::-webkit-scrollbar-thumb{background:var(--bdr)}
+/* MAIN PANEL */
+.pm{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.pm::-webkit-scrollbar{width:3px}
+.pm::-webkit-scrollbar-thumb{background:var(--bdr)}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:var(--pend);gap:8px;padding:40px}
+.empty-state span{font-size:36px;opacity:.25}
+.empty-state p{font-size:12px;color:var(--body)}
 
-/* empty state */
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:var(--pend);gap:8px;padding:40px}
-.empty span{font-size:32px;opacity:.3}
-.empty p{font-size:12px;color:var(--body)}
-
-/* detail panel */
-.det{padding:20px;flex:1}
-.det-hdr{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px}
-.prog-pill{font-size:9px;font-weight:700;padding:3px 9px;border-radius:4px;color:#fff;background:var(--blue);flex-shrink:0;margin-top:2px}
-.prog-pill.opt{background:var(--pur)}
-.det-name{font-size:16px;font-weight:700;color:var(--dark);line-height:1.2}
+/* DETAIL */
+.det{padding:18px 22px;flex:1}
+.det-hdr{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
+.ppill{font-size:9px;font-weight:700;padding:3px 9px;border-radius:4px;color:#fff;background:var(--blue);flex-shrink:0;margin-top:2px}
+.ppill.opt{background:var(--pur)}
+.det-name{font-size:17px;font-weight:700;color:var(--dark);line-height:1.2}
 .det-sub{font-size:10px;color:var(--body);margin-top:3px}
-.det-actions{margin-left:auto;display:flex;gap:6px}
+.det-btn{background:var(--sf);color:var(--body);border:1px solid var(--bdr);border-radius:6px;padding:5px 11px;font-size:9px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
 
-/* alerts */
-.alert{border-radius:8px;padding:9px 13px;margin-bottom:10px;font-size:10px;display:flex;gap:8px;align-items:flex-start;line-height:1.5}
-.alert.warn{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.3);color:#7a5500}
-.alert.err{background:rgba(232,69,69,.08);border:1px solid rgba(232,69,69,.3);color:var(--err)}
-.alert.info{background:rgba(0,144,248,.07);border:1px solid rgba(0,144,248,.2);color:#005BB0}
-.alert.ok{background:rgba(0,196,140,.07);border:1px solid rgba(0,196,140,.25);color:#007A50}
-.alert.pur{background:rgba(155,89,182,.07);border:1px solid rgba(155,89,182,.25);color:#5B2F8A}
-.alert.paused-a{background:rgba(232,69,69,.06);border:2px solid rgba(232,69,69,.4);color:var(--err);font-weight:600}
+/* ALERTS */
+.al{border-radius:8px;padding:8px 12px;margin-bottom:9px;font-size:10px;display:flex;gap:7px;align-items:flex-start;line-height:1.5}
+.al.w{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.3);color:#7a5500}
+.al.e{background:rgba(232,69,69,.08);border:1px solid rgba(232,69,69,.3);color:var(--err)}
+.al.i{background:rgba(0,144,248,.07);border:1px solid rgba(0,144,248,.2);color:#005BB0}
+.al.ok{background:rgba(0,196,140,.07);border:1px solid rgba(0,196,140,.25);color:#007A50}
+.al.pur{background:rgba(155,89,182,.07);border:1px solid rgba(155,89,182,.25);color:#5B2F8A}
+.al.pause{background:rgba(232,69,69,.06);border:2px solid rgba(232,69,69,.4);color:var(--err);font-weight:600}
 
-/* impact */
-.impact-box{background:var(--w);border:1px solid rgba(245,166,35,.35);border-radius:9px;padding:13px 16px;margin-bottom:12px}
-.impact-box h4{font-size:11px;font-weight:700;margin-bottom:9px;color:var(--dark)}
-.imp-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bdr);font-size:9px}
-.imp-row:last-of-type{border-bottom:none}
-.imp-lbl{width:120px;color:var(--body);flex-shrink:0}
-.imp-old{font-family:'DM Mono',monospace;text-decoration:line-through;color:var(--pend)}
-.imp-arr{color:var(--blue)}
-.imp-new{font-family:'DM Mono',monospace;font-weight:600}
-.imp-tag{font-size:7px;font-weight:700;padding:1px 6px;border-radius:20px;margin-left:auto;flex-shrink:0}
-.imp-tag.int{background:rgba(0,196,140,.12);color:#007A50}
-.imp-tag.ext{background:rgba(232,69,69,.12);color:var(--err)}
-.imp-tag.col{background:rgba(232,69,69,.2);color:var(--err)}
-.imp-actions{display:flex;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid var(--bdr)}
-.btn-accept{background:var(--ok);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
-.btn-revert{background:var(--sf);color:var(--body);border:1px solid var(--bdr);border-radius:6px;padding:6px 14px;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
+/* CONFLICT PANEL */
+.conflict-panel{background:var(--w);border:2px solid var(--err);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.conflict-panel h4{font-size:12px;font-weight:700;color:var(--err);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.conflict-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bdr);font-size:10px}
+.conflict-row:last-of-type{border-bottom:none}
+.cr-lbl{width:130px;color:var(--body);flex-shrink:0;font-size:9px}
+.cr-old{font-family:'DM Mono',monospace;text-decoration:line-through;color:var(--pend);font-size:9px}
+.cr-arr{color:var(--blue)}
+.cr-new{font-family:'DM Mono',monospace;font-weight:600;font-size:9px}
+.cr-tag{font-size:7px;font-weight:700;padding:2px 6px;border-radius:20px;margin-left:auto;flex-shrink:0}
+.cr-tag.int{background:rgba(0,196,140,.12);color:#007A50}
+.cr-tag.ext{background:rgba(232,69,69,.12);color:var(--err)}
+.cr-tag.clash{background:rgba(232,69,69,.2);color:var(--err)}
+.alt-dates{background:var(--bg);border-radius:7px;padding:9px 12px;margin-top:8px}
+.alt-dates h5{font-size:9px;font-weight:700;color:var(--dark);margin-bottom:7px}
+.alt-row{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:var(--w);border:1px solid var(--bdr);border-radius:6px;margin-bottom:4px;font-size:10px}
+.alt-row.best{border-color:var(--ok)}
+.alt-row span:first-child{font-family:'DM Mono',monospace;font-weight:600}
+.alt-row .load-info{font-size:9px;color:var(--body)}
+.btn-use-alt{background:var(--blue);color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:9px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif}
+.conf-actions{display:flex;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid var(--bdr)}
+.btn-apply{background:var(--ok);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
+.btn-cancel-c{background:var(--sf);color:var(--body);border:1px solid var(--bdr);border-radius:6px;padding:6px 14px;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
 
-/* production info */
-.prod-box{background:var(--sf);border-radius:9px;padding:12px 16px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.prod-field label{display:block;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--body);margin-bottom:3px}
-.prod-field input{width:100%;border:1px solid var(--bdr);border-radius:5px;padding:5px 8px;font-family:'Poppins',sans-serif;font-size:11px;color:var(--dark);background:var(--w)}
-.prod-field input:focus{outline:none;border-color:var(--blue)}
-.prod-summary{background:var(--bdim);border-radius:7px;padding:8px 12px;font-size:10px;color:var(--blue);font-weight:600;display:flex;gap:14px;margin-top:10px;flex-wrap:wrap}
+/* BLOCKS */
+.blocks{display:flex;flex-direction:column;gap:10px}
+.block{background:var(--w);border-radius:10px;overflow:hidden}
+.block-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--bdr)}
+.block-hdr:hover{background:var(--bg)}
+.block-color{width:4px;height:32px;border-radius:2px;flex-shrink:0}
+.block-title{font-size:12px;font-weight:700;color:var(--dark)}
+.block-subtitle{font-size:9px;color:var(--body);margin-top:1px}
+.block-progress{margin-left:auto;text-align:right;flex-shrink:0}
+.bp-bar{width:80px;height:5px;background:var(--bdr);border-radius:3px;overflow:hidden;margin-bottom:3px}
+.bp-fill{height:100%;border-radius:3px;transition:width .3s}
+.bp-txt{font-size:8px;color:var(--body)}
+.block-body{padding:0}
+.block-body.collapsed{display:none}
 
-/* flow steps */
-.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr);border-radius:10px;overflow:hidden;margin-bottom:14px}
-.fstep{background:var(--w);padding:12px}
-.fstep.done{background:#f9fff9}
-.fstep.incident-s{background:#fff8f8}
-.fstep-num{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--pend);margin-bottom:2px}
-.fstep.has-date .fstep-num{color:var(--blue)}
-.fstep-title{font-size:10px;font-weight:700;color:var(--dark);margin-bottom:2px}
-.fstep-who{font-size:9px;color:var(--blue);font-weight:600;margin-bottom:4px}
-.fstep-desc{font-size:9px;color:var(--body);line-height:1.5;margin-bottom:8px}
-.date-field label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--body);display:block;margin-bottom:2px}
-.date-field input[type=date]{border:1px solid var(--bdr);border-radius:5px;padding:4px 7px;font-family:'DM Mono',monospace;font-size:10px;color:var(--dark);background:var(--sf);width:100%;cursor:pointer}
-.date-field input[type=date]:focus{outline:none;border-color:var(--blue)}
-.date-field input.locked{background:rgba(0,196,140,.07);border-color:rgba(0,196,140,.3);color:#007A50}
-.step-dates{margin-top:6px;display:flex;flex-direction:column;gap:3px}
-.step-date-row{display:flex;justify-content:space-between;font-size:9px}
-.step-date-row span:first-child{color:var(--body)}
-.step-date-row span:last-child{font-family:'DM Mono',monospace;font-weight:500}
-.step-date-row.gap-warn span:last-child{color:var(--warn)}
-.lock-btn{font-size:8px;padding:2px 6px;border-radius:4px;cursor:pointer;border:none;font-family:'Poppins',sans-serif;font-weight:600;margin-top:4px;width:100%}
-.lock-btn.unl{background:rgba(0,144,248,.1);color:var(--blue)}
-.lock-btn.lkd{background:rgba(0,196,140,.12);color:#007A50}
-.inc-btn{font-size:8px;padding:2px 6px;border-radius:4px;cursor:pointer;border:none;font-family:'Poppins',sans-serif;font-weight:600;margin-top:4px;width:100%;background:rgba(232,69,69,.1);color:var(--err)}
-.inc-tag{display:inline-block;font-size:8px;font-weight:700;padding:1px 6px;border-radius:20px;background:rgba(232,69,69,.15);color:var(--err);margin-top:4px}
+/* SUB-STAGES */
+.substage{display:grid;grid-template-columns:28px 1fr auto;gap:0;align-items:stretch;border-bottom:1px solid var(--bdr)}
+.substage:last-child{border-bottom:none}
+.ss-status{display:flex;align-items:center;justify-content:center;padding:12px 8px;background:var(--sf);border-right:1px solid var(--bdr);cursor:pointer}
+.ss-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--bdr);transition:all .15s;flex-shrink:0}
+.ss-dot.p{border-color:var(--pend);background:transparent}
+.ss-dot.ip{border-color:var(--warn);background:rgba(245,166,35,.2)}
+.ss-dot.done{border-color:var(--ok);background:var(--ok)}
+.ss-body{padding:10px 14px;flex:1}
+.ss-label{font-size:10px;font-weight:600;color:var(--dark);margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.ss-who{font-size:8px;font-weight:600;padding:1px 6px;border-radius:20px;background:var(--bdim);color:var(--blue)}
+.ss-who.cont{background:rgba(0,196,140,.1);color:#007A50}
+.ss-who.doc{background:rgba(245,166,35,.1);color:#A07000}
+.ss-who.dev{background:rgba(155,89,182,.1);color:var(--pur)}
+.ss-who.umayor{background:rgba(232,69,69,.08);color:var(--err)}
+.ss-desc{font-size:9px;color:var(--body);line-height:1.5;margin-bottom:6px}
+.ss-date-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ss-date-calc{font-size:9px;color:var(--pend);font-family:'DM Mono',monospace}
+.ss-date-input{border:1px solid var(--bdr);border-radius:5px;padding:4px 7px;font-family:'DM Mono',monospace;font-size:10px;color:var(--dark);background:var(--sf);cursor:pointer;width:130px}
+.ss-date-input:focus{outline:none;border-color:var(--blue)}
+.ss-date-input.manual{border-color:var(--blue);background:rgba(0,144,248,.04)}
+.ss-date-input.conflict{border-color:var(--err);background:rgba(232,69,69,.05)}
+.ss-date-input.locked{border-color:var(--ok);background:rgba(0,196,140,.05);color:#007A50}
+.ss-min-warn{font-size:8px;color:var(--err);font-weight:600}
+.ss-min-ok{font-size:8px;color:var(--ok)}
+.ss-note{margin-top:5px}
+.ss-note input{width:100%;border:1px solid var(--bdr);border-radius:5px;padding:3px 8px;font-size:9px;font-family:'Poppins',sans-serif;color:var(--body);background:transparent}
+.ss-note input:focus{outline:none;border-color:var(--blue);background:var(--sf)}
+.ss-note input::placeholder{color:var(--pend)}
+.ss-side{padding:10px 12px;display:flex;flex-direction:column;gap:4px;align-items:flex-end;justify-content:center;border-left:1px solid var(--bdr);min-width:90px}
+.ss-status-sel{font-size:9px;border:1px solid var(--bdr);border-radius:5px;padding:3px 6px;background:var(--sf);color:var(--body);cursor:pointer;font-family:'Poppins',sans-serif;width:100%}
+.ss-inc-btn{font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(232,69,69,.1);color:var(--err);border:none;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:600;width:100%}
+.ss-inc-badge{font-size:7px;font-weight:700;padding:1px 5px;border-radius:20px;background:rgba(232,69,69,.15);color:var(--err)}
 
-/* timeline */
-.timeline{background:var(--sf);border-radius:9px;padding:12px 16px;margin-top:2px}
-.tl-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--body);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.tl-label::after{content:'';flex:1;height:1px;background:var(--bdr)}
-.tl-track{display:flex;align-items:flex-start;overflow-x:auto;padding-bottom:4px}
-.tl-dot{flex-shrink:0;text-align:center;min-width:60px}
-.tl-circle{width:8px;height:8px;border-radius:50%;margin:0 auto 3px}
-.tl-name{font-size:8px;font-weight:700}
-.tl-date{font-size:7px;font-family:'DM Mono',monospace;color:var(--body);margin-top:1px}
-.tl-line{flex:1;height:1px;background:var(--bdr);min-width:10px;margin-top:4px}
-
-/* incident history in detail */
-.inc-history{margin-top:14px}
-.inc-entry{border:1px solid var(--bdr);border-radius:8px;padding:10px 13px;margin-bottom:7px;border-left:3px solid var(--err)}
-.inc-entry.prog{border-left-color:var(--warn)}
-.inc-entry.other-t{border-left-color:var(--pend)}
-.inc-hdr{display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap}
-.inc-badge{font-size:8px;font-weight:700;padding:2px 7px;border-radius:20px}
-.inc-badge.noshow{background:rgba(232,69,69,.12);color:var(--err)}
-.inc-badge.prog{background:rgba(245,166,35,.12);color:#7a5500}
-.inc-badge.other-b{background:rgba(176,179,186,.15);color:var(--body)}
-.inc-del{font-size:8px;padding:1px 6px;background:rgba(232,69,69,.1);color:var(--err);border:none;border-radius:4px;cursor:pointer;font-family:'Poppins',sans-serif;margin-left:auto}
-
-/* ══════════════════════════════════════════════
-   VIEW 2 — SIMULADOR
-══════════════════════════════════════════════ */
-#v-sim{overflow-y:auto;padding:24px;flex-direction:column;gap:20px}
-#v-sim::-webkit-scrollbar{width:3px}
-#v-sim::-webkit-scrollbar-thumb{background:var(--bdr)}
-
-.sim-hero{background:var(--dark);border-radius:12px;padding:22px 26px;position:relative;overflow:hidden}
-.sim-hero::before{content:'';position:absolute;right:-12px;bottom:-12px;width:120px;height:120px;border-radius:50%;border:2px solid rgba(0,144,248,.2)}
-.sim-hero h2{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px}
-.sim-hero p{font-size:10px;color:rgba(255,255,255,.5);line-height:1.6;max-width:500px}
-
-.sim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-
-.sim-controls{background:var(--w);border-radius:10px;padding:16px 18px}
-.sim-controls h3{font-size:11px;font-weight:700;color:var(--dark);margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--bdr)}
-.ctrl-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+/* ── SIM VIEW ── */
+#vs{flex-direction:column;overflow-y:auto;padding:22px;gap:16px}
+#vs::-webkit-scrollbar{width:3px}
+.sim-hero{background:var(--dark);border-radius:12px;padding:20px 24px;position:relative;overflow:hidden}
+.sim-hero::before{content:'';position:absolute;right:-10px;bottom:-10px;width:110px;height:110px;border-radius:50%;border:2px solid rgba(0,144,248,.18)}
+.sim-hero h2{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
+.sim-hero p{font-size:10px;color:rgba(255,255,255,.5);line-height:1.6;max-width:520px}
+.sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sim-card{background:var(--w);border-radius:10px;padding:15px 17px}
+.sim-card h3{font-size:11px;font-weight:700;color:var(--dark);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--bdr)}
+.ctrl-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
 .ctrl-row:last-child{margin-bottom:0}
-.ctrl-label{font-size:10px;color:var(--body);flex:1}
-.ctrl-label small{display:block;font-size:8px;color:var(--pend);margin-top:1px}
-.ctrl-stepper{display:flex;align-items:center;gap:8px}
-.step-btn{background:var(--sf);border:1px solid var(--bdr);border-radius:5px;width:26px;height:26px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;color:var(--dark);transition:all .1s;flex-shrink:0}
-.step-btn:hover{background:var(--bdim);border-color:var(--blue);color:var(--blue)}
-.step-val{font-size:17px;font-weight:700;font-family:'DM Mono',monospace;color:var(--dark);min-width:28px;text-align:center}
-.ctrl-input{border:1px solid var(--bdr);border-radius:5px;padding:4px 8px;font-family:'DM Mono',monospace;font-size:13px;color:var(--dark);background:var(--sf);width:72px;text-align:center}
+.ctrl-lbl{font-size:10px;color:var(--body)}
+.ctrl-lbl small{display:block;font-size:8px;color:var(--pend);margin-top:1px}
+.stepper{display:flex;align-items:center;gap:8px}
+.step-btn{width:26px;height:26px;border:1px solid var(--bdr);border-radius:5px;background:var(--sf);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;color:var(--dark);flex-shrink:0}
+.step-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--bdim)}
+.step-val{font-size:18px;font-weight:700;font-family:'DM Mono',monospace;min-width:28px;text-align:center}
+.ctrl-input{border:1px solid var(--bdr);border-radius:5px;padding:4px 8px;font-family:'DM Mono',monospace;font-size:13px;color:var(--dark);background:var(--sf);width:70px;text-align:center}
 .ctrl-input:focus{outline:none;border-color:var(--blue)}
-
-.sim-contingency{background:var(--w);border-radius:10px;padding:16px 18px}
-.sim-contingency h3{font-size:11px;font-weight:700;color:var(--dark);margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--bdr)}
-.cont-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cont-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .cont-item label{display:block;font-size:9px;color:var(--body);margin-bottom:4px}
-.cont-item .cont-row{display:flex;align-items:center;gap:6px}
-.cont-item input{border:1px solid var(--bdr);border-radius:5px;padding:4px 8px;font-family:'DM Mono',monospace;font-size:13px;color:var(--dark);background:var(--sf);width:60px;text-align:center}
+.cont-item .ci-row{display:flex;align-items:center;gap:6px}
+.cont-item input{border:1px solid var(--bdr);border-radius:5px;padding:4px 8px;font-family:'DM Mono',monospace;font-size:12px;color:var(--dark);background:var(--sf);width:58px;text-align:center}
 .cont-item input:focus{outline:none;border-color:var(--blue)}
 .cont-item span{font-size:9px;color:var(--pend)}
-
-.sim-run-btn{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;width:100%;transition:opacity .15s}
-.sim-run-btn:hover{opacity:.85}
-
-/* results */
-.sim-results{display:none}
-.results-header{background:var(--w);border-radius:10px;padding:16px 18px;margin-bottom:16px;display:flex;align-items:center;gap:16px}
-.res-main{flex:1}
-.res-end{font-size:28px;font-weight:700;font-family:'DM Mono',monospace;color:var(--dark);line-height:1}
-.res-weeks{font-size:12px;color:var(--body);margin-top:3px}
-.res-bottleneck{font-size:11px;font-weight:600;padding:6px 12px;border-radius:6px;background:var(--sf)}
-.res-bottleneck.b-ok{color:var(--ok)}.res-bottleneck.b-warn{color:var(--warn)}.res-bottleneck.b-err{color:var(--err)}
-
-.compare-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.ccard{background:var(--w);border-radius:10px;padding:13px 15px;border-top:3px solid var(--bdr);position:relative}
-.ccard.is-current{border-top-color:var(--blue)}
-.ccard.is-better{border-top-color:var(--ok)}
-.ccard.is-same{border-top-color:var(--bdr)}
-.ccard-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--body);margin-bottom:4px}
-.ccard-end{font-size:16px;font-weight:700;font-family:'DM Mono',monospace;color:var(--dark);line-height:1;margin-bottom:3px}
-.ccard-diff{font-size:10px;margin-bottom:8px}
-.ccard-detail{font-size:9px;color:var(--body);line-height:1.6;border-top:1px solid var(--bdr);padding-top:7px}
-.ccard-detail strong{color:var(--dark)}
-
-.results-table{background:var(--w);border-radius:10px;overflow:hidden;margin-bottom:16px}
-.results-table table{width:100%;border-collapse:collapse;font-size:10px}
-.results-table th{background:var(--dark);color:#fff;padding:8px 10px;text-align:left;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-.results-table td{padding:7px 10px;border-bottom:1px solid var(--bdr);color:var(--body);vertical-align:middle}
-.results-table tbody tr:last-child td{border-bottom:none}
-.results-table td:first-child{font-weight:600;color:var(--dark);font-size:10px}
-.d{font-family:'DM Mono',monospace;font-size:9px;white-space:nowrap}
-.d.hi{color:var(--blue);font-weight:700}
-.weeks-pill{font-size:8px;font-weight:700;padding:2px 7px;border-radius:20px}
-.weeks-pill.fast{background:rgba(0,196,140,.12);color:#007A50}
-.weeks-pill.med{background:rgba(245,166,35,.12);color:#7a5500}
-.weeks-pill.slow{background:rgba(232,69,69,.12);color:var(--err)}
-
+.run-btn{background:var(--blue);color:#fff;border:none;border-radius:9px;padding:12px 20px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;width:100%}
+.run-btn:hover{opacity:.87}
+.sim-results{display:none;flex-direction:column;gap:14px}
+.res-summary{background:var(--w);border-radius:10px;padding:15px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.res-end{font-size:26px;font-weight:700;font-family:'DM Mono',monospace;color:var(--dark);line-height:1}
+.res-meta{flex:1}
+.res-weeks{font-size:11px;color:var(--body);margin-top:3px}
+.res-real{font-size:10px;color:var(--blue);font-weight:600;margin-top:4px}
+.bnk{font-size:10px;font-weight:600;padding:7px 13px;border-radius:7px;background:var(--sf)}
+.bnk.ok{color:var(--ok)}.bnk.w{color:var(--warn)}.bnk.e{color:var(--err)}
+.cmp-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.ccard{background:var(--w);border-radius:10px;padding:12px 14px;border-top:3px solid var(--bdr)}
+.ccard.cur{border-top-color:var(--blue)}.ccard.better{border-top-color:var(--ok)}.ccard.same{border-top-color:var(--bdr)}
+.cc-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--body);margin-bottom:3px}
+.cc-end{font-size:15px;font-weight:700;font-family:'DM Mono',monospace;color:var(--dark);line-height:1;margin-bottom:2px}
+.cc-diff{font-size:10px;margin-bottom:6px}
+.cc-det{font-size:9px;color:var(--body);line-height:1.6;border-top:1px solid var(--bdr);padding-top:6px}
+.res-table{background:var(--w);border-radius:10px;overflow:hidden}
+.res-table table{width:100%;border-collapse:collapse;font-size:10px}
+.res-table th{background:var(--dark);color:#fff;padding:7px 9px;text-align:left;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.res-table td{padding:6px 9px;border-bottom:1px solid var(--bdr);color:var(--body);vertical-align:middle}
+.res-table tbody tr:last-child td{border-bottom:none}
+.res-table td:first-child{font-weight:600;color:var(--dark)}
+.dm{font-family:'DM Mono',monospace;font-size:9px;white-space:nowrap}
+.dm.hi{color:var(--blue);font-weight:700}
+.dm.real{color:var(--ok);font-weight:700}
+.wp{font-size:8px;font-weight:700;padding:2px 6px;border-radius:20px}
+.wp.f{background:rgba(0,196,140,.12);color:#007A50}
+.wp.m{background:rgba(245,166,35,.12);color:#7a5500}
+.wp.s{background:rgba(232,69,69,.12);color:var(--err)}
+.apply-row{text-align:center;padding:4px 0}
 .apply-btn{background:var(--dark);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
-.apply-btn:hover{background:#3a3a3a}
-.apply-note{font-size:9px;color:var(--body);margin-top:5px;text-align:center}
+.apply-note{font-size:9px;color:var(--body);margin-top:4px}
 
-/* ══════════════════════════════════════════════
-   VIEW 3 — INCIDENCIAS
-══════════════════════════════════════════════ */
-#v-inc{overflow-y:auto;padding:20px;flex-direction:column;gap:0}
-#v-inc::-webkit-scrollbar{width:3px}
-.inc-view-header{background:var(--w);border-radius:10px;padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.inc-view-header h2{font-size:14px;font-weight:700;color:var(--dark)}
-.inc-filters{display:flex;gap:6px}
-.fchip{font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px;cursor:pointer;border:1px solid var(--bdr);background:var(--sf);transition:all .1s}
-.fchip.active{background:var(--dark);color:#fff;border-color:var(--dark)}
-.export-btn{background:var(--sf);color:var(--dark);border:1px solid var(--bdr);border-radius:7px;padding:7px 14px;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
+/* ── INC VIEW ── */
+#vi{flex-direction:column;overflow-y:auto;padding:20px;gap:14px}
+.inc-hdr-bar{background:var(--w);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.inc-hdr-bar h2{font-size:14px;font-weight:700;color:var(--dark)}
+.filt-row{display:flex;gap:5px}
+.fchip{font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px;cursor:pointer;border:1px solid var(--bdr);background:var(--sf);font-family:'Poppins',sans-serif}
+.fchip.on{background:var(--dark);color:#fff;border-color:var(--dark)}
+.exp-btn{margin-left:auto;background:var(--sf);border:1px solid var(--bdr);border-radius:7px;padding:7px 14px;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
+.inc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.istat{background:var(--w);border-radius:9px;padding:11px 13px;text-align:center}
+.istat-n{font-size:22px;font-weight:700;font-family:'DM Mono',monospace;line-height:1}
+.istat-l{font-size:8px;color:var(--body);margin-top:2px}
+.istat.r .istat-n{color:var(--err)}.istat.wa .istat-n{color:var(--warn)}.istat.gr .istat-n{color:var(--ok)}
 .inc-list{display:flex;flex-direction:column;gap:8px}
-.inc-card{background:var(--w);border-radius:10px;padding:14px 16px;border-left:4px solid var(--err)}
-.inc-card.prog{border-left-color:var(--warn)}
-.inc-card.other-t{border-left-color:var(--pend)}
-.inc-card .ic-hdr{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.icard{background:var(--w);border-radius:10px;padding:13px 16px;border-left:4px solid var(--err)}
+.icard.prog{border-left-color:var(--warn)}.icard.other{border-left-color:var(--pend)}
+.ic-hdr{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap}
 .ic-subj{font-size:12px;font-weight:700;color:var(--dark)}
-.ic-meet{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px}
-.ic-meet.r1{background:rgba(0,144,248,.12);color:var(--blue)}
-.ic-meet.r2{background:rgba(0,196,140,.12);color:#007A50}
-.ic-meet.r3{background:rgba(245,166,35,.12);color:#A07000}
-.ic-meet.r4{background:rgba(232,69,69,.12);color:var(--err)}
-.ic-type{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px}
-.ic-type.noshow{background:rgba(232,69,69,.12);color:var(--err)}
-.ic-type.prog{background:rgba(245,166,35,.12);color:#7a5500}
-.ic-type.other-b{background:rgba(176,179,186,.15);color:var(--body)}
+.ic-meet{font-size:8px;font-weight:700;padding:2px 7px;border-radius:20px}
+.ic-type{font-size:8px;font-weight:700;padding:2px 7px;border-radius:20px}
 .ic-date{font-size:9px;font-family:'DM Mono',monospace;color:var(--body);margin-left:auto}
 .ic-note{font-size:10px;color:var(--body);line-height:1.5;margin-top:4px}
-.ic-res{font-size:9px;color:var(--ok);margin-top:5px;font-weight:600}
-.ic-actions{display:flex;gap:8px;margin-top:8px}
-.ic-resolve{font-size:9px;padding:3px 10px;background:rgba(0,196,140,.1);color:var(--ok);border:1px solid rgba(0,196,140,.25);border-radius:5px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:600}
-.ic-del{font-size:9px;padding:3px 10px;background:rgba(232,69,69,.08);color:var(--err);border:1px solid rgba(232,69,69,.2);border-radius:5px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:600}
-.inc-empty{text-align:center;padding:40px;color:var(--body)}
-.inc-empty .ei{font-size:32px;opacity:.3;margin-bottom:8px}
-.inc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.istat{background:var(--w);border-radius:9px;padding:12px 14px;text-align:center}
-.istat-n{font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--dark);line-height:1}
-.istat-l{font-size:9px;color:var(--body);margin-top:2px}
-.istat.red .istat-n{color:var(--err)}
-.istat.warn .istat-n{color:var(--warn)}
-.istat.ok .istat-n{color:var(--ok)}
+.ic-res{font-size:9px;color:var(--ok);margin-top:4px;font-weight:600}
+.ic-acts{display:flex;gap:7px;margin-top:7px}
+.btn-res{font-size:9px;padding:3px 10px;background:rgba(0,196,140,.1);color:var(--ok);border:1px solid rgba(0,196,140,.25);border-radius:5px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:600}
+.btn-del-i{font-size:9px;padding:3px 10px;background:rgba(232,69,69,.08);color:var(--err);border:1px solid rgba(232,69,69,.2);border-radius:5px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:600}
 
-/* ── MODALS ── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center}
-.overlay.show{display:flex}
-.modal{background:var(--w);border-radius:12px;padding:20px;width:460px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.25);max-height:90vh;overflow-y:auto}
-.modal h3{font-size:14px;font-weight:700;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--bdr)}
-.field{margin-bottom:10px}
-.field label{display:block;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--body);margin-bottom:3px}
-.field input,.field select,.field textarea{width:100%;border:1px solid var(--bdr);border-radius:7px;padding:7px 10px;font-family:'Poppins',sans-serif;font-size:11px;color:var(--dark);background:var(--sf)}
-.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--blue)}
-.field textarea{resize:vertical;min-height:52px;font-size:10px}
-.field-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
-.field-row .field{margin-bottom:0}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:13px;border-top:1px solid var(--bdr)}
-.btn-cancel{background:var(--sf);color:var(--body);border:1px solid var(--bdr);border-radius:7px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
-.btn-save{background:var(--blue);color:#fff;border:none;border-radius:7px;padding:7px 18px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
-.btn-delete{background:rgba(232,69,69,.1);color:var(--err);border:1px solid rgba(232,69,69,.2);border-radius:7px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;margin-right:auto}
-.resch-box{background:var(--bg);border-radius:8px;padding:10px 12px;margin-top:8px}
+/* MODALS */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:none;align-items:center;justify-content:center}
+.ov.on{display:flex}
+.md{background:var(--w);border-radius:12px;padding:20px;width:480px;max-width:96vw;box-shadow:0 20px 60px rgba(0,0,0,.25);max-height:90vh;overflow-y:auto}
+.md h3{font-size:14px;font-weight:700;margin-bottom:13px;padding-bottom:9px;border-bottom:1px solid var(--bdr)}
+.f{margin-bottom:9px}
+.f label{display:block;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--body);margin-bottom:3px}
+.f input,.f select,.f textarea{width:100%;border:1px solid var(--bdr);border-radius:6px;padding:7px 10px;font-family:'Poppins',sans-serif;font-size:11px;color:var(--dark);background:var(--sf)}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:var(--blue)}
+.f textarea{resize:vertical;min-height:50px;font-size:10px}
+.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:9px}
+.f3 .f{margin-bottom:0}
+.prod-est{background:var(--bdim);border-radius:6px;padding:7px 12px;font-size:10px;color:var(--blue);font-weight:600;margin-bottom:9px;display:none}
+.warn-note{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:6px;padding:6px 10px;font-size:9px;color:#7a5500;margin-bottom:9px;display:none}
+.prog-warn{background:rgba(232,69,69,.08);border:1px solid rgba(232,69,69,.25);border-radius:7px;padding:8px 11px;font-size:10px;color:var(--err);margin-bottom:9px;display:none}
+.resch-box{background:var(--bg);border-radius:8px;padding:10px;margin-top:8px;display:none}
 .resch-box h4{font-size:9px;font-weight:700;color:var(--dark);margin-bottom:7px}
-.resch-row{background:var(--w);border:1px solid var(--bdr);border-radius:6px;padding:6px 10px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;font-size:10px}
-.resch-row.full{border-color:rgba(232,69,69,.3);background:rgba(232,69,69,.03)}
-.btn-use{background:var(--blue);color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:9px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif}
-.warn-note{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:6px;padding:7px 10px;font-size:9px;color:#7a5500;margin-bottom:10px;display:none}
-.prog-warn{background:rgba(232,69,69,.08);border:1px solid rgba(232,69,69,.25);border-radius:6px;padding:8px 11px;font-size:10px;color:var(--err);margin-bottom:10px;display:none}
+.rrow{background:var(--w);border:1px solid var(--bdr);border-radius:5px;padding:5px 9px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;font-size:9px}
+.rrow.full{border-color:rgba(232,69,69,.3);background:rgba(232,69,69,.03)}
+.btn-use{background:var(--blue);color:#fff;border:none;border-radius:4px;padding:2px 7px;font-size:8px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif}
+.mact{display:flex;gap:7px;justify-content:flex-end;margin-top:14px;padding-top:11px;border-top:1px solid var(--bdr)}
+.btn-cancel{background:var(--sf);color:var(--body);border:1px solid var(--bdr);border-radius:6px;padding:6px 13px;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
+.btn-save{background:var(--blue);color:#fff;border:none;border-radius:6px;padding:6px 17px;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif}
+.btn-del{background:rgba(232,69,69,.1);color:var(--err);border:1px solid rgba(232,69,69,.2);border-radius:6px;padding:6px 13px;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;margin-right:auto}
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">
     <svg viewBox="0 0 28 28" fill="none">
@@ -314,233 +278,268 @@ header{background:var(--dark);color:#fff;padding:10px 20px;display:flex;align-it
       <line x1="14" y1="1" x2="14" y2="27" stroke="white" stroke-width="1.2"/>
       <line x1="1" y1="14" x2="27" y2="14" stroke="white" stroke-width="1.2"/>
     </svg>
-    <span><span>HACK</span><span class="logo-ea">EA</span></span>
+    <span>HACK<span class="logo-ea">EA</span></span>
   </div>
-  <span class="h1">Planificador Ciclo 2</span>
+  <span class="htitle">Planificador Ciclo 2</span>
   <div class="spacer"></div>
   <div class="htabs">
-    <button class="htab active" onclick="showView('plan')">📅 Planificar</button>
-    <button class="htab" onclick="showView('sim')">🧮 Simular</button>
-    <button class="htab" onclick="showView('inc')">🚨 Incidencias <span id="inc-badge" style="display:none;background:var(--err);color:#fff;border-radius:20px;padding:0 5px;font-size:9px;margin-left:3px"></span></button>
+    <button class="htab on" onclick="showView('p')">📅 Planificar</button>
+    <button class="htab" onclick="showView('s')">🧮 Simular</button>
+    <button class="htab" onclick="showView('i')">🚨 Incidencias<span class="hbadge" id="ibadge" style="display:none"></span></button>
   </div>
-  <div class="hinfo" id="hdrDate"></div>
+  <div class="hinfo" id="hdate"></div>
 </header>
 
-<!-- ═══ VIEW: PLANIFICAR ═══ -->
-<div class="view active" id="v-plan">
+<!-- PLAN -->
+<div class="view on" id="vp">
   <aside class="sb">
-    <div class="sb-head">
-      <h2>Asignaturas (<span id="sb-count">0</span>)</h2>
+    <div class="sbh">
+      <h2>Asignaturas (<span id="sbcnt">0</span>)</h2>
       <button class="badd" onclick="openAddModal()">+ Nueva</button>
     </div>
-    <div class="sb-list" id="sb-list"></div>
+    <div class="sbl" id="sbl"></div>
   </aside>
-  <div class="plan-main" id="plan-main">
-    <div class="empty" id="plan-empty">
-      <span>📋</span>
-      <p>Selecciona una asignatura para ver el detalle</p>
-    </div>
-    <div class="det" id="plan-det" style="display:none"></div>
+  <div class="pm" id="pm">
+    <div class="empty-state" id="emp"><span>📋</span><p>Selecciona una asignatura</p></div>
+    <div class="det" id="det" style="display:none"></div>
   </div>
 </div>
 
-<!-- ═══ VIEW: SIMULADOR ═══ -->
-<div class="view" id="v-sim">
+<!-- SIM -->
+<div class="view" id="vs">
   <div class="sim-hero">
     <h2>🧮 Simulador de Capacidad</h2>
-    <p>Configura el equipo y los días de contingencia por etapa. El simulador calcula cuándo termina el ciclo completo y compara escenarios automáticamente.</p>
+    <p>Configura el equipo, los días de contingencia globales y compara escenarios. La sección "Planificación real" usa las fechas reales registradas en cada asignatura.</p>
   </div>
-
   <div class="sim-grid">
-    <div class="sim-controls">
+    <div class="sim-card">
       <h3>Equipo</h3>
-      <div class="ctrl-row">
-        <div class="ctrl-label">Contenidistas<small>Dev paralelo mientras doc. revisa. Ajustes = día exclusivo.</small></div>
-        <div class="ctrl-stepper">
-          <button class="step-btn" onclick="stepAdj('nc',-1)">−</button>
-          <span class="step-val" id="nc-val">1</span>
-          <button class="step-btn" onclick="stepAdj('nc',1)">+</button>
-        </div>
-      </div>
-      <div class="ctrl-row">
-        <div class="ctrl-label">Guionistas<small>Máx 2 reuniones/día. Puede guionizar si ≤1 reunión ese día.</small></div>
-        <div class="ctrl-stepper">
-          <button class="step-btn" onclick="stepAdj('ng',-1)">−</button>
-          <span class="step-val" id="ng-val">1</span>
-          <button class="step-btn" onclick="stepAdj('ng',1)">+</button>
-        </div>
-      </div>
-      <div class="ctrl-row">
-        <div class="ctrl-label">Desarrolladores E-Learning<small>Cada uno en 1 asignatura distinta simultáneamente.</small></div>
-        <div class="ctrl-stepper">
-          <button class="step-btn" onclick="stepAdj('nd',-1)">−</button>
-          <span class="step-val" id="nd-val">2</span>
-          <button class="step-btn" onclick="stepAdj('nd',1)">+</button>
-        </div>
-      </div>
-      <div class="ctrl-row">
-        <div class="ctrl-label">Páginas/día (Contenidista)<small>Días dev = ⌈páginas ÷ velocidad⌉</small></div>
-        <input class="ctrl-input" type="number" id="ppd-val" value="25" min="5" max="60">
-      </div>
+      <div class="ctrl-row"><div class="ctrl-lbl">Contenidistas<small>Dev en paralelo mientras doc. revisa. Ajustes = día exclusivo.</small></div><div class="stepper"><button class="step-btn" onclick="adj('nc',-1)">−</button><span class="step-val" id="nc">1</span><button class="step-btn" onclick="adj('nc',1)">+</button></div></div>
+      <div class="ctrl-row"><div class="ctrl-lbl">Guionistas<small>Máx 2 reuniones/día. Puede guionizar si ≤1 reunión ese día.</small></div><div class="stepper"><button class="step-btn" onclick="adj('ng',-1)">−</button><span class="step-val" id="ng">1</span><button class="step-btn" onclick="adj('ng',1)">+</button></div></div>
+      <div class="ctrl-row"><div class="ctrl-lbl">Desarrolladores E-Learning<small>Cada uno en 1 asignatura distinta simultáneamente.</small></div><div class="stepper"><button class="step-btn" onclick="adj('nd',-1)">−</button><span class="step-val" id="nd">2</span><button class="step-btn" onclick="adj('nd',1)">+</button></div></div>
+      <div class="ctrl-row"><div class="ctrl-lbl">Páginas/día (Contenidista)<small>Días desarrollo = ⌈páginas ÷ velocidad⌉</small></div><input class="ctrl-input" type="number" id="ppd" value="25" min="5" max="60"></div>
     </div>
-
-    <div class="sim-contingency">
-      <h3>Días de contingencia adicionales por etapa</h3>
+    <div class="sim-card">
+      <h3>Contingencia global por etapa (días extra)</h3>
       <div class="cont-grid">
-        <div class="cont-item">
-          <label>Desarrollo contenido</label>
-          <div class="cont-row"><input type="number" id="c-dev" value="0" min="0" max="14"><span>días extra</span></div>
-        </div>
-        <div class="cont-item">
-          <label>Revisión docente (→ R2)</label>
-          <div class="cont-row"><input type="number" id="c-rev" value="0" min="0" max="14"><span>días extra</span></div>
-        </div>
-        <div class="cont-item">
-          <label>Guionización</label>
-          <div class="cont-row"><input type="number" id="c-script" value="0" min="0" max="14"><span>días extra</span></div>
-        </div>
-        <div class="cont-item">
-          <label>Producción e-learning</label>
-          <div class="cont-row"><input type="number" id="c-prod" value="0" min="0" max="14"><span>días extra</span></div>
-        </div>
+        <div class="cont-item"><label>Desarrollo contenido</label><div class="ci-row"><input type="number" id="cd" value="0" min="0" max="14"><span>días extra</span></div></div>
+        <div class="cont-item"><label>Revisión docente (→R2)</label><div class="ci-row"><input type="number" id="cr" value="0" min="0" max="14"><span>días extra</span></div></div>
+        <div class="cont-item"><label>Guionización</label><div class="ci-row"><input type="number" id="cg" value="0" min="0" max="14"><span>días extra</span></div></div>
+        <div class="cont-item"><label>Producción</label><div class="ci-row"><input type="number" id="cp" value="0" min="0" max="14"><span>días extra</span></div></div>
       </div>
     </div>
   </div>
-
-  <button class="sim-run-btn" onclick="runSim()">▶ Calcular planificación ideal con estos recursos</button>
-
-  <div class="sim-results" id="sim-results"></div>
+  <button class="run-btn" onclick="runSim()">▶ Calcular planificación ideal con estos recursos</button>
+  <div class="sim-results" id="simres"></div>
 </div>
 
-<!-- ═══ VIEW: INCIDENCIAS ═══ -->
-<div class="view" id="v-inc">
-  <div class="inc-view-header">
+<!-- INC -->
+<div class="view" id="vi">
+  <div class="inc-hdr-bar">
     <h2>🚨 Incidencias del ciclo</h2>
-    <div class="inc-filters">
-      <button class="fchip active" onclick="setIncFilt('all',this)">Todas</button>
-      <button class="fchip" onclick="setIncFilt('noshow',this)">No se presentó</button>
-      <button class="fchip" onclick="setIncFilt('prog',this)">Programa distinto</button>
-      <button class="fchip" onclick="setIncFilt('other',this)">Otro</button>
+    <div class="filt-row">
+      <button class="fchip on" onclick="setIF('all',this)">Todas</button>
+      <button class="fchip" onclick="setIF('noshow',this)">No se presentó</button>
+      <button class="fchip" onclick="setIF('prog',this)">Programa distinto</button>
+      <button class="fchip" onclick="setIF('other',this)">Otro</button>
     </div>
-    <button class="export-btn" onclick="exportInc()">📥 Exportar informe</button>
+    <button class="exp-btn" onclick="exportInc()">📥 Exportar informe</button>
   </div>
-  <div class="inc-stats" id="inc-stats"></div>
-  <div class="inc-list" id="inc-list"></div>
+  <div class="inc-stats" id="istats"></div>
+  <div class="inc-list" id="ilist"></div>
 </div>
 
-<!-- ═══ MODAL: SUBJECT ═══ -->
-<div class="overlay" id="subOverlay">
-  <div class="modal">
-    <h3 id="sub-modal-title">Nueva Asignatura</h3>
-    <div class="warn-note" id="warn-note">⚠️ Docente por confirmar — actualiza cuando lo tengas.</div>
-    <div class="field"><label>Nombre de la asignatura</label><input type="text" id="f-name"></div>
-    <div class="field"><label>Programa</label>
-      <select id="f-prog"><option value="MBA">MBA</option><option value="MCG">MCG</option><option value="MCEE">MCEE</option><option value="OPT">Optativo</option></select>
+<!-- MODAL: SUBJECT -->
+<div class="ov" id="subOv">
+  <div class="md">
+    <h3 id="smtitle">Nueva Asignatura</h3>
+    <div class="warn-note" id="wnote">⚠️ Docente por confirmar — actualiza cuando lo tengas.</div>
+    <div class="f"><label>Nombre de la asignatura</label><input type="text" id="fn"></div>
+    <div class="f"><label>Programa</label><select id="fp"><option value="MBA">MBA</option><option value="MCG">MCG</option><option value="MCEE">MCEE</option><option value="OPT">Optativo</option></select></div>
+    <div class="f"><label>Docente</label><input type="text" id="ft" oninput="chkT(this.value)"></div>
+    <div class="f"><label>Email docente</label><input type="text" id="fe" placeholder="correo@umayor.cl"></div>
+    <div class="f3">
+      <div class="f"><label>Páginas</label><input type="number" id="fpg" placeholder="Ej: 40" min="1" oninput="updEst()"></div>
+      <div class="f"><label>Unidades</label><input type="number" id="fu" placeholder="Ej: 4" min="1" max="8" oninput="updEst()"></div>
+      <div class="f"><label>Min. Finales</label><input type="number" id="fmf" placeholder="Ej: 312" oninput="updEst()"></div>
     </div>
-    <div class="field"><label>Docente</label><input type="text" id="f-teacher" oninput="chkTeacher(this.value)"></div>
-    <div class="field"><label>Email docente</label><input type="text" id="f-email" placeholder="correo@umayor.cl"></div>
-    <div class="field-row">
-      <div class="field"><label>Páginas a desarrollar</label><input type="number" id="f-pages" placeholder="Ej: 40" min="1" oninput="updateProdEst()"></div>
-      <div class="field"><label>Unidades</label><input type="number" id="f-units" placeholder="Ej: 4" min="1" max="8" oninput="updateProdEst()"></div>
-      <div class="field"><label>Min. Finales</label><input type="number" id="f-mf" placeholder="Ej: 312" oninput="updateProdEst()"></div>
-    </div>
-    <div id="prod-est" style="display:none;background:var(--bdim);border-radius:6px;padding:7px 12px;font-size:10px;color:var(--blue);font-weight:600;margin-bottom:10px"></div>
-    <div class="field"><label>Fecha Reunión 1 (si ya se tiene)</label><input type="date" id="f-r1"></div>
-    <div class="field"><label>Restricciones de disponibilidad</label><textarea id="f-restr" placeholder="Ej: Solo jueves. No disponible en marzo..."></textarea></div>
-    <div id="resch-box" class="resch-box" style="display:none">
-      <h4>⚡ Fechas disponibles para el Guionista</h4>
-      <div id="resch-rows"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-delete" id="btn-del" onclick="deleteSub()" style="display:none">Eliminar</button>
-      <button class="btn-cancel" onclick="closeSubModal()">Cancelar</button>
+    <div class="prod-est" id="pest"></div>
+    <div class="f"><label>Fecha Reunión 1 (R1)</label><input type="date" id="fr1"></div>
+    <div class="f"><label>Restricciones del docente</label><textarea id="frst" placeholder="Ej: Solo jueves. No disponible en marzo..."></textarea></div>
+    <div class="resch-box" id="rbox"><h4>⚡ Fechas disponibles para el Guionista</h4><div id="rrows"></div></div>
+    <div class="mact">
+      <button class="btn-del" id="bdel" onclick="delSub()" style="display:none">Eliminar</button>
+      <button class="btn-cancel" onclick="closeSubOv()">Cancelar</button>
       <button class="btn-save" onclick="saveSub()">Guardar</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ MODAL: INCIDENT ═══ -->
-<div class="overlay" id="incOverlay">
-  <div class="modal">
-    <h3 id="inc-modal-title">Registrar Incidencia</h3>
-    <div class="field"><label>Tipo</label>
-      <select id="inc-type" onchange="toggleProgWarn()">
+<!-- MODAL: INCIDENT -->
+<div class="ov" id="incOv">
+  <div class="md">
+    <h3 id="imtitle">Registrar Incidencia</h3>
+    <div class="f"><label>Tipo</label>
+      <select id="itype" onchange="document.getElementById('pwarn').style.display=this.value==='prog'?'block':'none'">
         <option value="noshow">Docente no se presentó</option>
         <option value="prog">Llegó con programa distinto</option>
         <option value="other">Otro</option>
       </select>
     </div>
-    <div class="prog-warn" id="prog-warn">⚠️ El flujo quedará en pausa hasta que confirmes cuál programa usar y la resuelvas manualmente.</div>
-    <div class="field"><label>Nota — qué pasó</label><textarea id="inc-note" placeholder="Ej: No respondió recordatorios. Se reagendará la semana siguiente..."></textarea></div>
-    <div class="field"><label>Nueva fecha acordada (si ya se tiene)</label><input type="date" id="inc-new-date"></div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeIncModal()">Cancelar</button>
+    <div class="prog-warn" id="pwarn">⚠️ El flujo quedará pausado hasta que resuelvas esta incidencia manualmente.</div>
+    <div class="f"><label>Nota — qué pasó</label><textarea id="inote" placeholder="Ej: No respondió recordatorios. Se reagendará..."></textarea></div>
+    <div class="f"><label>Nueva fecha acordada (si ya se tiene)</label><input type="date" id="indate"></div>
+    <div class="mact">
+      <button class="btn-cancel" onclick="closeIncOv()">Cancelar</button>
       <button class="btn-save" onclick="saveInc()">Registrar</button>
     </div>
   </div>
 </div>
 
 <script>
-// ─────────────────────────────────────────────
+// ════════════════════════════════════════════
 // STATE
-// ─────────────────────────────────────────────
+// ════════════════════════════════════════════
 let subjects=[], selId=null, editId=null;
 let incidents=[], incFilt='all', pendingInc={};
-let lockedDates={}, prevR1={};
-let simCache=null;
-let simState={nc:1,ng:1,nd:2};
+let pendingConflict=null; // {subjectId, key, newDate, changes, alternatives}
+let simVals={nc:1,ng:1,nd:2};
 
-const CAPS={td:4,r3:2,r4:2,gm:2};
+const CAPS={td:4,r3:2,r4:2,gm:2}; // min gaps, max guionista/day
 const HOLS=new Set(['2026-01-01','2026-04-03','2026-04-04','2026-05-01','2026-05-21','2026-05-22','2026-06-29','2026-07-16','2026-08-15','2026-09-18','2026-09-19','2026-10-12','2026-10-31','2026-11-01','2026-12-08','2026-12-25']);
 
-// ─────────────────────────────────────────────
+// Sub-stage definitions
+// key, label, who, desc, isDateKey, isMeetingDate, minGapAfterKey, minGapMin
+const BLOCKS=[
+  {id:'b1',title:'Desarrollo de Contenidos',color:'var(--b1)',stages:[
+    {key:'r1',       label:'R1 — Reunión Inicial',         who:'dis',  whoLabel:'Diseñador Instruccional + Docente', desc:'Revisión del programa, bibliografía, evaluaciones, material complementario y orientaciones disciplinares del docente.', isDate:true, isMeeting:true},
+    {key:'devStart', label:'Desarrollo del contenido',      who:'cont', whoLabel:'Contenidista', desc:'El/la contenidista desarrolla el contenido con IA a partir de lo acordado en la R1.', isDate:true, isCalc:true, calcFrom:'r1', calcDays:'contDays'},
+    {key:'sendDoc1', label:'Envío del contenido al docente',who:'cont', whoLabel:'Contenidista', desc:'Se envía el contenido al docente para revisión. El docente tiene al menos 4 días hábiles para comentar antes de la R2.', isDate:true, isCalc:true, calcFrom:'devStart', calcDays:0, minGapTarget:'r2', minGapMin:4},
+    {key:'r2',       label:'R2 — Revisión de Comentarios', who:'dis',  whoLabel:'Diseñador Instruccional + Docente', desc:'El docente explica el alcance de cada comentario. Se toman acuerdos sobre ajustes.', isDate:true, isMeeting:true},
+    {key:'adj1',     label:'Ajuste del contenido',          who:'cont', whoLabel:'Contenidista', desc:'Se ajusta el contenido basado en los comentarios del docente (si fuera necesario). Día exclusivo.', isDate:true, isCalc:true, calcFrom:'r2', calcDays:1},
+    {key:'notif1',   label:'Aviso al docente (comentarios resueltos)', who:'dis', whoLabel:'Diseñador Instruccional', desc:'Se le avisa al docente que sus comentarios ya han sido resueltos en el contenido.', isDate:true, isCalc:true, calcFrom:'adj1', calcDays:1},
+  ]},
+  {id:'b2',title:'Guionización',color:'var(--b2)',stages:[
+    {key:'scriptStart', label:'Guionización',                      who:'gui', whoLabel:'Guionista', desc:'Con el contenido aprobado, el/la guionista desarrolla los guiones completos para todos los recursos.', isDate:true, isCalc:true, calcFrom:'notif1', calcDays:'scriptDays'},
+    {key:'sendDoc2',    label:'Envío de guiones al docente',       who:'gui', whoLabel:'Guionista', desc:'Se envían los guiones al docente. El docente tiene al menos 2 días hábiles para revisar antes de la R3.', isDate:true, isCalc:true, calcFrom:'scriptStart', calcDays:0, minGapTarget:'r3', minGapMin:2},
+    {key:'r3',          label:'R3 — Revisión de Guiones',          who:'gui', whoLabel:'Guionista + Docente', desc:'El docente explica el alcance de cada comentario sobre los guiones.', isDate:true, isMeeting:true},
+    {key:'adj2',        label:'Ajuste de guionización',             who:'gui', whoLabel:'Guionista', desc:'Se ajustan los guiones basado en los comentarios del docente (si fuera necesario).', isDate:true, isCalc:true, calcFrom:'r3', calcDays:1},
+    {key:'notif2',      label:'Aviso al docente (guiones resueltos)',who:'dis',whoLabel:'Diseñador Instruccional', desc:'Se le avisa al docente que sus comentarios en los guiones ya han sido resueltos.', isDate:true, isCalc:true, calcFrom:'adj2', calcDays:1},
+  ]},
+  {id:'b3',title:'Producción',color:'var(--b3)',stages:[
+    {key:'prodStart', label:'Producción de recursos',               who:'dev', whoLabel:'Desarrolladores E-Learning', desc:'Con la guionización lista, se producen todos los recursos educativos virtualizados.', isDate:true, isCalc:true, calcFrom:'notif2', calcDays:'prodDays'},
+    {key:'sendDoc3', label:'Envío de recursos al docente',          who:'dev', whoLabel:'Desarrolladores E-Learning', desc:'Se envían los recursos producidos al docente. Tiene al menos 2 días hábiles para revisar antes de la R4.', isDate:true, isCalc:true, calcFrom:'prodStart', calcDays:0, minGapTarget:'r4', minGapMin:2},
+    {key:'r4',       label:'R4 — Revisión de Recursos',             who:'gui', whoLabel:'Guionista + Docente', desc:'Se muestran los recursos al docente y explica el alcance de cada comentario.', isDate:true, isMeeting:true},
+    {key:'adj3',     label:'Ajuste de recursos',                    who:'dev', whoLabel:'Desarrolladores E-Learning', desc:'Se ajustan los recursos educativos virtualizados basado en los comentarios (si fuera necesario).', isDate:true, isCalc:true, calcFrom:'r4', calcDays:1},
+    {key:'notif3',   label:'Aviso al docente (recursos corregidos)',who:'dis', whoLabel:'Diseñador Instruccional', desc:'Se avisa al docente que los recursos han sido corregidos según sus comentarios.', isDate:true, isCalc:true, calcFrom:'adj3', calcDays:1},
+  ]},
+  {id:'b4',title:'Montaje',color:'var(--b4)',stages:[
+    {key:'mountStart',label:'Subida de recursos a la plataforma', who:'dev', whoLabel:'Desarrolladores E-Learning', desc:'Se comienzan a subir todos los recursos educativos a la plataforma Blackboard.', isDate:true, isCalc:true, calcFrom:'notif3', calcDays:2},
+    {key:'mountEnd',  label:'Plataforma montada',                 who:'dev', whoLabel:'Desarrolladores E-Learning', desc:'Todos los recursos están subidos y la asignatura está montada en la plataforma.', isDate:true, isCalc:true, calcFrom:'mountStart', calcDays:1},
+  ]},
+  {id:'b5',title:'Revisión Universidad Mayor',color:'var(--b5)',stages:[
+    {key:'notifUM',  label:'Aviso a U. Mayor para revisión',     who:'umayor', whoLabel:'Gestión + U. Mayor', desc:'Se notifica a Universidad Mayor que los recursos están montados y disponibles para revisión.', isDate:true, isCalc:true, calcFrom:'mountEnd', calcDays:1},
+    {key:'corrUM',   label:'Correcciones U. Mayor',              who:'dev',    whoLabel:'Desarrolladores E-Learning', desc:'Se realizan las correcciones indicadas por U. Mayor (si las hubiera).', isDate:true, isCalc:true, calcFrom:'notifUM', calcDays:2},
+    {key:'closeMount',label:'Cierre del montaje',                who:'dev',    whoLabel:'Desarrolladores E-Learning', desc:'Se cierra el montaje con todas las correcciones aplicadas.', isDate:true, isCalc:true, calcFrom:'corrUM', calcDays:1},
+    {key:'docReview', label:'Revisión final del docente en LMS', who:'doc',    whoLabel:'Docente', desc:'El docente da una última mirada a la asignatura completa en Blackboard.', isDate:true, isCalc:true, calcFrom:'closeMount', calcDays:2},
+    {key:'done',      label:'✅ Asignatura completada',           who:'all',    whoLabel:'Hackea + U. Mayor + Docente', desc:'La asignatura está completamente digitalizada, revisada y disponible para los estudiantes.', isDate:true, isCalc:true, calcFrom:'docReview', calcDays:1},
+  ]},
+];
+
+// ════════════════════════════════════════════
 // DATE HELPERS
-// ─────────────────────────────────────────────
+// ════════════════════════════════════════════
 function isWD(s){if(!s)return false;const d=new Date(s+'T12:00:00');return d.getDay()>0&&d.getDay()<6&&!HOLS.has(s);}
-function ds(d){return d.toISOString().split('T')[0];}
-function addBD(s,n){if(!s||n<=0)return s;let d=new Date(s+'T12:00:00'),c=0;while(c<n){d.setDate(d.getDate()+1);if(isWD(ds(d)))c++;}return ds(d);}
-function nextCalDay(s){const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+1);return ds(d);}
+function addBD(s,n){if(!s||n<=0)return s;let d=new Date(s+'T12:00:00'),c=0;while(c<n){d.setDate(d.getDate()+1);if(isWD(dstr(d)))c++;}return dstr(d);}
+function dstr(d){return d.toISOString().split('T')[0];}
 function todayS(){return new Date().toISOString().split('T')[0];}
-function fmt(s){if(!s)return'—';return new Date(s+'T12:00:00').toLocaleDateString('es-CL',{day:'2-digit',month:'short'});}
+function fmt(s){if(!s||s==='—')return'—';return new Date(s+'T12:00:00').toLocaleDateString('es-CL',{day:'2-digit',month:'short'});}
 function fmtFull(s){if(!s)return'';return new Date(s+'T12:00:00').toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long'});}
-function getWkStart(off){const t=new Date(),dw=t.getDay(),m=new Date(t);m.setDate(t.getDate()-(dw===0?6:dw-1)+off*7);m.setHours(0,0,0,0);return m;}
-function bdBetween(d1,d2){if(!d1||!d2||d1>=d2)return 0;let d=new Date(d1+'T12:00:00'),c=0;while(ds(d)<d2){d.setDate(d.getDate()+1);if(isWD(ds(d)))c++;}return c;}
+function bdBetween(d1,d2){if(!d1||!d2||d1>=d2)return 0;let d=new Date(d1+'T12:00:00'),c=0;while(dstr(d)<d2){d.setDate(d.getDate()+1);if(isWD(dstr(d)))c++;}return c;}
+function nextCalDay(s){const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+1);return dstr(d);}
 
-// ─────────────────────────────────────────────
+// ════════════════════════════════════════════
 // PERSIST
-// ─────────────────────────────────────────────
-function save(){try{localStorage.setItem('hkc2v8',JSON.stringify({subjects,incidents,lockedDates,simState}));}catch(e){}}
-function load(){try{const d=localStorage.getItem('hkc2v8');if(d){const p=JSON.parse(d);subjects=p.subjects||[];incidents=p.incidents||[];lockedDates=p.lockedDates||{};if(p.simState)simState=p.simState;}}catch(e){}}
-function resetData(){if(!confirm('¿Resetear todos los datos?'))return;localStorage.removeItem('hkc2v8');subjects=[];incidents=[];lockedDates={};prevR1={};simCache=null;seedData();renderSidebar();showEmpty();}
+// ════════════════════════════════════════════
+function save(){try{localStorage.setItem('hkc2v9',JSON.stringify({subjects,incidents,simVals}));}catch(e){}}
+function load(){try{const d=localStorage.getItem('hkc2v9');if(d){const p=JSON.parse(d);subjects=p.subjects||[];incidents=p.incidents||[];if(p.simVals)simVals=p.simVals;}}catch(e){}}
+function resetData(){if(!confirm('¿Resetear todos los datos?'))return;localStorage.removeItem('hkc2v9');subjects=[];incidents=[];selId=null;seedData();renderSB();showEmp();}
 
-// ─────────────────────────────────────────────
-// PRODUCTION HELPERS
-// ─────────────────────────────────────────────
+// ════════════════════════════════════════════
+// PRODUCTION CALC
+// ════════════════════════════════════════════
 function getProdDays(s){const mf=s.minFinales||0,u=s.units||0;if(mf>0)return mf<200?3:mf<280?4:mf<360?5:mf<440?6:7;if(u>0){const m={1:2,2:3,3:4,4:5,5:6,6:7,7:8};return m[u]||4;}return 4;}
 function getContDays(s,ppd=25){const p=s.pages||0;return p>0?Math.max(1,Math.ceil(p/ppd)):2;}
+function getScriptDays(){return 2;} // guionista standard
 
-function computeDates(s,ppd=25){
-  const r1=s.r1Date;if(!r1)return{};
+// Compute all stage dates for a subject
+// Uses manual overrides (dates[key]) when set, otherwise calculates
+function computeAllDates(s,ppd=25){
+  const manual=s.dates||{};
   const cd=getContDays(s,ppd);
-  const cs=addBD(r1,cd);
-  const r2=addBD(cs,CAPS.td);
-  const adj=addBD(r2,1);
-  const sc=addBD(adj,2);
-  const r3=addBD(sc,CAPS.r3);
   const pd=getProdDays(s);
-  const prod=addBD(r3,pd);
-  const r4=addBD(prod,CAPS.r4);
-  const fa=addBD(r4,1);
-  const mt=addBD(fa,1);
-  return{contentSend:cs,r2,adjDone:adj,scriptsSent:sc,r3,prodDone:prod,r4,finalAdj:fa,montage:mt,contDays:cd,prodDays:pd};
+  const sd=getScriptDays();
+
+  const calc={};
+
+  function get(key){
+    if(manual[key])return manual[key]; // manual override
+    return calc[key]||null;
+  }
+  function set(key,val){calc[key]=val;}
+
+  // B1
+  set('r1', get('r1')||s.r1Date||null);
+  set('devStart', get('devStart')||addBD(get('r1'),cd));
+  set('sendDoc1', get('sendDoc1')||get('devStart'));  // same day as dev done
+  set('r2', get('r2')||addBD(get('sendDoc1'),CAPS.td));
+  set('adj1', get('adj1')||addBD(get('r2'),1));
+  set('notif1', get('notif1')||addBD(get('adj1'),1));
+  // B2
+  set('scriptStart', get('scriptStart')||addBD(get('notif1'),sd));
+  set('sendDoc2', get('sendDoc2')||get('scriptStart'));
+  set('r3', get('r3')||addBD(get('sendDoc2'),CAPS.r3));
+  set('adj2', get('adj2')||addBD(get('r3'),1));
+  set('notif2', get('notif2')||addBD(get('adj2'),1));
+  // B3
+  set('prodStart', get('prodStart')||addBD(get('notif2'),pd));
+  set('sendDoc3', get('sendDoc3')||get('prodStart'));
+  set('r4', get('r4')||addBD(get('sendDoc3'),CAPS.r4));
+  set('adj3', get('adj3')||addBD(get('r4'),1));
+  set('notif3', get('notif3')||addBD(get('adj3'),1));
+  // B4
+  set('mountStart', get('mountStart')||addBD(get('notif3'),1));
+  set('mountEnd', get('mountEnd')||addBD(get('mountStart'),2));
+  // B5
+  set('notifUM', get('notifUM')||addBD(get('mountEnd'),1));
+  set('corrUM', get('corrUM')||addBD(get('notifUM'),2));
+  set('closeMount', get('closeMount')||addBD(get('corrUM'),1));
+  set('docReview', get('docReview')||addBD(get('closeMount'),2));
+  set('done', get('done')||addBD(get('docReview'),1));
+
+  // Merge: manual takes priority
+  return Object.assign({},calc,manual,{_calc:calc,_cd:cd,_pd:pd,_sd:sd});
 }
 
+// Check gap constraints
+function checkGaps(d){
+  const issues=[];
+  const g1=bdBetween(d.sendDoc1,d.r2);
+  if(d.sendDoc1&&d.r2&&g1<CAPS.td)issues.push({key:'sendDoc1',target:'r2',gap:g1,min:CAPS.td});
+  const g2=bdBetween(d.sendDoc2,d.r3);
+  if(d.sendDoc2&&d.r3&&g2<CAPS.r3)issues.push({key:'sendDoc2',target:'r3',gap:g2,min:CAPS.r3});
+  const g3=bdBetween(d.sendDoc3,d.r4);
+  if(d.sendDoc3&&d.r4&&g3<CAPS.r4)issues.push({key:'sendDoc3',target:'r4',gap:g3,min:CAPS.r4});
+  return issues;
+}
+
+// Guionista load: r1, r3, r4 are guionista meetings (DI = same as guionista capacity)
 function getGuionLoad(){
   const load={};
   subjects.forEach(s=>{
     if(isPaused(s))return;
-    const d=computeDates(s);
-    [s.r1Date,d.r3,d.r4].forEach(dt=>{if(dt)load[dt]=(load[dt]||0)+1;});
+    const d=computeAllDates(s);
+    [d.r1,d.r2,d.r3,d.r4].forEach(dt=>{if(dt)load[dt]=(load[dt]||0)+1;});
   });
   return load;
 }
@@ -550,8 +549,7 @@ function isShared(s){const k=(s.teacher||'').toLowerCase().trim();if(!k||k==='po
 function getSiblings(s){const k=(s.teacher||'').toLowerCase().trim();return subjects.filter(x=>x.id!==s.id&&(x.teacher||'').toLowerCase().trim()===k);}
 
 function checkRestr(ds2,r){
-  if(!r||!ds2)return null;
-  const rl=r.toLowerCase();const d=new Date(ds2+'T12:00:00'),m=d.getMonth()+1,dw=d.getDay();
+  if(!r||!ds2)return null;const rl=r.toLowerCase();const d=new Date(ds2+'T12:00:00'),m=d.getMonth()+1,dw=d.getDay();
   if(rl.includes('no disponible en marzo')&&m===3)return'No disponible en marzo';
   const dobj=new Date(ds2+'T12:00:00');
   if((rl.includes('semana santa')||rl.includes('28 de marzo'))&&dobj>=new Date('2026-03-28')&&dobj<=new Date('2026-04-05'))return'Semana Santa';
@@ -569,425 +567,504 @@ function getUrgency(s){
   if(isShared(s))sc+=8;return sc;
 }
 
-function getFreeDays(from,n){
-  const load=getGuionLoad();const res=[];if(!from)return res;
-  let d=new Date(from+'T12:00:00');d.setDate(d.getDate()-7);let t=0;
-  while(res.length<n&&t<90){t++;const ds2=ds(d);if(isWD(ds2))res.push({date:ds2,count:load[ds2]||0});d.setDate(d.getDate()+1);}
-  return res;
+function getProgress(s){
+  const st=s.stages||{};
+  const allKeys=BLOCKS.flatMap(b=>b.stages.map(x=>x.key));
+  const done=allKeys.filter(k=>st[k]==='done').length;
+  return Math.round((done/allKeys.length)*100);
 }
 
-function getImpact(id,newR1){
-  const s=subjects.find(x=>x.id===id);if(!s||!s.r1Date||!newR1||s.r1Date===newR1)return null;
-  const old=computeDates({...s,r1Date:s.r1Date});const nw=computeDates({...s,r1Date:newR1});
-  const lk=lockedDates[id]||{};const load=getGuionLoad();const changes=[];
-  [{k:'contentSend',l:'Envío contenido',t:'int'},{k:'r2',l:'R2 Comentarios',t:'ext'},{k:'adjDone',l:'Ajustes',t:'int'},
-   {k:'scriptsSent',l:'Guiones enviados',t:'int'},{k:'r3',l:'R3 Guiones',t:'ext'},
-   {k:'prodDone',l:'Producción lista',t:'int'},{k:'r4',l:'R4 Recursos',t:'ext'},{k:'montage',l:'Fin estimado',t:'int'}
-  ].forEach(({k,l,t})=>{
-    if(old[k]&&nw[k]&&old[k]!==nw[k]){
-      const locked=(k==='r2'&&lk.r2)||(k==='r3'&&lk.r3)||(k==='r4'&&lk.r4);
-      const conflict=t==='ext'&&(load[nw[k]]||0)>=CAPS.gm;
-      changes.push({label:l,old:fmt(old[k]),newv:fmt(nw[k]),type:locked?'col':conflict?'col':t});
+// ════════════════════════════════════════════
+// CONFLICT DETECTION + ALTERNATIVES
+// ════════════════════════════════════════════
+function detectConflicts(subjectId, key, newVal){
+  const s=subjects.find(x=>x.id===subjectId);
+  if(!s)return null;
+  const oldDates=computeAllDates(s);
+  const draftDates={...s.dates||{}, [key]:newVal};
+  const draftS={...s,dates:draftDates};
+  const newDates=computeAllDates(draftS);
+  const load=getGuionLoad();
+  const changes=[];
+  const meetingKeys=['r1','r2','r3','r4'];
+  const allKeys=BLOCKS.flatMap(b=>b.stages.map(x=>x.key));
+  allKeys.forEach(k=>{
+    const oldV=oldDates[k],newV=newDates[k];
+    if(oldV&&newV&&oldV!==newV){
+      const isMeeting=meetingKeys.includes(k);
+      const clash=isMeeting&&(load[newV]||0)>=CAPS.gm&&newV!==s.dates?.[k];
+      const isManual=!!(s.dates&&s.dates[k]);
+      changes.push({key:k,label:BLOCKS.flatMap(b=>b.stages).find(x=>x.key===k)?.label||k,old:fmt(oldV),newv:fmt(newV),type:isMeeting?'ext':'int',clash,isManual,newDate:newV});
     }
   });
-  return changes.length?changes:null;
+  if(!changes.length)return null;
+
+  // Find alternatives for meeting clashes
+  const alts={};
+  changes.filter(c=>c.clash).forEach(c=>{
+    const options=[];
+    let d=new Date(c.newDate+'T12:00:00');
+    let tries=0;
+    while(options.length<3&&tries<60){
+      d.setDate(d.getDate()+1);tries++;
+      const ds2=dstr(d);
+      if(isWD(ds2)&&(load[ds2]||0)<CAPS.gm&&!checkRestr(ds2,s.restrictions)){
+        options.push({date:ds2,load:load[ds2]||0});
+      }
+    }
+    alts[c.key]=options;
+  });
+
+  return{changes,alts,subjectId,key,newVal};
 }
 
-// ─────────────────────────────────────────────
-// VIEWS
-// ─────────────────────────────────────────────
-function showView(v){
-  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.htab').forEach(el=>el.classList.remove('active'));
-  document.getElementById('v-'+v).classList.add('active');
-  document.querySelectorAll('.htab')[v==='plan'?0:v==='sim'?1:2].classList.add('active');
-  if(v==='inc')renderIncidents();
+function applyDateChange(subjectId, key, newVal){
+  const s=subjects.find(x=>x.id===subjectId);if(!s)return;
+  if(!s.dates)s.dates={};
+  s.dates[key]=newVal;
+  // If it's r1, also update r1Date for backward compat
+  if(key==='r1')s.r1Date=newVal;
+  save();renderSB();renderDet();
 }
 
-// ─────────────────────────────────────────────
+function clearDateOverride(subjectId, key){
+  const s=subjects.find(x=>x.id===subjectId);if(!s||!s.dates)return;
+  delete s.dates[key];
+  save();renderSB();renderDet();
+}
+
+// ════════════════════════════════════════════
 // SIDEBAR
-// ─────────────────────────────────────────────
-function renderSidebar(){
-  document.getElementById('sb-count').textContent=subjects.length;
-  const badge=document.getElementById('inc-badge');
-  const openInc=incidents.filter(i=>!i.resolved).length;
-  if(openInc>0){badge.textContent=openInc;badge.style.display='inline';}else badge.style.display='none';
-  const load=getGuionLoad();
-  const el=document.getElementById('sb-list');
+// ════════════════════════════════════════════
+function renderSB(){
+  document.getElementById('sbcnt').textContent=subjects.length;
+  const badge=document.getElementById('ibadge');
+  const openI=incidents.filter(i=>!i.resolved).length;
+  badge.textContent=openI;badge.style.display=openI?'inline':'none';
+  const el=document.getElementById('sbl');
   if(!subjects.length){el.innerHTML='<div style="padding:14px;text-align:center;font-size:10px;color:var(--pend)">Agrega asignaturas →</div>';return;}
-  // Sort by urgency desc, then by name
   const sorted=[...subjects].sort((a,b)=>getUrgency(b)-getUrgency(a));
   let h='';
   ['MBA','MCG','MCEE','OPT'].forEach(prog=>{
     sorted.filter(s=>s.program===prog).forEach(s=>{
-      const d=computeDates(s);
-      const over=[s.r1Date,d.r3,d.r4].some(dt=>dt&&(load[dt]||0)>CAPS.gm);
-      const rw=s.r1Date?checkRestr(s.r1Date,s.restrictions):null;
-      const sh=isShared(s),urg=getUrgency(s),ps=isPaused(s);
-      const openI=incidents.filter(i=>i.subjectId===s.id&&!i.resolved).length;
-      h+=`<div class="si${selId===s.id?' active':''}" onclick="selSub('${s.id}')">
+      const pct=getProgress(s);
+      const ps=isPaused(s);
+      const chipCls=ps?'ps':pct===100?'done':s.r1Date?'a':'p';
+      const chipTxt=ps?'⏸ Pausada':pct===100?'✅ Completada':s.r1Date?`${pct}% completado`:'Sin agendar';
+      const oI=incidents.filter(i=>i.subjectId===s.id&&!i.resolved).length;
+      h+=`<div class="si${selId===s.id?' on':''}" onclick="selSub('${s.id}')">
         <div class="si-prog${prog==='OPT'?' opt':''}">${prog}</div>
         <div class="si-name">${s.name}</div>
         <div class="si-meta">
-          <span class="chip${ps?' paused':s.r1Date?' active-c':' pend'}">${ps?'⏸ Pausada':s.r1Date?fmt(s.r1Date):'Sin agendar'}</span>
-          ${s.pages?`<span style="font-size:8px;color:var(--body)">${s.pages}p</span>`:''}
-          ${s.units?`<span style="font-size:8px;color:var(--body)">${s.units}u</span>`:''}
-          ${sh?`<span title="Docente compartido" style="font-size:10px">🟣</span>`:''}
-          ${over?`<span title="Guionista sobrecargada" style="font-size:10px">⚠️</span>`:''}
-          ${rw?`<span title="${rw}" style="font-size:10px">🚫</span>`:''}
-          ${openI?`<span title="${openI} incidencia(s)" style="font-size:10px">🚨</span>`:''}
-          ${!s.r1Date&&urg>=15?`<span class="urg h">URG</span>`:!s.r1Date&&urg>=8?`<span class="urg m">PRIO</span>`:''}
+          <span class="chip ${chipCls}">${chipTxt}</span>
+          ${isShared(s)?`<span style="font-size:10px" title="Docente compartido">🟣</span>`:''}
+          ${oI?`<span style="font-size:10px" title="${oI} incidencia(s)">🚨</span>`:''}
         </div>
+        ${s.r1Date?`<div class="si-progress"><div class="si-progress-fill" style="width:${pct}%"></div></div>`:''}
       </div>`;
     });
   });
   el.innerHTML=h;
 }
 
-// ─────────────────────────────────────────────
+// ════════════════════════════════════════════
 // DETAIL
-// ─────────────────────────────────────────────
-function showEmpty(){selId=null;document.getElementById('plan-empty').style.display='flex';document.getElementById('plan-det').style.display='none';}
-function selSub(id){selId=id;renderSidebar();renderDetail();}
+// ════════════════════════════════════════════
+function showEmp(){selId=null;document.getElementById('emp').style.display='flex';document.getElementById('det').style.display='none';}
+function selSub(id){selId=id;renderSB();renderDet();}
 
-function renderDetail(){
+function renderDet(){
   const s=subjects.find(x=>x.id===selId);
-  if(!s){showEmpty();return;}
-  document.getElementById('plan-empty').style.display='none';
-  const det=document.getElementById('plan-det');
-  det.style.display='block';
-  const d=computeDates(s);
+  if(!s){showEmp();return;}
+  document.getElementById('emp').style.display='none';
+  const det=document.getElementById('det');det.style.display='block';
+  const d=computeAllDates(s);
   const load=getGuionLoad();
-  const over=[s.r1Date,d.r3,d.r4].some(dt=>dt&&(load[dt]||0)>CAPS.gm);
-  const rw=s.r1Date?checkRestr(s.r1Date,s.restrictions):null;
+  const ps=isPaused(s);
   const sh=isShared(s);const sibs=getSiblings(s);
-  const lk=lockedDates[s.id]||{};const ps=isPaused(s);
-  const openInc=incidents.filter(i=>i.subjectId===s.id&&!i.resolved);
+  const gapIssues=checkGaps(d);
+  const pct=getProgress(s);
 
-  let h='';
-
-  // Header
-  h+=`<div class="det-hdr">
-    <span class="prog-pill${s.program==='OPT'?' opt':''}">${s.program}</span>
+  let h=`<div class="det-hdr">
+    <span class="ppill${s.program==='OPT'?' opt':''}">${s.program}</span>
     <div>
       <div class="det-name">${s.name}</div>
-      <div class="det-sub">👤 ${s.teacher||'Por confirmar'}${s.email?` · ${s.email}`:''}</div>
+      <div class="det-sub">👤 ${s.teacher||'Por confirmar'}${s.email?` · ${s.email}`:''} &nbsp;|&nbsp; ${pct}% completado</div>
     </div>
-    <div class="det-actions">
-      <button class="badd" style="background:var(--sf);color:var(--body);border:1px solid var(--bdr)" onclick="openEditModal('${s.id}')">✏️ Editar</button>
+    <div style="margin-left:auto;display:flex;gap:6px">
+      <button class="det-btn" onclick="openEditModal('${s.id}')">✏️ Editar</button>
     </div>
   </div>`;
 
   // Alerts
-  if(ps)h+=`<div class="alert paused-a">⏸ Flujo pausado — ${openInc.length} incidencia(s) activa(s). Resuelve la incidencia para continuar.</div>`;
-  if(s.restrictions)h+=`<div class="alert warn"><span>📋</span><span><strong>Restricciones:</strong> ${s.restrictions}</span></div>`;
-  if(sh&&sibs.length)h+=`<div class="alert pur"><span>🟣</span><span><strong>${s.teacher}</strong> también aparece en ${sibs.map(x=>x.program).join(', ')}. Coordina la misma fecha de R1.</span></div>`;
-  if(over&&!ps)h+=`<div class="alert err"><span>⚠️</span><span>El Guionista ya tiene ${load[s.r1Date]} reuniones ese día (límite: 2). Cambia la fecha de R1.</span></div>`;
-  if(rw&&!ps)h+=`<div class="alert err"><span>🚫</span><span>${rw} — cambia la fecha de R1.</span></div>`;
-  if(!s.teacher||s.teacher==='Por confirmar')h+=`<div class="alert info"><span>ℹ️</span><span>Docente aún no confirmado. Actualiza cuando lo tengas.</span></div>`;
+  if(ps)h+=`<div class="al pause">⏸ Flujo pausado — incidencia(s) sin resolver. Ve a la pestaña Incidencias.</div>`;
+  if(s.restrictions)h+=`<div class="al w"><span>📋</span><span><strong>Restricciones docente:</strong> ${s.restrictions}</span></div>`;
+  if(sh&&sibs.length)h+=`<div class="al pur"><span>🟣</span><span><strong>${s.teacher}</strong> también en ${sibs.map(x=>x.program).join(', ')}. Coordina la misma fecha de R1.</span></div>`;
+  gapIssues.forEach(gi=>{
+    const labels={sendDoc1:'Envío contenido',sendDoc2:'Envío guiones',sendDoc3:'Envío recursos'};
+    const tgts={r2:'R2',r3:'R3',r4:'R4'};
+    h+=`<div class="al e"><span>⚠️</span><span>Gap insuficiente: ${labels[gi.key]} → ${tgts[gi.target]} = <strong>${gi.gap} días hábiles</strong> (mínimo ${gi.min}d). Ajusta las fechas para dar más tiempo al docente.</span></div>`;
+  });
 
-  // Impact of R1 change
-  if(prevR1[s.id]&&s.r1Date&&prevR1[s.id]!==s.r1Date){
-    const changes=getImpact(s.id,s.r1Date);
-    if(changes&&changes.length){
-      h+=`<div class="impact-box"><h4>📅 Impacto del cambio de R1: ${fmt(prevR1[s.id])} → ${fmt(s.r1Date)}</h4>`;
-      changes.forEach(c=>{
-        const tl=c.type==='int'?'Interno':c.type==='col'?'⚠️ Revisar':'Reconfirmar con docente';
-        h+=`<div class="imp-row"><span class="imp-lbl">${c.label}</span><span class="imp-old">${c.old}</span><span class="imp-arr">→</span><span class="imp-new">${c.newv}</span><span class="imp-tag ${c.type}">${tl}</span></div>`;
+  // Conflict panel (if pending)
+  if(pendingConflict&&pendingConflict.subjectId===s.id){
+    const c=pendingConflict;
+    h+=`<div class="conflict-panel"><h4>📅 Impacto del cambio</h4>`;
+    c.changes.forEach(ch=>{
+      const typeLabel=ch.type==='int'?'Interno':ch.clash?'⚠️ Conflicto de agenda':'Requiere reconfirmar';
+      h+=`<div class="conflict-row"><span class="cr-lbl">${ch.label}</span><span class="cr-old">${ch.old}</span><span class="cr-arr">→</span><span class="cr-new">${ch.newv}</span><span class="cr-tag ${ch.clash?'clash':ch.type}">${typeLabel}</span></div>`;
+    });
+    const clashes=c.changes.filter(ch=>ch.clash);
+    if(clashes.length&&c.alts){
+      h+=`<div class="alt-dates"><h5>📆 Fechas alternativas disponibles para el Guionista</h5>`;
+      clashes.forEach(ch=>{
+        const opts=c.alts[ch.key]||[];
+        h+=`<div style="margin-bottom:7px"><div style="font-size:9px;font-weight:700;color:var(--dark);margin-bottom:4px">${ch.label}</div>`;
+        if(!opts.length){h+=`<div style="font-size:9px;color:var(--pend)">No hay fechas libres próximas — revisa manualmente.</div>`;}
+        opts.forEach((opt,i)=>{
+          const isBest=opt.load===0;
+          h+=`<div class="alt-row${isBest?' best':''}">
+            <span>${fmtFull(opt.date)}</span>
+            <span class="load-info">${opt.load===0?'✅ Libre':opt.load===1?'🟡 1 reunión':'🟡 '+opt.load+' reuniones'}</span>
+            <button class="btn-use-alt" onclick="useAlt('${s.id}','${ch.key}','${opt.date}')">Usar</button>
+          </div>`;
+        });
+        h+=`</div>`;
       });
-      h+=`<div class="imp-actions">
-        <button class="btn-accept" onclick="acceptChange('${s.id}')">✅ Entendido, aplicar</button>
-        <button class="btn-revert" onclick="revertChange('${s.id}')">↩️ Revertir a ${fmt(prevR1[s.id])}</button>
-      </div></div>`;
+      h+=`</div>`;
     }
+    h+=`<div class="conf-actions">
+      <button class="btn-apply" onclick="confirmConflict()">✅ Aplicar de todas formas</button>
+      <button class="btn-cancel-c" onclick="cancelConflict()">↩️ Cancelar cambio</button>
+    </div></div>`;
   }
 
-  // Production
-  h+=`<div class="prod-box">
-    <div class="prod-field"><label>Páginas a desarrollar</label><input type="number" value="${s.pages||''}" placeholder="Ej: 40" onchange="updateSubj('${s.id}','pages',+this.value)"></div>
-    <div class="prod-field"><label>Unidades</label><input type="number" value="${s.units||''}" placeholder="Ej: 4" min="1" max="8" onchange="updateSubj('${s.id}','units',+this.value)"></div>
-    <div class="prod-field"><label>Min. Finales (planilla)</label><input type="number" value="${s.minFinales||''}" placeholder="Ej: 312" onchange="updateSubj('${s.id}','minFinales',+this.value)"></div>
-    <div class="prod-summary" style="grid-column:1/-1">
-      <span>📝 Contenidista: <strong>${d.contDays||'?'} días</strong>${s.pages?` (${s.pages}p ÷ 25)`:' (estimado)'}</span>
-      <span>🎬 Producción: <strong>${d.prodDays||'?'} días</strong>${s.minFinales?` (Min.Finales)`:s.units?` (${s.units} unidades)`:' (estimado)'}</span>
-    </div>
+  // Production summary
+  h+=`<div style="background:var(--sf);border-radius:9px;padding:11px 15px;margin-bottom:12px;display:flex;gap:16px;flex-wrap:wrap;font-size:10px">
+    <span>📝 Desarrollo: <strong>${d._cd} días</strong>${s.pages?` (${s.pages}p÷25)`:' (estimado)'}</span>
+    <span>✏️ Guionización: <strong>${d._sd} días</strong></span>
+    <span>🎬 Producción: <strong>${d._pd} días</strong>${s.minFinales?` (Min.Finales)`:s.units?` (${s.units}u)`:' (estimado)'}</span>
+    <span>📅 Fin estimado: <strong style="color:var(--blue)">${fmt(d.done)}</strong></span>
   </div>`;
 
-  // Flow steps
-  const steps=[
-    {num:'R1',title:'Reunión Inicial',who:'Guionista + Docente',
-     desc:`Revisión de programa. Contenidista inicia desarrollo ese mismo día (${d.contDays||'?'} días). Mín ${CAPS.td}d para docente antes de R2.`,
-     editable:true,key:'r1',
-     dates:d.contentSend?[{l:'Contenidista envía',v:d.contentSend},{l:`Min ${CAPS.td}d → R2`,v:d.r2}]:[]},
-    {num:'R2',title:'Revisión Comentarios',who:'Guionista + Docente',
-     desc:`Contenidista: 1 día exclusivo de ajustes. Guionista: 2 días guionización. Docente tuvo mín ${CAPS.td} días para revisar.`,
-     lockable:true,key:'r2',
-     gap:{l:'Gap revisión docente',v:d.contentSend&&d.r2?bdBetween(d.contentSend,d.r2):0,min:CAPS.td},
-     dates:[{l:'R2',v:d.r2},{l:'Ajustes listos',v:d.adjDone},{l:'Guiones enviados',v:d.scriptsSent}]},
-    {num:'R3',title:'Revisión Guiones',who:'Guionista + Docente',
-     desc:`Producción: ${d.prodDays||'?'} días (2 Desarrolladores en paralelo). Docente tuvo mín ${CAPS.r3} días para revisar guiones.`,
-     lockable:true,key:'r3',
-     gap:{l:'Gap revisión guiones',v:d.scriptsSent&&d.r3?bdBetween(d.scriptsSent,d.r3):0,min:CAPS.r3},
-     dates:[{l:'R3',v:d.r3},{l:'Producción lista',v:d.prodDone}]},
-    {num:'R4',title:'Revisión Recursos',who:'Guionista + Docente',
-     desc:`Docente tuvo mín ${CAPS.r4} días para revisar recursos producidos. Ajustes finales + montaje + Bibliotecas U. Mayor.`,
-     lockable:true,key:'r4',
-     gap:{l:'Gap revisión recursos',v:d.prodDone&&d.r4?bdBetween(d.prodDone,d.r4):0,min:CAPS.r4},
-     dates:[{l:'R4',v:d.r4},{l:'Montaje',v:d.finalAdj},{l:'Fin estimado',v:d.montage}]}
-  ];
-
-  h+=`<div class="flow">`;
-  steps.forEach(st=>{
-    const stInc=incidents.filter(i=>i.subjectId===s.id&&i.meetingKey===st.key&&!i.resolved);
-    const hasInc=stInc.length>0;
-    h+=`<div class="fstep${s.r1Date?' has-date':''}${hasInc?' incident-s':''}">
-      <div class="fstep-num">${st.num}</div>
-      <div class="fstep-title">${st.title}</div>
-      <div class="fstep-who">${st.who}</div>
-      <div class="fstep-desc">${st.desc}</div>
-      ${st.editable?`<div class="date-field"><label>Fecha R1</label><input type="date" value="${s.r1Date||''}" onchange="updateR1('${s.id}',this.value)"></div>`:''}
-      ${st.lockable?`<button class="lock-btn ${lk[st.key]?'lkd':'unl'}" onclick="toggleLock('${s.id}','${st.key}')">${lk[st.key]?'🔒 Acordada con docente':'🔓 Marcar como acordada'}</button>`:''}
-      ${st.gap&&st.gap.v>0?`<div class="step-date-row${st.gap.v<st.gap.min?' gap-warn':''}"><span>${st.gap.l}</span><span>${st.gap.v}d ${st.gap.v<st.gap.min?'⚠️':'✅'}</span></div>`:''}
-      ${st.dates.filter(x=>x.v).length?`<div class="step-dates">${st.dates.filter(x=>x.v).map(x=>`<div class="step-date-row"><span>${x.l}</span><span>${fmt(x.v)}</span></div>`).join('')}</div>`:''}
-      ${hasInc?`<div class="inc-tag">🚨 ${stInc.length} incidencia</div>
-        <button class="inc-btn" onclick="resolveIncById('${stInc[0].id}')">✅ Resolver</button>`:
-        `<button class="inc-btn" onclick="openIncModal('${s.id}','${st.key}','${st.title}')">⚠️ Marcar incidencia</button>`}
-    </div>`;
-  });
-  h+=`</div>`;
-
-  // Timeline
-  if(s.r1Date&&!ps){
-    const tl=[{l:'R1',v:s.r1Date,c:'var(--r1)'},{l:'Envío',v:d.contentSend,c:'#aaa'},{l:'R2',v:d.r2,c:'var(--r2)'},{l:'R3',v:d.r3,c:'var(--r3)'},{l:'Prod.',v:d.prodDone,c:'#aaa'},{l:'R4',v:d.r4,c:'var(--r4)'},{l:'Fin',v:d.montage,c:'#aaa'}].filter(t=>t.v);
-    h+=`<div class="timeline"><div class="tl-label">Línea de tiempo estimada</div><div class="tl-track">`;
-    tl.forEach((t,i)=>{h+=`<div class="tl-dot"><div class="tl-circle" style="background:${t.c}"></div><div class="tl-name" style="color:${t.c}">${t.l}</div><div class="tl-date">${fmt(t.v)}</div></div>`;if(i<tl.length-1)h+=`<div class="tl-line"></div>`;});
-    h+=`</div></div>`;
-  }
-
-  // Incident history
-  const sIncs=incidents.filter(i=>i.subjectId===s.id);
-  if(sIncs.length){
-    h+=`<div class="inc-history">`;
-    h+=`<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--body);margin:14px 0 8px;display:flex;align-items:center;gap:6px">Historial de incidencias<span style="flex:1;height:1px;background:var(--bdr);display:block"></span></div>`;
-    sIncs.forEach(inc=>{
-      const tl=inc.type==='noshow'?'No se presentó':inc.type==='prog'?'Programa distinto':'Otro';
-      h+=`<div class="inc-entry${inc.type==='prog'?' prog':inc.type==='other'?' other-t':''}">
-        <div class="inc-hdr">
-          <span class="inc-badge${inc.type==='noshow'?' noshow':inc.type==='prog'?' prog':' other-b'}">${tl}</span>
-          <span style="font-size:9px;font-weight:600;color:var(--dark)">${inc.meetingTitle}</span>
-          <span style="font-size:9px;color:var(--body)">${inc.date}</span>
-          <button class="inc-del" onclick="deleteIncById('${inc.id}')">✕</button>
+  // Blocks
+  const collapsed=s.collapsed||{};
+  h+=`<div class="blocks">`;
+  BLOCKS.forEach(block=>{
+    const stageStatuses=block.stages.map(st=>s.stages?.[st.key]||'p');
+    const doneCnt=stageStatuses.filter(x=>x==='done').length;
+    const pctB=Math.round((doneCnt/block.stages.length)*100);
+    const isCollapsed=collapsed[block.id];
+    h+=`<div class="block">
+      <div class="block-hdr" onclick="toggleBlock('${s.id}','${block.id}')">
+        <div class="block-color" style="background:${block.color}"></div>
+        <div>
+          <div class="block-title">${block.title}</div>
+          <div class="block-subtitle">${doneCnt}/${block.stages.length} sub-etapas completadas</div>
         </div>
-        ${inc.note?`<div style="font-size:10px;color:var(--body);margin-top:3px">${inc.note}</div>`:''}
-        ${inc.newDate?`<div style="font-size:9px;color:var(--ok);margin-top:3px;font-weight:600">✅ Nueva fecha: ${fmt(inc.newDate)}</div>`:''}
-        ${inc.resolved?`<div style="font-size:9px;color:var(--ok);margin-top:3px;font-weight:600">✅ Resuelta</div>`:
-          `<button class="inc-btn" style="width:auto;padding:3px 10px;margin-top:5px" onclick="resolveIncById('${inc.id}')">✅ Marcar resuelta</button>`}
+        <div class="block-progress">
+          <div class="bp-bar"><div class="bp-fill" style="width:${pctB}%;background:${block.color}"></div></div>
+          <div class="bp-txt">${pctB}% &nbsp;${isCollapsed?'▸':'▾'}</div>
+        </div>
+      </div>
+      <div class="block-body${isCollapsed?' collapsed':''}">`;
+
+    block.stages.forEach(st=>{
+      const stStatus=s.stages?.[st.key]||'p';
+      const rawDate=d[st.key]||null;
+      const isManual=!!(s.dates&&s.dates[st.key]);
+      const calcDate=d._calc?.[st.key]||null;
+      const hasConflict=load[rawDate]>CAPS.gm&&st.isMeeting&&rawDate;
+      const stInc=incidents.filter(i=>i.subjectId===s.id&&i.meetingKey===st.key&&!i.resolved);
+      const note=s.notes?.[st.key]||'';
+
+      // Gap warning for send stages
+      let gapWarn=null;
+      if(st.minGapTarget){
+        const targetDate=d[st.minGapTarget];
+        const sendDate=rawDate;
+        if(sendDate&&targetDate){
+          const gap=bdBetween(sendDate,targetDate);
+          if(gap<st.minGapMin)gapWarn={gap,min:st.minGapMin,target:st.minGapTarget};
+        }
+      }
+
+      const whoClass=st.who==='cont'?'cont':st.who==='dev'?'dev':st.who==='doc'?'doc':st.who==='umayor'?'umayor':'';
+      const dotCls=stStatus==='done'?'done':stStatus==='ip'?'ip':'p';
+
+      h+=`<div class="substage">
+        <div class="ss-status" onclick="cycleStatus('${s.id}','${st.key}')" title="Clic para cambiar estado">
+          <div class="ss-dot ${dotCls}"></div>
+        </div>
+        <div class="ss-body">
+          <div class="ss-label">
+            ${st.label}
+            <span class="ss-who ${whoClass}">${st.whoLabel}</span>
+          </div>
+          <div class="ss-desc">${st.desc}</div>
+          <div class="ss-date-row">`;
+
+      if(st.isDate){
+        const inputCls=hasConflict?'conflict':isManual?'manual':stStatus==='done'?'locked':'';
+        h+=`<input type="date" class="ss-date-input ${inputCls}" value="${rawDate||''}" 
+              onchange="handleDateChange('${s.id}','${st.key}',this.value)"
+              ${stStatus==='done'?'title="Completada — haz clic en el círculo para reabrir"':''}
+            >`;
+        if(isManual&&calcDate&&calcDate!==rawDate){
+          h+=`<span class="ss-date-calc" title="Fecha calculada: ${fmt(calcDate)}">calc: ${fmt(calcDate)}</span>
+              <button onclick="clearDateOverride('${s.id}','${st.key}')" style="font-size:8px;padding:1px 5px;border:1px solid var(--bdr);border-radius:4px;background:var(--sf);cursor:pointer;color:var(--body)" title="Volver a fecha calculada">↺</button>`;
+        }
+        if(hasConflict)h+=`<span style="font-size:8px;color:var(--err);font-weight:700">⚠️ Guionista sobrecargado</span>`;
+        if(gapWarn)h+=`<span class="ss-min-warn">⚠️ Solo ${gapWarn.gap}d hábiles (mín ${gapWarn.min}d)</span>`;
+        if(!gapWarn&&st.minGapTarget&&rawDate&&d[st.minGapTarget]){
+          const gap=bdBetween(rawDate,d[st.minGapTarget]);
+          h+=`<span class="ss-min-ok">✅ ${gap}d hábiles para docente</span>`;
+        }
+      }
+
+      h+=`</div>
+          <div class="ss-note"><input type="text" placeholder="Nota..." value="${note}" onchange="updateNote('${s.id}','${st.key}',this.value)"></div>
+        </div>
+        <div class="ss-side">
+          <select class="ss-status-sel" onchange="setStatus('${s.id}','${st.key}',this.value)">
+            <option value="p" ${stStatus==='p'?'selected':''}>⏳ Pendiente</option>
+            <option value="ip" ${stStatus==='ip'?'selected':''}>🔄 En progreso</option>
+            <option value="done" ${stStatus==='done'?'selected':''}>✅ Completada</option>
+          </select>
+          ${st.isMeeting?`<button class="ss-inc-btn" onclick="openIncModal('${s.id}','${st.key}','${st.label}')">⚠️ Incidencia</button>`:''}
+          ${stInc.length?`<span class="ss-inc-badge">🚨 ${stInc.length}</span>`:''}
+        </div>
       </div>`;
     });
-    h+=`</div>`;
-  }
+
+    h+=`</div></div>`; // block-body, block
+  });
+  h+=`</div>`; // blocks
 
   det.innerHTML=h;
 }
 
-function updateR1(id,val){
-  const s=subjects.find(x=>x.id===id);if(!s)return;
-  if(s.r1Date)prevR1[id]=s.r1Date;
-  s.r1Date=val||null;save();renderSidebar();renderDetail();
+function toggleBlock(sid,bid){
+  const s=subjects.find(x=>x.id===sid);if(!s)return;
+  if(!s.collapsed)s.collapsed={};
+  s.collapsed[bid]=!s.collapsed[bid];
+  save();renderDet();
 }
-function acceptChange(id){delete prevR1[id];renderDetail();}
-function revertChange(id){const s=subjects.find(x=>x.id===id);if(!s||!prevR1[id])return;s.r1Date=prevR1[id];delete prevR1[id];save();renderSidebar();renderDetail();}
-function toggleLock(id,key){if(!lockedDates[id])lockedDates[id]={};lockedDates[id][key]=!lockedDates[id][key];save();renderDetail();}
-function updateSubj(id,field,val){const s=subjects.find(x=>x.id===id);if(!s)return;s[field]=val;save();renderDetail();}
 
-// ─────────────────────────────────────────────
+function handleDateChange(sid,key,newVal){
+  if(!newVal){clearDateOverride(sid,key);return;}
+  const conflict=detectConflicts(sid,key,newVal);
+  if(conflict&&conflict.changes.length){
+    pendingConflict=conflict;
+    renderDet(); // show conflict panel
+  } else {
+    pendingConflict=null;
+    applyDateChange(sid,key,newVal);
+  }
+}
+
+function confirmConflict(){
+  if(!pendingConflict)return;
+  const{subjectId,key,newVal}=pendingConflict;
+  pendingConflict=null;
+  applyDateChange(subjectId,key,newVal);
+}
+
+function cancelConflict(){
+  pendingConflict=null;
+  renderDet(); // re-render without conflict panel, restores old date
+}
+
+function useAlt(sid,key,date){
+  pendingConflict=null;
+  applyDateChange(sid,key,date);
+}
+
+function cycleStatus(sid,key){
+  const s=subjects.find(x=>x.id===sid);if(!s)return;
+  if(!s.stages)s.stages={};
+  const cur=s.stages[key]||'p';
+  s.stages[key]=cur==='p'?'ip':cur==='ip'?'done':'p';
+  save();renderSB();renderDet();
+}
+function setStatus(sid,key,val){
+  const s=subjects.find(x=>x.id===sid);if(!s)return;
+  if(!s.stages)s.stages={};
+  s.stages[key]=val;save();renderSB();renderDet();
+}
+function updateNote(sid,key,val){
+  const s=subjects.find(x=>x.id===sid);if(!s)return;
+  if(!s.notes)s.notes={};
+  s.notes[key]=val;save();
+}
+
+// ════════════════════════════════════════════
 // INCIDENTS
-// ─────────────────────────────────────────────
-function openIncModal(subjectId,meetingKey,meetingTitle){
-  pendingInc={subjectId,meetingKey,meetingTitle};
-  document.getElementById('inc-modal-title').textContent=`Incidencia — ${meetingTitle}`;
-  document.getElementById('inc-type').value='noshow';
-  document.getElementById('inc-note').value='';
-  document.getElementById('inc-new-date').value='';
-  document.getElementById('prog-warn').style.display='none';
-  document.getElementById('incOverlay').classList.add('show');
+// ════════════════════════════════════════════
+function openIncModal(sid,meetingKey,meetingTitle){
+  pendingInc={sid,meetingKey,meetingTitle};
+  document.getElementById('imtitle').textContent=`Incidencia — ${meetingTitle}`;
+  document.getElementById('itype').value='noshow';
+  document.getElementById('inote').value='';document.getElementById('indate').value='';
+  document.getElementById('pwarn').style.display='none';
+  document.getElementById('incOv').classList.add('on');
 }
-function closeIncModal(){document.getElementById('incOverlay').classList.remove('show');pendingInc={};}
-function toggleProgWarn(){document.getElementById('prog-warn').style.display=document.getElementById('inc-type').value==='prog'?'block':'none';}
+function closeIncOv(){document.getElementById('incOv').classList.remove('on');pendingInc={};}
 function saveInc(){
-  incidents.push({
-    id:Date.now().toString()+Math.random(),
-    subjectId:pendingInc.subjectId,meetingKey:pendingInc.meetingKey,meetingTitle:pendingInc.meetingTitle,
-    type:document.getElementById('inc-type').value,
-    note:document.getElementById('inc-note').value.trim(),
-    newDate:document.getElementById('inc-new-date').value||null,
-    date:new Date().toLocaleDateString('es-CL',{day:'2-digit',month:'short',year:'numeric'}),
-    resolved:false
-  });
-  save();closeIncModal();renderSidebar();renderDetail();
+  incidents.push({id:Date.now().toString()+Math.random(),subjectId:pendingInc.sid,meetingKey:pendingInc.meetingKey,meetingTitle:pendingInc.meetingTitle,type:document.getElementById('itype').value,note:document.getElementById('inote').value.trim(),newDate:document.getElementById('indate').value||null,date:new Date().toLocaleDateString('es-CL',{day:'2-digit',month:'short',year:'numeric'}),resolved:false});
+  save();closeIncOv();renderSB();renderDet();renderInc();
 }
-function resolveIncById(id){const i=incidents.find(x=>x.id===id);if(i){i.resolved=true;save();renderSidebar();renderDetail();renderIncidents();}}
-function deleteIncById(id){if(!confirm('¿Eliminar esta incidencia?'))return;incidents=incidents.filter(i=>i.id!==id);save();renderSidebar();renderDetail();renderIncidents();}
-
-function setIncFilt(f,el){incFilt=f;document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderIncidents();}
-
-function renderIncidents(){
-  // Stats
+function resolveInc(id){const i=incidents.find(x=>x.id===id);if(i){i.resolved=true;save();renderSB();renderDet();renderInc();}}
+function delInc(id){if(!confirm('¿Eliminar?'))return;incidents=incidents.filter(i=>i.id!==id);save();renderSB();renderInc();}
+function setIF(f,el){incFilt=f;document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderInc();}
+function renderInc(){
   const total=incidents.length,ns=incidents.filter(i=>i.type==='noshow').length,pr=incidents.filter(i=>i.type==='prog').length,res=incidents.filter(i=>i.resolved).length;
-  document.getElementById('inc-stats').innerHTML=`
-    <div class="istat red"><div class="istat-n">${total}</div><div class="istat-l">Total incidencias</div></div>
-    <div class="istat red"><div class="istat-n">${ns}</div><div class="istat-l">No se presentó</div></div>
-    <div class="istat warn"><div class="istat-n">${pr}</div><div class="istat-l">Programa distinto</div></div>
-    <div class="istat ok"><div class="istat-n">${res}</div><div class="istat-l">Resueltas</div></div>`;
-
-  const filtered=incFilt==='all'?incidents:incidents.filter(i=>i.type===incFilt);
-  const el=document.getElementById('inc-list');
-  if(!filtered.length){el.innerHTML=`<div class="inc-empty"><div class="ei">✅</div><p>${incFilt==='all'?'No hay incidencias registradas.':'No hay incidencias de este tipo.'}</p></div>`;return;}
+  document.getElementById('istats').innerHTML=`<div class="istat r"><div class="istat-n">${total}</div><div class="istat-l">Total</div></div><div class="istat r"><div class="istat-n">${ns}</div><div class="istat-l">No se presentó</div></div><div class="istat wa"><div class="istat-n">${pr}</div><div class="istat-l">Prog. distinto</div></div><div class="istat gr"><div class="istat-n">${res}</div><div class="istat-l">Resueltas</div></div>`;
+  const filt=incFilt==='all'?incidents:incidents.filter(i=>i.type===incFilt);
+  const el=document.getElementById('ilist');
+  if(!filt.length){el.innerHTML=`<div style="text-align:center;padding:36px;color:var(--pend)"><div style="font-size:30px;opacity:.25;margin-bottom:8px">✅</div><p>No hay incidencias${incFilt!=='all'?' de este tipo':''}.</p></div>`;return;}
   let h='';
-  [...filtered].reverse().forEach(inc=>{
+  [...filt].reverse().forEach(inc=>{
     const s=subjects.find(x=>x.id===inc.subjectId);
     const tl=inc.type==='noshow'?'No se presentó':inc.type==='prog'?'Programa distinto':'Otro';
-    h+=`<div class="inc-card${inc.type==='prog'?' prog':inc.type==='other'?' other-t':''}">
+    h+=`<div class="icard${inc.type==='prog'?' prog':inc.type==='other'?' other':''}">
       <div class="ic-hdr">
-        <span class="ic-subj">${s?s.name:'[asignatura eliminada]'}</span>
-        <span class="ic-meet ${inc.meetingKey}">${inc.meetingTitle}</span>
-        <span class="ic-type${inc.type==='noshow'?' noshow':inc.type==='prog'?' prog':' other-b'}">${tl}</span>
+        <span class="ic-subj">${s?s.name:'—'}</span>
+        <span class="ic-meet" style="background:rgba(0,144,248,.1);color:var(--blue)">${inc.meetingTitle?.substring(0,30)||'—'}</span>
+        <span class="ic-type" style="${inc.type==='noshow'?'background:rgba(232,69,69,.1);color:var(--err)':inc.type==='prog'?'background:rgba(245,166,35,.1);color:#7a5500':'background:rgba(176,179,186,.15);color:var(--body)'}">${tl}</span>
         <span class="ic-date">${inc.date}</span>
       </div>
       ${inc.note?`<div class="ic-note">${inc.note}</div>`:''}
-      ${inc.newDate?`<div class="ic-res">✅ Nueva fecha acordada: ${fmt(inc.newDate)}</div>`:''}
-      ${inc.resolved?`<div class="ic-res">✅ Resuelta</div>`:`<div class="ic-actions">
-        <button class="ic-resolve" onclick="resolveIncById('${inc.id}')">✅ Marcar resuelta</button>
-        <button class="ic-del" onclick="deleteIncById('${inc.id}')">Eliminar</button>
-      </div>`}
+      ${inc.newDate?`<div class="ic-res">✅ Nueva fecha: ${fmt(inc.newDate)}</div>`:''}
+      ${inc.resolved?`<div class="ic-res">✅ Resuelta</div>`:`<div class="ic-acts"><button class="btn-res" onclick="resolveInc('${inc.id}')">✅ Marcar resuelta</button><button class="btn-del-i" onclick="delInc('${inc.id}')">Eliminar</button></div>`}
     </div>`;
   });
   el.innerHTML=h;
 }
-
 function exportInc(){
-  if(!incidents.length){alert('No hay incidencias registradas.');return;}
-  let txt='INFORME DE INCIDENCIAS — Hackea Ciclo 2\n';
-  txt+=`Generado: ${new Date().toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}\n${'='.repeat(60)}\n\n`;
+  if(!incidents.length){alert('No hay incidencias.');return;}
+  let txt='INFORME DE INCIDENCIAS — Hackea Ciclo 2\n'+`Generado: ${new Date().toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}\n`+'='.repeat(60)+'\n\n';
   incidents.forEach((inc,i)=>{
     const s=subjects.find(x=>x.id===inc.subjectId);
-    txt+=`${i+1}. ${s?s.name:'[eliminada]'}\n   Reunión: ${inc.meetingTitle}\n   Tipo: ${inc.type==='noshow'?'No se presentó':inc.type==='prog'?'Programa distinto':'Otro'}\n   Fecha: ${inc.date}\n`;
+    txt+=`${i+1}. ${s?s.name:'[eliminada]'}\n   Sub-etapa: ${inc.meetingTitle}\n   Tipo: ${inc.type==='noshow'?'No se presentó':inc.type==='prog'?'Programa distinto':'Otro'}\n   Fecha registro: ${inc.date}\n`;
     if(inc.note)txt+=`   Nota: ${inc.note}\n`;
-    if(inc.newDate)txt+=`   Nueva fecha acordada: ${fmt(inc.newDate)}\n`;
+    if(inc.newDate)txt+=`   Nueva fecha: ${fmt(inc.newDate)}\n`;
     txt+=`   Estado: ${inc.resolved?'Resuelta':'Pendiente'}\n\n`;
   });
-  txt+=`${'─'.repeat(40)}\nRESUMEN: ${incidents.length} total | No se presentó: ${incidents.filter(i=>i.type==='noshow').length} | Programa distinto: ${incidents.filter(i=>i.type==='prog').length} | Resueltas: ${incidents.filter(i=>i.resolved).length}\n`;
+  txt+=`${'─'.repeat(40)}\nRESUMEN: ${incidents.length} total | No presentó: ${incidents.filter(i=>i.type==='noshow').length} | Prog. distinto: ${incidents.filter(i=>i.type==='prog').length} | Resueltas: ${incidents.filter(i=>i.resolved).length}\n`;
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));a.download='incidencias_hackea_c2.txt';a.click();
 }
 
-// ─────────────────────────────────────────────
+// ════════════════════════════════════════════
 // SIMULATOR
-// ─────────────────────────────────────────────
-const SIM_VALS={nc:1,ng:1,nd:2};
-function stepAdj(k,d){SIM_VALS[k]=Math.max(1,Math.min(8,(SIM_VALS[k]||1)+d));document.getElementById(k+'-val').textContent=SIM_VALS[k];}
+// ════════════════════════════════════════════
+const SV={nc:1,ng:1,nd:2};
+function adj(k,d){SV[k]=Math.max(1,Math.min(8,(SV[k]||1)+d));document.getElementById(k).textContent=SV[k];}
 
 function runSim(){
-  const nc=SIM_VALS.nc,ng=SIM_VALS.ng,nd=SIM_VALS.nd;
-  const ppd=parseInt(document.getElementById('ppd-val').value)||25;
-  const cDev=parseInt(document.getElementById('c-dev').value)||0;
-  const cRev=parseInt(document.getElementById('c-rev').value)||0;
-  const cSc=parseInt(document.getElementById('c-script').value)||0;
-  const cPr=parseInt(document.getElementById('c-prod').value)||0;
+  const nc=SV.nc,ng=SV.ng,nd=SV.nd;
+  const ppd=parseInt(document.getElementById('ppd').value)||25;
+  const cDev=parseInt(document.getElementById('cd').value)||0;
+  const cRev=parseInt(document.getElementById('cr').value)||0;
+  const cSc=parseInt(document.getElementById('cg').value)||0;
+  const cPr=parseInt(document.getElementById('cp').value)||0;
 
   const base=simEngine(nc,ng,nd,ppd,cDev,cRev,cSc,cPr);
-  simCache=base;
-
-  // Comparisons
   const comps=[
-    {label:`Actual: ${nc}C/${ng}G/${nd}D`,r:base,isCurrent:true},
-    {label:`+1 Contenidista`,r:simEngine(nc+1,ng,nd,ppd,cDev,cRev,cSc,cPr),isCurrent:false},
-    {label:`+1 Guionista`,r:simEngine(nc,ng+1,nd,ppd,cDev,cRev,cSc,cPr),isCurrent:false},
-    {label:`+1 Desarrollador`,r:simEngine(nc,ng,nd+1,ppd,cDev,cRev,cSc,cPr),isCurrent:false},
+    {label:`Actual ${nc}C/${ng}G/${nd}D`,r:base,cur:true},
+    {label:`+1 Contenidista`,r:simEngine(nc+1,ng,nd,ppd,cDev,cRev,cSc,cPr),cur:false},
+    {label:`+1 Guionista`,r:simEngine(nc,ng+1,nd,ppd,cDev,cRev,cSc,cPr),cur:false},
+    {label:`+1 Desarrollador`,r:simEngine(nc,ng,nd+1,ppd,cDev,cRev,cSc,cPr),cur:false},
   ];
 
-  renderSimResults(base,comps);
-  document.getElementById('sim-results').style.display='block';
+  // Real projection using actual subject dates
+  const realEnd=getRealProjection();
+
+  renderSimResults(base,comps,realEnd);
+  const el=document.getElementById('simres');el.style.display='flex';el.style.flexDirection='column';el.style.gap='14px';
+}
+
+function getRealProjection(){
+  // Find the latest 'done' date or latest calculated end across all subjects
+  let latest=null;
+  subjects.forEach(s=>{
+    const d=computeAllDates(s);
+    const end=d.done||d.mountEnd||d.r4||null;
+    if(end&&(!latest||end>latest))latest=end;
+  });
+  return latest;
 }
 
 function simEngine(nc,ng,nd,ppd,cDev,cRev,cSc,cPr){
   const START='2026-04-13';
-  const guionMtg={};
-  const contBusy={};
-  const devBusy=Array.from({length:nd},()=>({}));
+  const gMtg={};
+  const contB={};
+  const devB=Array.from({length:nd},()=>({}));
 
   const subs=[
-    {id:'s11',name:'Taller Estrategias Diversificación',prog:'MCEE',pages:35,units:4,urgency:100,noRanges:[['2026-04-20','2026-04-26']],noDays:[]},
-    {id:'s12',name:'Trabajo Colaborativo Interprofesional',prog:'MCEE',pages:30,units:3,urgency:80,noRanges:[],noDays:[0,2]},
-    {id:'s5',name:'Control Estratégico',prog:'MCG',pages:40,units:4,urgency:75,noRanges:[],noDays:[3,4]},
-    {id:'s9',name:'Control y Riesgo Operacional',prog:'MCG',pages:28,units:3,urgency:75,noRanges:[],noDays:[1,2,4]},
-    {id:'s6',name:'Tecnología Control de Gestión',prog:'MCG',pages:32,units:3,urgency:70,noRanges:[],noDays:[0,1,2,4]},
-    {id:'s2',name:'Dirección Innovación MBA',prog:'MBA',pages:38,units:4,urgency:60,noRanges:[],noDays:[],shared:'s7'},
-    {id:'s7',name:'Dirección Innovación MCG',prog:'MCG',pages:38,units:4,urgency:60,noRanges:[],noDays:[],shared:'s2'},
-    {id:'s1',name:'Contabilidad Toma de Decisiones',prog:'MBA',pages:42,units:4,urgency:50,noRanges:[],noDays:[]},
-    {id:'s4',name:'Transformación Digital e IA',prog:'MBA',pages:38,units:4,urgency:50,noRanges:[],noDays:[]},
-    {id:'s3',name:'Finanzas Toma de Decisiones',prog:'MBA',pages:40,units:4,urgency:45,noRanges:[],noDays:[]},
-    {id:'s8',name:'Gestión y Desarrollo Org.',prog:'MCG',pages:36,units:4,urgency:40,noRanges:[],noDays:[]},
-    {id:'s13',name:'Investigación Educativa',prog:'MCEE',pages:34,units:4,urgency:40,noRanges:[],noDays:[]},
-    {id:'s10',name:'Taller Evaluación Formativa',prog:'MCEE',pages:36,units:4,urgency:35,noRanges:[['2026-06-29','2026-07-10']],noDays:[]},
-    {id:'s14',name:'Optativo: Datos y Visualización',prog:'OPT',pages:26,units:3,urgency:20,noRanges:[],noDays:[]},
-    {id:'s15',name:'Optativo: IA Creatividad',prog:'OPT',pages:26,units:3,urgency:20,noRanges:[],noDays:[]},
-    {id:'s16',name:'Optativo: Diseño de Servicios',prog:'OPT',pages:26,units:3,urgency:20,noRanges:[],noDays:[]}
+    {id:'s11',name:'Taller Estrategias Diversificación',prog:'MCEE',pages:35,units:4,urgency:100,noR:[['2026-04-20','2026-04-26']],noD:[]},
+    {id:'s12',name:'Trabajo Colaborativo Interprofesional',prog:'MCEE',pages:30,units:3,urgency:80,noR:[],noD:[0,2]},
+    {id:'s5',name:'Control Estratégico',prog:'MCG',pages:40,units:4,urgency:75,noR:[],noD:[3,4]},
+    {id:'s9',name:'Control y Riesgo Operacional',prog:'MCG',pages:28,units:3,urgency:75,noR:[],noD:[1,2,4]},
+    {id:'s6',name:'Tecnología Control de Gestión',prog:'MCG',pages:32,units:3,urgency:70,noR:[],noD:[0,1,2,4]},
+    {id:'s2',name:'Dirección Innovación MBA',prog:'MBA',pages:38,units:4,urgency:60,noR:[],noD:[],shared:'s7'},
+    {id:'s7',name:'Dirección Innovación MCG',prog:'MCG',pages:38,units:4,urgency:60,noR:[],noD:[],shared:'s2'},
+    {id:'s1',name:'Contabilidad Toma de Decisiones',prog:'MBA',pages:42,units:4,urgency:50,noR:[],noD:[]},
+    {id:'s4',name:'Transformación Digital e IA',prog:'MBA',pages:38,units:4,urgency:50,noR:[],noD:[]},
+    {id:'s3',name:'Finanzas Toma de Decisiones',prog:'MBA',pages:40,units:4,urgency:45,noR:[],noD:[]},
+    {id:'s8',name:'Gestión y Desarrollo Org.',prog:'MCG',pages:36,units:4,urgency:40,noR:[],noD:[]},
+    {id:'s13',name:'Investigación Educativa',prog:'MCEE',pages:34,units:4,urgency:40,noR:[],noD:[]},
+    {id:'s10',name:'Taller Evaluación Formativa',prog:'MCEE',pages:36,units:4,urgency:35,noR:[['2026-06-29','2026-07-10']],noD:[]},
+    {id:'s14',name:'Optativo: Datos y Visualización',prog:'OPT',pages:26,units:3,urgency:20,noR:[],noD:[]},
+    {id:'s15',name:'Optativo: IA Creatividad',prog:'OPT',pages:26,units:3,urgency:20,noR:[],noD:[]},
+    {id:'s16',name:'Optativo: Diseño de Servicios',prog:'OPT',pages:26,units:3,urgency:20,noR:[],noD:[]},
   ];
-  // Override pages/units from actual subjects
-  subs.forEach(sd=>{const real=subjects.find(x=>x.id===sd.id);if(real){if(real.pages>0)sd.pages=real.pages;if(real.units>0)sd.units=real.units;if(real.minFinales>0)sd.minFinales=real.minFinales;}});
+  subs.forEach(sd=>{const r=subjects.find(x=>x.id===sd.id);if(r){if(r.pages>0)sd.pages=r.pages;if(r.units>0)sd.units=r.units;if(r.minFinales>0)sd.minFinales=r.minFinales;}});
 
-  function nbk(d){guionMtg[d]=(guionMtg[d]||0)+1;}
+  function nbk(d){gMtg[d]=(gMtg[d]||0)+1;}
   function canR1(d,s){
     if(!isWD(d))return false;
-    if((guionMtg[d]||0)>=ng*2)return false;
-    for(const[bs,be]of s.noRanges)if(bs<=d&&d<=be)return false;
-    const dobj=new Date(d+'T12:00:00');
-    if(s.noDays.includes(dobj.getDay()))return false;
+    if((gMtg[d]||0)>=ng*2)return false;
+    for(const[bs,be]of s.noR)if(bs<=d&&d<=be)return false;
+    const dobj=new Date(d+'T12:00:00');if(s.noD.includes(dobj.getDay()))return false;
     return true;
   }
-  function findMtg(from){let d=from;for(let i=0;i<120;i++){if(isWD(d)&&(guionMtg[d]||0)<ng*2){nbk(d);return d;}const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);d=ds(dn);}return from;}
-  function bookContDev(start,n,sid){let d=start;for(let i=0;i<n;i++){contBusy[d+':'+sid]='dev';const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);while(!isWD(ds(dn)))dn.setDate(dn.getDate()+1);if(i<n-1)d=ds(dn);}return d;}
-  function findContDevStart(from,n,sid){
-    let d=from;
-    for(let attempt=0;attempt<120;attempt++){
-      if(!isWD(d)){const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);d=ds(dn);continue;}
-      const devCountToday=Object.keys(contBusy).filter(k=>k.startsWith(d+':')&&contBusy[k]==='dev').length;
-      if(devCountToday<nc)return d;
-      const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);d=ds(dn);
-    }
-    return from;
-  }
-  function findContAdj(from,sid){let d=from;for(let i=0;i<60;i++){if(isWD(d)){const busyToday=Object.keys(contBusy).filter(k=>k.startsWith(d+':')).length;if(busyToday===0){contBusy[d+':adj:'+sid]='adj';return d;}}const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);d=ds(dn);}return from;}
-  function findDev(from,n,sid){for(let di=0;di<nd;di++){let d=from;let consec=[];for(let i=0;i<120;i++){if(isWD(d)&&!devBusy[di][d]){consec.push(d);if(consec.length>=n){consec.forEach(dd=>{devBusy[di][dd]=sid;});return{start:consec[0],end:consec[consec.length-1]};}}else consec=[];const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);d=ds(dn);}}return{start:from,end:addBD(from,n-1)};}
+  function findMtg(from){let d=from;for(let i=0;i<120;i++){if(isWD(d)&&(gMtg[d]||0)<ng*2){nbk(d);return d;}const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);d=dstr(dn);}return from;}
+  function bookCD(start,n,sid){let d=start;for(let i=0;i<n;i++){contB[d+':'+sid]='dev';const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);while(!isWD(dstr(dn)))dn.setDate(dn.getDate()+1);if(i<n-1)d=dstr(dn);}return d;}
+  function findCDS(from,n,sid){let d=from;for(let a=0;a<120;a++){if(!isWD(d)){const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);d=dstr(dn);continue;}const cnt=Object.keys(contB).filter(k=>k.startsWith(d+':')).length;if(cnt<nc)return d;const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);d=dstr(dn);}return from;}
+  function findContAdj(from,sid){let d=from;for(let i=0;i<60;i++){if(isWD(d)&&Object.keys(contB).filter(k=>k.startsWith(d+':')).length===0){contB[d+':adj:'+sid]='adj';return d;}const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);d=dstr(dn);}return from;}
+  function findDev(from,n,sid){for(let di=0;di<nd;di++){let d=from;let c=[];for(let i=0;i<120;i++){if(isWD(d)&&!devB[di][d]){c.push(d);if(c.length>=n){c.forEach(dd=>{devB[di][dd]=sid;});return{s:c[0],e:c[c.length-1]};}}else c=[];const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);d=dstr(dn);}}return{s:from,e:addBD(from,n-1)};}
 
-  // Assign R1
   const r1Map={};
   subs.forEach(s=>{
     if(r1Map[s.id])return;
     if(s.shared&&r1Map[s.shared]){r1Map[s.id]=r1Map[s.shared];return;}
+    // Use actual r1 if set
+    const real=subjects.find(x=>x.id===s.id);
+    if(real?.r1Date){r1Map[s.id]=real.r1Date;nbk(real.r1Date);if(s.shared)r1Map[s.shared]=real.r1Date;return;}
     let d=START;
-    for(let i=0;i<120;i++){
-      if(canR1(d,s)){r1Map[s.id]=d;nbk(d);if(s.shared)r1Map[s.shared]=d;break;}
-      const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);d=ds(dn);
-    }
+    for(let i=0;i<120;i++){if(canR1(d,s)){r1Map[s.id]=d;nbk(d);if(s.shared)r1Map[s.shared]=d;break;}const dn=new Date(d+'T12:00:00');dn.setDate(dn.getDate()+1);d=dstr(dn);}
   });
 
   const results=[];
   subs.forEach(s=>{
+    const real=subjects.find(x=>x.id===s.id);
     const r1=r1Map[s.id]||START;
-    const contDays=Math.max(1,Math.ceil((s.pages||35)/ppd))+cDev;
-    const contStart=findContDevStart(r1,contDays,s.id);
-    const lastDevDay=bookContDev(contStart,contDays,s.id);
-    const r2=findMtg(addBD(lastDevDay,CAPS.td+cRev));
-    const adjDay=findContAdj(r2,s.id);
-    const scDays=2+cSc;let scriptEnd=addBD(adjDay,scDays);
-    const r3=findMtg(addBD(scriptEnd,CAPS.r3));
-    const pdDays=(s.minFinales>0?(s.minFinales<200?3:s.minFinales<280?4:s.minFinales<360?5:s.minFinales<440?6:7):({1:2,2:3,3:4,4:5,5:6,6:7,7:8}[s.units]||4))+cPr;
-    const devSlot=findDev(addBD(r3,1),pdDays,s.id);
-    const r4=findMtg(addBD(devSlot.end,CAPS.r4));
-    const montage=addBD(addBD(r4,1),1);
-    results.push({id:s.id,name:s.name,prog:s.prog,pages:s.pages,contDays,units:s.units,prodDays:pdDays,r1,r2,r3,r4,montage});
+    const cd=Math.max(1,Math.ceil((s.pages||35)/ppd))+cDev;
+    const cds=findCDS(r1,cd,s.id);const lastCD=bookCD(cds,cd,s.id);
+    const r2=findMtg(addBD(lastCD,CAPS.td+cRev));
+    const adjD=findContAdj(r2,s.id);
+    const scD=2+cSc;const scEnd=addBD(adjD,scD);
+    const r3=findMtg(addBD(scEnd,CAPS.r3));
+    const pdN=(s.minFinales>0?(s.minFinales<200?3:s.minFinales<280?4:s.minFinales<360?5:s.minFinales<440?6:7):({1:2,2:3,3:4,4:5,5:6,6:7,7:8}[s.units]||4))+cPr;
+    const dv=findDev(addBD(r3,1),pdN,s.id);
+    const r4=findMtg(addBD(dv.e,CAPS.r4));
+    const done=addBD(addBD(addBD(r4,2),2),1); // approx
+    // If real dates exist for r4 or done, use those
+    const realDone=real?computeAllDates(real).done:null;
+    results.push({id:s.id,name:s.name,prog:s.prog,pages:s.pages,contDays:cd,prodDays:pdN,r1,r2,r3,r4,montage:done,realDone});
   });
+
   const ends=results.map(r=>r.montage);
   const cycleEnd=ends.reduce((a,b)=>a>b?a:b,START);
   const startD=new Date(START+'T12:00:00'),endD=new Date(cycleEnd+'T12:00:00');
@@ -995,137 +1072,140 @@ function simEngine(nc,ng,nd,ppd,cDev,cRev,cSc,cPr){
   return{results,cycleEnd,weeks,nc,ng,nd,ppd};
 }
 
-function renderSimResults(base,comps){
-  const wp=w=>w<=9?'fast':w<=14?'med':'slow';
-  const fmtW=w=>`${w.toFixed(1)} sem`;
+function renderSimResults(base,comps,realEnd){
+  const wp=w=>w<=9?'f':w<=14?'m':'s';
   const baseEnd=new Date(base.cycleEnd+'T12:00:00');
-
-  // Bottleneck
   const avgCont=base.results.reduce((a,b)=>a+b.contDays,0)/base.results.length;
-  const avgProd=base.results.reduce((a,b)=>a+b.prodDays,0)/base.results.length;
-  let bnk,bnkCls;
-  if(base.weeks>16){bnk=`Guionista — cuello principal (${base.weeks.toFixed(1)} sem)`;bnkCls='b-err';}
-  else if(avgCont>3){bnk=`Contenidista — promedio ${avgCont.toFixed(1)}d/asig`;bnkCls='b-warn';}
-  else{bnk=`Sin cuello de botella crítico`;bnkCls='b-ok';}
+  let bnk,bc;
+  if(base.weeks>16){bnk=`⚠️ Cuello de botella: Guionista (${base.weeks.toFixed(1)} semanas)`;bc='e';}
+  else if(avgCont>3.5){bnk=`⚠️ Cuello de botella: Contenidista (${avgCont.toFixed(1)}d prom.)`;bc='w';}
+  else{bnk=`✅ Sin cuello crítico`;bc='ok';}
 
-  let h='';
-  // Header result
-  h+=`<div class="results-header">
-    <div class="res-main">
+  let h=`<div class="res-summary">
+    <div class="res-meta">
       <div class="res-end">${fmt(base.cycleEnd)}</div>
-      <div class="res-weeks"><span class="weeks-pill ${wp(base.weeks)}">${fmtW(base.weeks)}</span> &nbsp;desde 13 abril 2026 con ${base.nc}C / ${base.ng}G / ${base.nd}D (${base.ppd}p/día)</div>
+      <div class="res-weeks"><span class="wp ${wp(base.weeks)}">${base.weeks.toFixed(1)} semanas</span> con ${base.nc}C/${base.ng}G/${base.nd}D · ${base.ppd}p/día desde 13 abr 2026</div>
+      ${realEnd?`<div class="res-real">📅 Proyección real (con fechas manuales): ${fmt(realEnd)}</div>`:''}
     </div>
-    <div class="res-bottleneck ${bnkCls}">⚠️ ${bnk}</div>
-  </div>`;
+    <div class="bnk ${bc}">${bnk}</div>
+  </div>
+  <div class="cmp-cards">`;
 
-  // Compare cards
-  h+=`<div class="compare-cards">`;
   comps.forEach(c=>{
     const cEnd=new Date(c.r.cycleEnd+'T12:00:00');
     const diffD=Math.round((cEnd-baseEnd)/(24*3600*1000));
-    const cls=c.isCurrent?'is-current':diffD<-3?'is-better':'is-same';
-    const diffStr=c.isCurrent?`<span style="color:var(--body);font-size:9px">Config. actual</span>`:diffD<0?`<span style="color:var(--ok);font-weight:700;font-size:11px">▲ ${Math.abs(diffD)} días antes</span>`:`<span style="color:var(--pend);font-size:10px">Sin mejora significativa</span>`;
-    h+=`<div class="ccard ${cls}">
-      <div class="ccard-label">${c.label}</div>
-      <div class="ccard-end">${fmt(c.r.cycleEnd)}</div>
-      <div class="ccard-diff">${diffStr}</div>
-      <div class="ccard-detail"><strong>Semanas:</strong> ${fmtW(c.r.weeks)}</div>
-    </div>`;
+    const cls=c.cur?'cur':diffD<-3?'better':'same';
+    const diffStr=c.cur?'Config. actual':diffD<0?`<strong style="color:var(--ok)">▲ ${Math.abs(diffD)} días antes</strong>`:'Sin mejora significativa';
+    h+=`<div class="ccard ${cls}"><div class="cc-lbl">${c.label}</div><div class="cc-end">${fmt(c.r.cycleEnd)}</div><div class="cc-diff">${diffStr}</div><div class="cc-det">${c.r.weeks.toFixed(1)} semanas</div></div>`;
   });
-  h+=`</div>`;
 
-  // Detail table
-  h+=`<div class="results-table"><table>
-    <thead><tr><th>#</th><th>Asignatura</th><th>Prog</th><th>Páginas</th><th>Días cont.</th><th>Días prod.</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>Fin estimado</th></tr></thead><tbody>`;
+  h+=`</div><div class="res-table"><table>
+    <thead><tr><th>#</th><th>Asignatura</th><th>Prog</th><th>Pág.</th><th>Días cont.</th><th>Días prod.</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>Fin simulado</th><th>Fin real*</th></tr></thead><tbody>`;
   base.results.forEach((r,i)=>{
-    h+=`<tr><td class="d">${i+1}</td><td>${r.name}</td><td><span style="font-size:8px;font-weight:700;color:${r.prog==='OPT'?'var(--pur)':'var(--blue)'}">${r.prog}</span></td><td class="d">${r.pages}</td><td class="d">${r.contDays}d</td><td class="d">${r.prodDays}d</td><td class="d">${fmt(r.r1)}</td><td class="d">${fmt(r.r2)}</td><td class="d">${fmt(r.r3)}</td><td class="d">${fmt(r.r4)}</td><td class="d hi">${fmt(r.montage)}</td></tr>`;
+    const realDStr=r.realDone?`<span class="dm real">${fmt(r.realDone)}</span>`:`<span style="font-size:9px;color:var(--pend)">—</span>`;
+    h+=`<tr><td class="dm">${i+1}</td><td>${r.name.substring(0,28)}</td><td><span style="font-size:8px;font-weight:700;color:${r.prog==='OPT'?'var(--pur)':'var(--blue)'}">${r.prog}</span></td><td class="dm">${r.pages}</td><td class="dm">${r.contDays}d</td><td class="dm">${r.prodDays}d</td><td class="dm">${fmt(r.r1)}</td><td class="dm">${fmt(r.r2)}</td><td class="dm">${fmt(r.r3)}</td><td class="dm">${fmt(r.r4)}</td><td class="dm hi">${fmt(r.montage)}</td><td>${realDStr}</td></tr>`;
   });
-  h+=`</tbody></table></div>`;
-
-  h+=`<div style="text-align:center">
-    <button class="apply-btn" onclick="applySimR1()">Aplicar fechas de R1 de este plan →</button>
+  h+=`</tbody></table></div>
+  <div style="font-size:9px;color:var(--body)">*Fin real = fecha de la sub-etapa "Asignatura completada" según lo registrado en la pestaña Planificar. Se actualiza a medida que el equipo completa sub-etapas.</div>
+  <div class="apply-row">
+    <button class="apply-btn" onclick="applySimR1()">Aplicar fechas de R1 sugeridas →</button>
     <div class="apply-note">Solo asigna R1 a asignaturas que aún no tienen fecha.</div>
   </div>`;
 
-  document.getElementById('sim-results').innerHTML=h;
+  document.getElementById('simres').innerHTML=h;
 }
 
+let lastSimBase=null;
 function applySimR1(){
-  if(!simCache)return;
-  if(!confirm('¿Aplicar las fechas de R1 sugeridas?\nSolo se asignan asignaturas sin fecha actual.'))return;
-  simCache.results.forEach(sr=>{const s=subjects.find(x=>x.id===sr.id);if(s&&!s.r1Date)s.r1Date=sr.r1;});
-  save();renderSidebar();if(selId)renderDetail();showView('plan');
+  // re-run to get base
+  const nc=SV.nc,ng=SV.ng,nd=SV.nd,ppd=parseInt(document.getElementById('ppd').value)||25;
+  const base=simEngine(nc,ng,nd,ppd,0,0,0,0);
+  if(!confirm('¿Aplicar fechas de R1 sugeridas? Solo asigna a asignaturas sin fecha.'))return;
+  base.results.forEach(sr=>{const s=subjects.find(x=>x.id===sr.id);if(s&&!s.r1Date){s.r1Date=sr.r1;if(!s.dates)s.dates={};s.dates.r1=sr.r1;}});
+  save();renderSB();if(selId)renderDet();showView('p');
 }
 
-// ─────────────────────────────────────────────
+// ════════════════════════════════════════════
+// VIEWS / TABS
+// ════════════════════════════════════════════
+function showView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.htab').forEach(el=>el.classList.remove('on'));
+  document.getElementById('v'+v).classList.add('on');
+  const idx={p:0,s:1,i:2}[v]??0;
+  document.querySelectorAll('.htab')[idx].classList.add('on');
+  if(v==='i')renderInc();
+}
+
+// ════════════════════════════════════════════
 // SUBJECT MODAL
-// ─────────────────────────────────────────────
-function updateProdEst(){
-  const p=+document.getElementById('f-pages').value||0;const u=+document.getElementById('f-units').value||0;const mf=+document.getElementById('f-mf').value||0;
-  const el=document.getElementById('prod-est');
+// ════════════════════════════════════════════
+function updEst(){
+  const p=+document.getElementById('fpg').value||0,u=+document.getElementById('fu').value||0,mf=+document.getElementById('fmf').value||0;
+  const el=document.getElementById('pest');
   const cd=p>0?Math.max(1,Math.ceil(p/25)):null;
   const pd=mf>0?(mf<200?3:mf<280?4:mf<360?5:mf<440?6:7):u>0?({1:2,2:3,3:4,4:5,5:6,6:7,7:8}[u]||4):null;
   if(cd||pd){el.style.display='block';el.textContent=`📝 Contenidista: ${cd||'?'} días · 🎬 Producción: ${pd||'?'} días`;}
   else el.style.display='none';
 }
-function chkTeacher(v){document.getElementById('warn-note').style.display=v.toLowerCase().includes('confirmar')&&v.trim()?'block':'none';}
+function chkT(v){document.getElementById('wnote').style.display=v.toLowerCase().includes('confirmar')&&v.trim()?'block':'none';}
 function showResch(from){
-  const box=document.getElementById('resch-box'),rows=document.getElementById('resch-rows');
-  const days=getFreeDays(from||todayS(),8);
-  if(!days.length){box.style.display='none';return;}
+  const box=document.getElementById('rbox'),rows=document.getElementById('rrows');
+  const load=getGuionLoad();const res=[];
+  if(!from){box.style.display='none';return;}
+  let d=new Date(from+'T12:00:00');d.setDate(d.getDate()-7);let t=0;
+  while(res.length<8&&t<90){t++;const ds2=dstr(d);if(isWD(ds2))res.push({date:ds2,count:load[ds2]||0});d.setDate(d.getDate()+1);}
+  if(!res.length){box.style.display='none';return;}
   box.style.display='block';
-  rows.innerHTML=days.map(d=>{
-    const cls=d.count>=CAPS.gm?'full':'';
-    const w=d.count===0?'✅ Libre':d.count===1?'🟡 1 reunión':d.count>=CAPS.gm?`⚠️ Lleno`:d.count+' reuniones';
-    return`<div class="resch-row ${cls}"><span>${fmtFull(d.date)}</span><span style="font-size:9px;color:var(--body)">${w}</span><button class="btn-use" onclick="document.getElementById('f-r1').value='${d.date}';showResch('${d.date}')">Usar</button></div>`;
-  }).join('');
+  rows.innerHTML=res.map(r=>{const full=r.count>=CAPS.gm;const w=r.count===0?'✅ Libre':r.count===1?'🟡 1 reunión':full?`⚠️ Lleno`:r.count+' reuniones';return`<div class="rrow${full?' full':''}"><span>${fmtFull(r.date)}</span><span style="font-size:9px;color:var(--body)">${w}</span><button class="btn-use" onclick="document.getElementById('fr1').value='${r.date}';showResch('${r.date}')">Usar</button></div>`;}).join('');
 }
-document.getElementById('f-r1').addEventListener('change',function(){showResch(this.value);});
+document.getElementById('fr1').addEventListener('change',function(){showResch(this.value);});
 function openAddModal(){
-  editId=null;
-  document.getElementById('sub-modal-title').textContent='Nueva Asignatura';
-  ['f-name','f-teacher','f-email','f-restr'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-prog').value='MBA';document.getElementById('f-r1').value='';
-  document.getElementById('f-pages').value='';document.getElementById('f-units').value='';document.getElementById('f-mf').value='';
-  document.getElementById('btn-del').style.display='none';document.getElementById('resch-box').style.display='none';
-  document.getElementById('warn-note').style.display='none';document.getElementById('prod-est').style.display='none';
-  document.getElementById('subOverlay').classList.add('show');
+  editId=null;document.getElementById('smtitle').textContent='Nueva Asignatura';
+  ['fn','ft','fe','frst'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fp').value='MBA';document.getElementById('fr1').value='';
+  document.getElementById('fpg').value='';document.getElementById('fu').value='';document.getElementById('fmf').value='';
+  document.getElementById('bdel').style.display='none';document.getElementById('rbox').style.display='none';
+  document.getElementById('wnote').style.display='none';document.getElementById('pest').style.display='none';
+  document.getElementById('subOv').classList.add('on');
 }
 function openEditModal(id){
   editId=id;const s=subjects.find(x=>x.id===id);
-  document.getElementById('sub-modal-title').textContent='Editar Asignatura';
-  document.getElementById('f-name').value=s.name;document.getElementById('f-prog').value=s.program;
-  document.getElementById('f-teacher').value=s.teacher||'';document.getElementById('f-email').value=s.email||'';
-  document.getElementById('f-r1').value=s.r1Date||'';document.getElementById('f-restr').value=s.restrictions||'';
-  document.getElementById('f-pages').value=s.pages||'';document.getElementById('f-units').value=s.units||'';document.getElementById('f-mf').value=s.minFinales||'';
-  document.getElementById('btn-del').style.display='block';
-  document.getElementById('warn-note').style.display=(!s.teacher||s.teacher==='Por confirmar')?'block':'none';
-  updateProdEst();showResch(s.r1Date||todayS());
-  document.getElementById('subOverlay').classList.add('show');
+  document.getElementById('smtitle').textContent='Editar Asignatura';
+  document.getElementById('fn').value=s.name;document.getElementById('fp').value=s.program;
+  document.getElementById('ft').value=s.teacher||'';document.getElementById('fe').value=s.email||'';
+  document.getElementById('fr1').value=s.r1Date||'';document.getElementById('frst').value=s.restrictions||'';
+  document.getElementById('fpg').value=s.pages||'';document.getElementById('fu').value=s.units||'';document.getElementById('fmf').value=s.minFinales||'';
+  document.getElementById('bdel').style.display='block';
+  document.getElementById('wnote').style.display=(!s.teacher||s.teacher==='Por confirmar')?'block':'none';
+  updEst();showResch(s.r1Date||todayS());
+  document.getElementById('subOv').classList.add('on');
 }
-function closeSubModal(){document.getElementById('subOverlay').classList.remove('show');editId=null;}
+function closeSubOv(){document.getElementById('subOv').classList.remove('on');editId=null;}
 function saveSub(){
-  const name=document.getElementById('f-name').value.trim();if(!name){alert('Ingresa el nombre.');return;}
-  const t=document.getElementById('f-teacher').value.trim();const r1=document.getElementById('f-r1').value||null;
+  const name=document.getElementById('fn').value.trim();if(!name){alert('Ingresa el nombre.');return;}
+  const t=document.getElementById('ft').value.trim();const r1=document.getElementById('fr1').value||null;
   if((!t||t==='Por confirmar')&&r1&&!confirm('Docente sin confirmar. ¿Continuar?'))return;
-  const data={name,program:document.getElementById('f-prog').value,teacher:t,email:document.getElementById('f-email').value.trim(),r1Date:r1,restrictions:document.getElementById('f-restr').value.trim(),pages:+document.getElementById('f-pages').value||0,units:+document.getElementById('f-units').value||0,minFinales:+document.getElementById('f-mf').value||0};
-  if(editId)Object.assign(subjects.find(x=>x.id===editId),data);
-  else subjects.push({id:Date.now().toString()+Math.random(),...data});
-  save();closeSubModal();renderSidebar();if(selId)renderDetail();
+  const data={name,program:document.getElementById('fp').value,teacher:t,email:document.getElementById('fe').value.trim(),r1Date:r1,restrictions:document.getElementById('frst').value.trim(),pages:+document.getElementById('fpg').value||0,units:+document.getElementById('fu').value||0,minFinales:+document.getElementById('fmf').value||0};
+  if(editId){
+    const s=subjects.find(x=>x.id===editId);Object.assign(s,data);
+    if(!s.dates)s.dates={};s.dates.r1=r1;
+  } else {
+    subjects.push({id:Date.now().toString()+Math.random(),...data,dates:{r1:r1||null},stages:{},notes:{},collapsed:{}});
+  }
+  save();closeSubOv();renderSB();if(selId===editId||!editId)renderDet();
 }
-function deleteSub(){
+function delSub(){
   if(!editId||!confirm('¿Eliminar esta asignatura?'))return;
   subjects=subjects.filter(s=>s.id!==editId);
-  if(selId===editId){selId=null;showEmpty();}
-  save();closeSubModal();renderSidebar();
+  if(selId===editId){selId=null;showEmp();}
+  save();closeSubOv();renderSB();
 }
+['subOv','incOv'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id){if(id==='subOv')closeSubOv();else closeIncOv();}});});
 
-// close overlays on backdrop click
-['subOverlay','incOverlay'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id){if(id==='subOverlay')closeSubModal();else closeIncModal();}});});
-
-// ─────────────────────────────────────────────
+// ════════════════════════════════════════════
 // SEED DATA
-// ─────────────────────────────────────────────
+// ════════════════════════════════════════════
 function seedData(){
   if(subjects.length)return;
   [
@@ -1145,17 +1225,16 @@ function seedData(){
     {id:'s14',name:'Optativo: Datos, Visualización y Decisiones',program:'OPT',teacher:'Por confirmar',email:'',pages:26,units:3,restrictions:'Docente por confirmar.'},
     {id:'s15',name:'Optativo: IA, Creatividad y Ética',program:'OPT',teacher:'Joaquim Giannotti',email:'',pages:26,units:3,restrictions:'Sin restricciones informadas.'},
     {id:'s16',name:'Optativo: Introducción al Diseño de Servicios',program:'OPT',teacher:'Por confirmar',email:'',pages:26,units:3,restrictions:'Docente por confirmar.'},
-  ].forEach(s=>subjects.push({...s,r1Date:null,minFinales:0}));
+  ].forEach(s=>subjects.push({...s,r1Date:null,minFinales:0,dates:{},stages:{},notes:{},collapsed:{}}));
   save();
 }
 
-// ─────────────────────────────────────────────
+// ════════════════════════════════════════════
 // INIT
-// ─────────────────────────────────────────────
-document.getElementById('hdrDate').innerHTML=
-  new Date().toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+
-  '<br><span>Guionista México UTC−6 · −3h Chile</span>';
-load();seedData();renderSidebar();
+// ════════════════════════════════════════════
+document.getElementById('hdate').innerHTML=new Date().toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'<br><span>Guionista México UTC−6 · −3h Chile</span>';
+load();seedData();renderSB();
+document.getElementById('emp').style.display='flex';document.getElementById('det').style.display='none';
 </script>
 </body>
 </html>
