@@ -300,11 +300,11 @@ header{background:var(--dark);color:#fff;padding:10px 20px;display:flex;align-it
       <button class="badd" onclick="openAddModal()">+ Nueva</button>
     </div>
     <div style="padding:6px 10px;border-bottom:1px solid var(--bdr);display:flex;gap:4px;flex-wrap:wrap">
-      <button class="fchip on" style="font-size:8px;padding:2px 7px" onclick="setSBFilt('all',this)">Todos</button>
-      <button class="fchip" style="font-size:8px;padding:2px 7px" onclick="setSBFilt('MBA',this)">MBA</button>
-      <button class="fchip" style="font-size:8px;padding:2px 7px" onclick="setSBFilt('MCG',this)">MCG</button>
-      <button class="fchip" style="font-size:8px;padding:2px 7px" onclick="setSBFilt('MCEE',this)">MCEE</button>
-      <button class="fchip" style="font-size:8px;padding:2px 7px" onclick="setSBFilt('OPT',this)">OPT</button>
+      <button class="fchip sbfilt-btn on" style="font-size:8px;padding:2px 7px" onclick="setSBFilt('all',this)">Todos</button>
+      <button class="fchip sbfilt-btn" style="font-size:8px;padding:2px 7px" onclick="setSBFilt('MBA',this)">MBA</button>
+      <button class="fchip sbfilt-btn" style="font-size:8px;padding:2px 7px" onclick="setSBFilt('MCG',this)">MCG</button>
+      <button class="fchip sbfilt-btn" style="font-size:8px;padding:2px 7px" onclick="setSBFilt('MCEE',this)">MCEE</button>
+      <button class="fchip sbfilt-btn" style="font-size:8px;padding:2px 7px" onclick="setSBFilt('OPT',this)">OPT</button>
     </div>
     <div class="sbl" id="sbl"></div>
   </aside>
@@ -319,15 +319,15 @@ header{background:var(--dark);color:#fff;padding:10px 20px;display:flex;align-it
   <div style="background:var(--w);border-bottom:1px solid var(--bdr);padding:10px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap">
     <h2 style="font-size:13px;font-weight:700;color:var(--dark)">📊 Gantt — Cronograma del Ciclo 2</h2>
     <div style="display:flex;gap:4px;margin-left:8px">
-      <button class="fchip on" id="gzoom-w" onclick="setGZoom('w',this)" style="font-size:9px;padding:3px 9px">Semanal</button>
-      <button class="fchip" id="gzoom-d" onclick="setGZoom('d',this)" style="font-size:9px;padding:3px 9px">Diario</button>
+      <button class="fchip gzoom-btn on" onclick="setGZoom('w',this)" style="font-size:9px;padding:3px 9px">Semanal</button>
+      <button class="fchip gzoom-btn" onclick="setGZoom('d',this)" style="font-size:9px;padding:3px 9px">Diario</button>
     </div>
     <div style="display:flex;gap:4px;margin-left:4px">
-      <button class="fchip on" id="gf-all" onclick="setGFilt('all',this)" style="font-size:8px;padding:2px 7px">Todos</button>
-      <button class="fchip" onclick="setGFilt('MBA',this)" style="font-size:8px;padding:2px 7px">MBA</button>
-      <button class="fchip" onclick="setGFilt('MCG',this)" style="font-size:8px;padding:2px 7px">MCG</button>
-      <button class="fchip" onclick="setGFilt('MCEE',this)" style="font-size:8px;padding:2px 7px">MCEE</button>
-      <button class="fchip" onclick="setGFilt('OPT',this)" style="font-size:8px;padding:2px 7px">OPT</button>
+      <button class="fchip gfilt-btn on" onclick="setGFilt('all',this)" style="font-size:8px;padding:2px 7px">Todos</button>
+      <button class="fchip gfilt-btn" onclick="setGFilt('MBA',this)" style="font-size:8px;padding:2px 7px">MBA</button>
+      <button class="fchip gfilt-btn" onclick="setGFilt('MCG',this)" style="font-size:8px;padding:2px 7px">MCG</button>
+      <button class="fchip gfilt-btn" onclick="setGFilt('MCEE',this)" style="font-size:8px;padding:2px 7px">MCEE</button>
+      <button class="fchip gfilt-btn" onclick="setGFilt('OPT',this)" style="font-size:8px;padding:2px 7px">OPT</button>
     </div>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center;font-size:9px;color:var(--body)">
       <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(0,144,248,.5);border-radius:2px;display:inline-block"></span>Desarrollo</span>
@@ -385,10 +385,10 @@ header{background:var(--dark);color:#fff;padding:10px 20px;display:flex;align-it
   <div class="inc-hdr-bar">
     <h2>🚨 Incidencias del ciclo</h2>
     <div class="filt-row">
-      <button class="fchip on" onclick="setIF('all',this)">Todas</button>
-      <button class="fchip" onclick="setIF('noshow',this)">No se presentó</button>
-      <button class="fchip" onclick="setIF('prog',this)">Programa distinto</button>
-      <button class="fchip" onclick="setIF('other',this)">Otro</button>
+      <button class="fchip ifilt-btn on" onclick="setIF('all',this)">Todas</button>
+      <button class="fchip ifilt-btn" onclick="setIF('noshow',this)">No se presentó</button>
+      <button class="fchip ifilt-btn" onclick="setIF('prog',this)">Programa distinto</button>
+      <button class="fchip ifilt-btn" onclick="setIF('other',this)">Otro</button>
     </div>
     <button class="exp-btn" onclick="exportInc()">📥 Exportar informe</button>
   </div>
@@ -1055,7 +1055,7 @@ function saveInc(){
 }
 function resolveInc(id){const i=incidents.find(x=>x.id===id);if(i){i.resolved=true;save();renderSB();renderDet();renderInc();}}
 function delInc(id){if(!confirm('¿Eliminar?'))return;incidents=incidents.filter(i=>i.id!==id);save();renderSB();renderInc();}
-function setIF(f,el){incFilt=f;document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderInc();}
+function setIF(f,el){incFilt=f;document.querySelectorAll('.ifilt-btn').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderInc();}
 function renderInc(){
   const total=incidents.length,ns=incidents.filter(i=>i.type==='noshow').length,pr=incidents.filter(i=>i.type==='prog').length,res=incidents.filter(i=>i.resolved).length;
   document.getElementById('istats').innerHTML=`<div class="istat r"><div class="istat-n">${total}</div><div class="istat-l">Total</div></div><div class="istat r"><div class="istat-n">${ns}</div><div class="istat-l">No se presentó</div></div><div class="istat wa"><div class="istat-n">${pr}</div><div class="istat-l">Prog. distinto</div></div><div class="istat gr"><div class="istat-n">${res}</div><div class="istat-l">Resueltas</div></div>`;
@@ -1283,7 +1283,7 @@ function showView(v){
 // ════════════════════════════════════════════
 function setSBFilt(f,el){
   sbFilt=f;
-  document.querySelectorAll('.sb .fchip').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('.sbfilt-btn').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
   renderSB();
 }
@@ -1291,8 +1291,8 @@ function setSBFilt(f,el){
 // ════════════════════════════════════════════
 // GANTT
 // ════════════════════════════════════════════
-function setGZoom(z,el){gZoom=z;document.querySelectorAll('#vg .fchip').forEach(c=>{if(c.id?.startsWith('gzoom'))c.classList.remove('on')});el.classList.add('on');renderGantt();}
-function setGFilt(f,el){gFilt=f;document.querySelectorAll('#vg .fchip').forEach(c=>{if(!c.id?.startsWith('gzoom'))c.classList.remove('on')});el.classList.add('on');renderGantt();}
+function setGZoom(z,el){gZoom=z;document.querySelectorAll('.gzoom-btn').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderGantt();}
+function setGFilt(f,el){gFilt=f;document.querySelectorAll('.gfilt-btn').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderGantt();}
 
 function renderGantt(){
   const wrap=document.getElementById('gantt-content');
