@@ -589,9 +589,21 @@ function nextCalDay(s){const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+1);
 // ════════════════════════════════════════════
 // PERSIST
 // ════════════════════════════════════════════
-function save(){try{localStorage.setItem('hkc2v9',JSON.stringify({subjects,incidents,simVals}));}catch(e){}}
-function load(){try{const d=localStorage.getItem('hkc2v9');if(d){const p=JSON.parse(d);subjects=p.subjects||[];incidents=p.incidents||[];if(p.simVals)simVals=p.simVals;}}catch(e){}}
-function resetData(){if(!confirm('¿Resetear todos los datos?'))return;localStorage.removeItem('hkc2v9');subjects=[];incidents=[];selId=null;seedData();renderSB();showEmp();}
+const STORE_KEY='hackea_ciclo2';
+function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify({subjects,incidents,simVals}));}catch(e){}}
+function load(){
+  try{
+    // Try current key first
+    let d=localStorage.getItem(STORE_KEY);
+    // Migrate from any previous version key
+    if(!d){
+      const oldKeys=['hkc2v9','hkc2v8','hkc2v7','hkc2v6','hkc2v5','hkc2v4'];
+      for(const k of oldKeys){const v=localStorage.getItem(k);if(v){d=v;localStorage.setItem(STORE_KEY,v);break;}}
+    }
+    if(d){const p=JSON.parse(d);subjects=p.subjects||[];incidents=p.incidents||[];if(p.simVals)simVals=p.simVals;}
+  }catch(e){}
+}
+function resetData(){if(!confirm('¿Resetear todos los datos?'))return;localStorage.removeItem(STORE_KEY);subjects=[];incidents=[];selId=null;seedData();renderSB();showEmp();}
 
 // ════════════════════════════════════════════
 // PRODUCTION CALC
@@ -1427,120 +1439,6 @@ function renderGantt(){
   html+=`</div>`;
   wrap.innerHTML=html;
 }
-
-  // Compute date range
-  let minD=null,maxD=null;
-  subs.forEach(s=>{
-    const d=computeAllDates(s);
-    const start=d.r1||s.r1Date;const end=d.done;
-    if(start){if(!minD||start<minD)minD=start;}
-    if(end){if(!maxD||end>maxD)maxD=end;}
-  });
-  if(!minD)minD='2026-04-13';
-  if(!maxD)maxD=addBD(minD,120);
-
-  // Generate time slots
-  const slots=[];
-  const startD=new Date(minD+'T12:00:00');
-  const endD=new Date(maxD+'T12:00:00');
-
-  if(gZoom==='w'){
-    // weekly slots
-    let d=new Date(startD);
-    const dow=d.getDay();const diff=dow<=1?1-dow:8-dow;
-    d.setDate(d.getDate()-(dow===1?0:dow===0?6:dow-1)); // go to monday
-    while(d<=endD){
-      slots.push({label:`${d.toLocaleDateString('es-CL',{day:'numeric',month:'short'})}`,start:dstr(d),isHol:false});
-      d.setDate(d.getDate()+7);
-    }
-  } else {
-    // daily slots (only workdays)
-    let d=new Date(startD);
-    while(d<=endD){
-      const ds2=dstr(d);
-      if(isWD(ds2))slots.push({label:d.toLocaleDateString('es-CL',{weekday:'short',day:'numeric'}),start:ds2});
-      d.setDate(d.getDate()+1);
-    }
-  }
-
-  const COL=gZoom==='w'?44:28;
-  const ROW=32;
-  const LEFT=200;
-
-  // Block colors
-  const BC={dev:'rgba(0,144,248,.35)',gui:'rgba(0,196,140,.35)',prod:'rgba(245,166,35,.35)',mount:'rgba(232,69,69,.35)',rev:'rgba(155,89,182,.35)'};
-  const MEETINGS={r1:var_blue,r2:'#00C48C',r3:'#F5A623',r4:'#E84545'};
-  function var_blue(){return '#0090F8';}
-
-  let html=`<div style="display:flex;flex-direction:column">`;
-
-  // Header row
-  html+=`<div style="display:flex;position:sticky;top:0;z-index:10;background:var(--dark)">
-    <div style="width:${LEFT}px;flex-shrink:0;padding:8px 12px;font-size:9px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.6px">Asignatura</div>`;
-  slots.forEach(sl=>{
-    html+=`<div style="width:${COL}px;flex-shrink:0;text-align:center;padding:6px 2px;font-size:8px;font-weight:600;color:rgba(255,255,255,.6);border-left:1px solid rgba(255,255,255,.06);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${sl.label}</div>`;
-  });
-  html+=`</div>`;
-
-  // Subject rows
-  subs.forEach((s,si)=>{
-    const d=computeAllDates(s);
-    const progColor=s.program==='MBA'?'#0090F8':s.program==='MCG'?'#00C48C':s.program==='MCEE'?'#F5A623':'#9B59B6';
-    const rowBg=si%2===0?'var(--w)':'var(--sf)';
-
-    html+=`<div style="display:flex;align-items:center;min-height:${ROW}px;background:${rowBg};border-bottom:1px solid var(--bdr);position:relative" onclick="selSub('${s.id}');showView('p')">
-      <div style="width:${LEFT}px;flex-shrink:0;padding:6px 12px;cursor:pointer">
-        <div style="font-size:8px;font-weight:700;color:${progColor};text-transform:uppercase;margin-bottom:1px">${s.program}</div>
-        <div style="font-size:10px;font-weight:600;color:var(--dark);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px" title="${s.name}">${s.name}</div>
-      </div>`;
-
-    // Grid cells
-    slots.forEach(sl=>{
-      html+=`<div style="width:${COL}px;flex-shrink:0;height:${ROW}px;border-left:1px solid var(--bdr);position:relative">`;
-
-      // Draw blocks as filled segments
-      const phases=[
-        {start:d.r1,end:d.sendDoc1,color:BC.dev,label:'Dev'},
-        {start:d.sendDoc1,end:d.r2,color:BC.dev,label:'Rev doc'},
-        {start:d.r2,end:d.notif1,color:BC.dev,label:'Ajuste'},
-        {start:d.notif1,end:d.scriptStart,color:'transparent'},
-        {start:d.scriptStart,end:d.r3,color:BC.gui,label:'Guión'},
-        {start:d.r3,end:d.notif2,color:BC.gui,label:'Aj.Gui'},
-        {start:d.notif2,end:d.prodStart,color:'transparent'},
-        {start:d.prodStart,end:d.r4,color:BC.prod,label:'Prod'},
-        {start:d.r4,end:d.notif3,color:BC.prod,label:'Aj.Prod'},
-        {start:d.notif3,end:d.mountEnd,color:BC.mount,label:'Montaje'},
-        {start:d.mountEnd,end:d.done,color:BC.rev,label:'Rev UM'},
-      ];
-
-      phases.forEach(ph=>{
-        if(!ph.start||!ph.end||ph.color==='transparent')return;
-        const overlap=getSlotOverlap(sl.start,ph.start,ph.end,gZoom);
-        if(overlap>0){
-          const w=Math.min(COL-2,Math.round(overlap*COL));
-          html+=`<div style="position:absolute;top:6px;height:${ROW-12}px;width:${w}px;left:1px;background:${ph.color};border-radius:2px" title="${ph.label}"></div>`;
-        }
-      });
-
-      // Meeting dots
-      const meetings=[{d:d.r1,c:'#0090F8'},{d:d.r2,c:'#00C48C'},{d:d.r3,c:'#F5A623'},{d:d.r4,c:'#E84545'}];
-      meetings.forEach(m=>{
-        if(!m.d)return;
-        const inSlot=isInSlot(sl.start,m.d,gZoom);
-        if(inSlot){
-          html+=`<div style="position:absolute;width:8px;height:8px;border-radius:50%;background:${m.c};border:2px solid white;top:50%;margin-top:-4px;left:50%;margin-left:-4px;z-index:2;box-shadow:0 1px 3px rgba(0,0,0,.3)"></div>`;
-        }
-      });
-
-      html+=`</div>`;
-    });
-    html+=`</div>`;
-  });
-
-  html+=`</div>`;
-  wrap.innerHTML=html;
-}
-
 
 // ════════════════════════════════════════════
 // CLASHES
