@@ -288,7 +288,9 @@ header{background:var(--dark);color:#fff;padding:10px 20px;display:flex;align-it
     <button class="htab" onclick="showView('g')">📊 Gantt</button>
     <button class="htab" onclick="showView('c')">⚡ Choques</button>
     <button class="htab" onclick="showView('i')">🚨 Incidencias<span class="hbadge" id="ibadge" style="display:none"></span></button>
+    <button class="htab" onclick="showView('h')">🕓 Historial</button>
   </div>
+  <div id="sync-status" style="font-size:9px;font-family:'DM Mono',monospace;flex-shrink:0;margin-left:8px;white-space:nowrap"></div>
   <div class="hinfo" id="hdate"></div>
 </header>
 
@@ -476,7 +478,15 @@ header{background:var(--dark);color:#fff;padding:10px 20px;display:flex;align-it
 .clash-items .clash-item.over{color:var(--err);font-weight:600}
 </style>
 
-<!-- MODAL: SUBJECT -->
+<!-- HISTORIAL -->
+<div class="view" id="vh" style="flex-direction:column;overflow-y:auto;padding:20px;gap:14px">
+  <div style="background:var(--w);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <h2 style="font-size:14px;font-weight:700;color:var(--dark)">🕓 Historial de cambios</h2>
+    <div style="font-size:10px;color:var(--body)">Todos los cambios realizados por el equipo en tiempo real.</div>
+    <button class="fchip" onclick="renderHistory()" style="margin-left:auto;font-size:9px">↺ Actualizar</button>
+  </div>
+  <div id="hist-content"></div>
+</div>
 <div class="ov" id="subOv">
   <div class="md">
     <h3 id="smtitle">Nueva Asignatura</h3>
@@ -589,21 +599,189 @@ function nextCalDay(s){const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+1);
 // ════════════════════════════════════════════
 // PERSIST
 // ════════════════════════════════════════════
-const STORE_KEY='hackea_ciclo2';
-function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify({subjects,incidents,simVals}));}catch(e){}}
-function load(){
-  try{
-    // Try current key first
-    let d=localStorage.getItem(STORE_KEY);
-    // Migrate from any previous version key
-    if(!d){
-      const oldKeys=['hkc2v9','hkc2v8','hkc2v7','hkc2v6','hkc2v5','hkc2v4'];
-      for(const k of oldKeys){const v=localStorage.getItem(k);if(v){d=v;localStorage.setItem(STORE_KEY,v);break;}}
-    }
-    if(d){const p=JSON.parse(d);subjects=p.subjects||[];incidents=p.incidents||[];if(p.simVals)simVals=p.simVals;}
-  }catch(e){}
+// ════════════════════════════════════════════
+// SUPABASE CONFIG
+// ════════════════════════════════════════════
+const SB_URL='https://uldqkeysazhdlfidaxrg.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZHFrZXlzYXpoZGxmaWRheHJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5NjU1NDksImV4cCI6MjA5MjU0MTU0OX0.StcfZfyLEUpmElUlPbfKAIBTTMetyH5sKSFItyTgW8Y';
+const HEADERS={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'return=minimal'};
+
+// ── User identity ──────────────────────────
+let currentUser = localStorage.getItem('hackea_user') || '';
+if(!currentUser){
+  currentUser = prompt('¿Cómo te llamas? (Para el registro de cambios)') || 'Anónimo';
+  localStorage.setItem('hackea_user', currentUser);
 }
-function resetData(){if(!confirm('¿Resetear todos los datos?'))return;localStorage.removeItem(STORE_KEY);subjects=[];incidents=[];selId=null;seedData();renderSB();showEmp();}
+
+// ── Sync state ─────────────────────────────
+let syncing = false;
+let lastSync = null;
+let pendingSync = false;
+
+function showSyncStatus(state, msg){
+  const el = document.getElementById('sync-status');
+  if(!el) return;
+  if(state === 'ok') el.innerHTML = `<span style="color:var(--ok)">✅ ${msg||'Sincronizado'}</span>`;
+  else if(state === 'saving') el.innerHTML = `<span style="color:var(--warn)">⏳ Guardando...</span>`;
+  else if(state === 'error') el.innerHTML = `<span style="color:var(--err)">⚠️ ${msg||'Error al guardar'}</span>`;
+  else if(state === 'offline') el.innerHTML = `<span style="color:var(--pend)">📴 Sin conexión (guardado local)</span>`;
+}
+
+async function sbFetch(path, method='GET', body=null){
+  const opts = {method, headers: HEADERS};
+  if(body) opts.body = JSON.stringify(body);
+  const r = await fetch(SB_URL+'/rest/v1/'+path, opts);
+  if(!r.ok){const t=await r.text();throw new Error(t);}
+  if(method==='GET') return r.json();
+  return null;
+}
+
+// ── Save subject to Supabase ───────────────
+async function saveSubject(s, action='update'){
+  showSyncStatus('saving');
+  try {
+    await sbFetch('subjects?id=eq.'+s.id, 'DELETE');
+    await sbFetch('subjects', 'POST', {id:s.id, data:s, updated_at:new Date().toISOString(), updated_by:currentUser});
+    await logChange('subject', s.id, s.name, action, `${action==='create'?'Nueva asignatura':'Asignatura actualizada'}: ${s.name}`);
+    showSyncStatus('ok');
+    lastSync = new Date();
+  } catch(e){
+    console.error('Save subject error:', e);
+    showSyncStatus('error', 'Error al guardar');
+    // fallback to localStorage
+    saveLocal();
+  }
+}
+
+// ── Save incident to Supabase ──────────────
+async function saveIncident(inc, action='create'){
+  showSyncStatus('saving');
+  try {
+    await sbFetch('incidents?id=eq.'+inc.id, 'DELETE');
+    await sbFetch('incidents', 'POST', {id:inc.id, data:inc, created_at:new Date().toISOString(), created_by:currentUser});
+    const s = subjects.find(x=>x.id===inc.subjectId);
+    await logChange('incident', inc.id, s?.name||'?', action, `Incidencia en ${inc.meetingTitle}: ${inc.type==='noshow'?'No se presentó':inc.type==='prog'?'Programa distinto':'Otro'}`);
+    showSyncStatus('ok');
+  } catch(e){
+    console.error('Save incident error:', e);
+    showSyncStatus('error');
+    saveLocal();
+  }
+}
+
+// ── Delete from Supabase ───────────────────
+async function deleteSubject(id, name){
+  showSyncStatus('saving');
+  try {
+    await sbFetch('subjects?id=eq.'+id, 'DELETE');
+    await logChange('subject', id, name, 'delete', `Asignatura eliminada: ${name}`);
+    showSyncStatus('ok');
+  } catch(e){ showSyncStatus('error'); }
+}
+
+async function deleteIncident(id){
+  showSyncStatus('saving');
+  try {
+    await sbFetch('incidents?id=eq.'+id, 'DELETE');
+    showSyncStatus('ok');
+  } catch(e){ showSyncStatus('error'); }
+}
+
+// ── Change log ─────────────────────────────
+async function logChange(entityType, entityId, entityName, action, summary){
+  try {
+    await sbFetch('change_log', 'POST', {
+      entity_type:entityType, entity_id:entityId, entity_name:entityName,
+      action, changed_by:currentUser, changed_at:new Date().toISOString(), summary
+    });
+  } catch(e){ console.warn('Log error:', e); }
+}
+
+// ── Load all from Supabase ─────────────────
+async function loadFromSupabase(){
+  showSyncStatus('saving', 'Conectando...');
+  try {
+    const [subs, incs] = await Promise.all([
+      sbFetch('subjects?select=*&order=updated_at.desc'),
+      sbFetch('incidents?select=*&order=created_at.desc')
+    ]);
+    if(subs && subs.length > 0){
+      subjects = subs.map(r => r.data);
+    } else {
+      // First time: migrate from localStorage if exists
+      const oldKeys=['hackea_ciclo2','hkc2v9','hkc2v8','hkc2v7','hkc2v6'];
+      for(const k of oldKeys){
+        const v=localStorage.getItem(k);
+        if(v){
+          try{
+            const p=JSON.parse(v);
+            if(p.subjects?.length){
+              subjects=p.subjects;
+              incidents=p.incidents||[];
+              // Push to Supabase
+              showSyncStatus('saving','Migrando datos...');
+              await Promise.all(subjects.map(s=>sbFetch('subjects','POST',{id:s.id,data:s,updated_at:new Date().toISOString(),updated_by:currentUser}).catch(()=>{})));
+              await Promise.all(incidents.map(i=>sbFetch('incidents','POST',{id:i.id,data:i,created_at:new Date().toISOString(),created_by:currentUser}).catch(()=>{})));
+              await logChange('system','migration','Sistema','migrate',`Migración de datos locales (${subjects.length} asignaturas, ${incidents.length} incidencias)`);
+              break;
+            }
+          }catch(e){}
+        }
+      }
+      if(!subjects.length) seedData();
+    }
+    if(incs && incs.length > 0) incidents = incs.map(r => r.data);
+    showSyncStatus('ok','Datos cargados');
+    lastSync = new Date();
+    saveLocal(); // cache locally
+    renderSB();
+    document.getElementById('emp').style.display='flex';
+    document.getElementById('det').style.display='none';
+  } catch(e){
+    console.error('Load error:', e);
+    showSyncStatus('offline');
+    // Fall back to local
+    loadLocal();
+    renderSB();
+  }
+}
+
+// ── LocalStorage fallback ──────────────────
+const STORE_KEY='hackea_ciclo2';
+function saveLocal(){try{localStorage.setItem(STORE_KEY,JSON.stringify({subjects,incidents,simVals}));}catch(e){}}
+function loadLocal(){
+  try{
+    const d=localStorage.getItem(STORE_KEY);
+    if(d){const p=JSON.parse(d);subjects=p.subjects||[];incidents=p.incidents||[];}
+    if(!subjects.length) seedData();
+  }catch(e){ seedData(); }
+}
+
+// ── Main save (called everywhere) ─────────
+function save(){
+  saveLocal(); // always save locally first (instant)
+}
+
+// ── Wrap save calls with Supabase push ────
+function saveAndSync(s, action='update'){
+  saveLocal();
+  saveSubject(s, action); // async, non-blocking
+}
+
+function resetData(){
+  if(!confirm('¿Resetear TODOS los datos? Esto afectará a todos los usuarios.'))return;
+  subjects=[];incidents=[];selId=null;
+  // Clear supabase
+  Promise.all([
+    sbFetch('subjects','DELETE').catch(()=>{}),
+    sbFetch('incidents','DELETE').catch(()=>{})
+  ]).then(()=>{
+    logChange('system','reset','Sistema','reset','Reset completo de datos');
+    seedData();
+    Promise.all(subjects.map(s=>sbFetch('subjects','POST',{id:s.id,data:s,updated_at:new Date().toISOString(),updated_by:currentUser}).catch(()=>{})));
+    saveLocal();renderSB();showEmp();
+  });
+}
 
 // ════════════════════════════════════════════
 // PRODUCTION CALC
@@ -762,15 +940,14 @@ function applyDateChange(subjectId, key, newVal){
   const s=subjects.find(x=>x.id===subjectId);if(!s)return;
   if(!s.dates)s.dates={};
   s.dates[key]=newVal;
-  // If it's r1, also update r1Date for backward compat
   if(key==='r1')s.r1Date=newVal;
-  save();renderSB();renderDet();
+  saveAndSync(s,'update');renderSB();renderDet();
 }
 
 function clearDateOverride(subjectId, key){
   const s=subjects.find(x=>x.id===subjectId);if(!s||!s.dates)return;
   delete s.dates[key];
-  save();renderSB();renderDet();
+  saveAndSync(s,'update');renderSB();renderDet();
 }
 
 // ════════════════════════════════════════════
@@ -1036,17 +1213,20 @@ function cycleStatus(sid,key){
   if(!s.stages)s.stages={};
   const cur=s.stages[key]||'p';
   s.stages[key]=cur==='p'?'ip':cur==='ip'?'done':'p';
-  save();renderSB();renderDet();
+  const stDef=BLOCKS.flatMap(b=>b.stages).find(x=>x.key===key);
+  saveAndSync(s, `status:${s.stages[key]}:${stDef?.label||key}`);renderSB();renderDet();
 }
 function setStatus(sid,key,val){
   const s=subjects.find(x=>x.id===sid);if(!s)return;
   if(!s.stages)s.stages={};
-  s.stages[key]=val;save();renderSB();renderDet();
+  s.stages[key]=val;
+  saveAndSync(s,'update');renderSB();renderDet();
 }
 function updateNote(sid,key,val){
   const s=subjects.find(x=>x.id===sid);if(!s)return;
   if(!s.notes)s.notes={};
-  s.notes[key]=val;save();
+  s.notes[key]=val;
+  saveAndSync(s,'update');
 }
 
 // ════════════════════════════════════════════
@@ -1062,11 +1242,20 @@ function openIncModal(sid,meetingKey,meetingTitle){
 }
 function closeIncOv(){document.getElementById('incOv').classList.remove('on');pendingInc={};}
 function saveInc(){
-  incidents.push({id:Date.now().toString()+Math.random(),subjectId:pendingInc.sid,meetingKey:pendingInc.meetingKey,meetingTitle:pendingInc.meetingTitle,type:document.getElementById('itype').value,note:document.getElementById('inote').value.trim(),newDate:document.getElementById('indate').value||null,date:new Date().toLocaleDateString('es-CL',{day:'2-digit',month:'short',year:'numeric'}),resolved:false});
-  save();closeIncOv();renderSB();renderDet();renderInc();
+  const inc={id:Date.now().toString()+Math.random(),subjectId:pendingInc.sid,meetingKey:pendingInc.meetingKey,meetingTitle:pendingInc.meetingTitle,type:document.getElementById('itype').value,note:document.getElementById('inote').value.trim(),newDate:document.getElementById('indate').value||null,date:new Date().toLocaleDateString('es-CL',{day:'2-digit',month:'short',year:'numeric'}),resolved:false};
+  incidents.push(inc);
+  saveLocal();saveIncident(inc,'create');closeIncOv();renderSB();renderDet();renderInc();
 }
-function resolveInc(id){const i=incidents.find(x=>x.id===id);if(i){i.resolved=true;save();renderSB();renderDet();renderInc();}}
-function delInc(id){if(!confirm('¿Eliminar?'))return;incidents=incidents.filter(i=>i.id!==id);save();renderSB();renderInc();}
+function resolveInc(id){
+  const i=incidents.find(x=>x.id===id);if(!i)return;
+  i.resolved=true;
+  saveLocal();saveIncident(i,'resolve');renderSB();renderDet();renderInc();
+}
+function delInc(id){
+  if(!confirm('¿Eliminar?'))return;
+  incidents=incidents.filter(i=>i.id!==id);
+  saveLocal();deleteIncident(id);renderSB();renderInc();
+}
 function setIF(f,el){incFilt=f;document.querySelectorAll('.ifilt-btn').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderInc();}
 function renderInc(){
   const total=incidents.length,ns=incidents.filter(i=>i.type==='noshow').length,pr=incidents.filter(i=>i.type==='prog').length,res=incidents.filter(i=>i.resolved).length;
@@ -1272,8 +1461,8 @@ function applySimR1(){
   const nc=SV.nc,ng=SV.ng,nd=SV.nd,ppd=parseInt(document.getElementById('ppd').value)||25;
   const base=simEngine(nc,ng,nd,ppd,0,0,0,0);
   if(!confirm('¿Aplicar fechas de R1 sugeridas? Solo asigna a asignaturas sin fecha.'))return;
-  base.results.forEach(sr=>{const s=subjects.find(x=>x.id===sr.id);if(s&&!s.r1Date){s.r1Date=sr.r1;if(!s.dates)s.dates={};s.dates.r1=sr.r1;}});
-  save();renderSB();if(selId)renderDet();showView('p');
+  base.results.forEach(sr=>{const s=subjects.find(x=>x.id===sr.id);if(s&&!s.r1Date){s.r1Date=sr.r1;if(!s.dates)s.dates={};s.dates.r1=sr.r1;saveAndSync(s,'update');}});
+  saveLocal();renderSB();if(selId)renderDet();showView('p');
 }
 
 // ════════════════════════════════════════════
@@ -1283,11 +1472,12 @@ function showView(v){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.htab').forEach(el=>el.classList.remove('on'));
   document.getElementById('v'+v).classList.add('on');
-  const idx={p:0,g:1,c:2,s:3,i:4}[v]??0;
+  const idx={p:0,s:1,g:2,c:3,i:4,h:5}[v]??0;
   document.querySelectorAll('.htab')[idx].classList.add('on');
   if(v==='i')renderInc();
   if(v==='g')renderGantt();
   if(v==='c')renderClashes();
+  if(v==='h')renderHistory();
 }
 
 // ════════════════════════════════════════════
@@ -1587,19 +1777,25 @@ function saveSub(){
   const t=document.getElementById('ft').value.trim();const r1=document.getElementById('fr1').value||null;
   if((!t||t==='Por confirmar')&&r1&&!confirm('Docente sin confirmar. ¿Continuar?'))return;
   const data={name,program:document.getElementById('fp').value,teacher:t,email:document.getElementById('fe').value.trim(),r1Date:r1,restrictions:document.getElementById('frst').value.trim(),pages:+document.getElementById('fpg').value||0,units:+document.getElementById('fu').value||0,minFinales:+document.getElementById('fmf').value||0};
+  let subj;
   if(editId){
-    const s=subjects.find(x=>x.id===editId);Object.assign(s,data);
-    if(!s.dates)s.dates={};s.dates.r1=r1;
+    subj=subjects.find(x=>x.id===editId);Object.assign(subj,data);
+    if(!subj.dates)subj.dates={};subj.dates.r1=r1;
+    saveAndSync(subj,'update');
   } else {
-    subjects.push({id:Date.now().toString()+Math.random(),...data,dates:{r1:r1||null},stages:{},notes:{},collapsed:{}});
+    subj={id:Date.now().toString()+Math.random(),...data,dates:{r1:r1||null},stages:{},notes:{},collapsed:{}};
+    subjects.push(subj);
+    saveAndSync(subj,'create');
   }
-  save();closeSubOv();renderSB();if(selId===editId||!editId)renderDet();
+  closeSubOv();renderSB();if(selId===editId||!editId)renderDet();
 }
 function delSub(){
   if(!editId||!confirm('¿Eliminar esta asignatura?'))return;
+  const s=subjects.find(x=>x.id===editId);
+  const name=s?.name||'?';
   subjects=subjects.filter(s=>s.id!==editId);
   if(selId===editId){selId=null;showEmp();}
-  save();closeSubOv();renderSB();
+  saveLocal();deleteSubject(editId,name);closeSubOv();renderSB();
 }
 ['subOv','incOv'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id){if(id==='subOv')closeSubOv();else closeIncOv();}});});
 
@@ -1631,11 +1827,50 @@ function seedData(){
 
 
 // ════════════════════════════════════════════
+// HISTORY
+// ════════════════════════════════════════════
+async function renderHistory(){
+  const el=document.getElementById('hist-content');
+  if(!el)return;
+  el.innerHTML='<div style="text-align:center;padding:30px;color:var(--pend)">Cargando historial...</div>';
+  try{
+    const logs=await sbFetch('change_log?select=*&order=changed_at.desc&limit=100');
+    if(!logs||!logs.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--pend)"><div style="font-size:28px;opacity:.3;margin-bottom:8px">📋</div><p>No hay cambios registrados aún.</p></div>';return;}
+    const actionLabel={create:'Creado',update:'Actualizado',delete:'Eliminado',resolve:'Resuelta',migrate:'Migración',reset:'Reset','status:done:':'Completado','status:ip:':'En progreso','status:p:':'Reabierto'};
+    const actionColor={create:'var(--ok)',update:'var(--blue)',delete:'var(--err)',resolve:'var(--ok)',migrate:'var(--pur)',reset:'var(--err)'};
+    let h='<div style="display:flex;flex-direction:column;gap:6px">';
+    logs.forEach(log=>{
+      const d=new Date(log.changed_at);
+      const dateStr=d.toLocaleDateString('es-CL',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+      const timeStr=d.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
+      const action=log.action||'update';
+      const baseAction=action.startsWith('status:')?action.split(':')[0]+':':action;
+      const color=actionColor[baseAction]||actionColor[action]||'var(--body)';
+      const label=actionLabel[action]||actionLabel[baseAction]||action;
+      h+=`<div style="background:var(--w);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;background:${color}18;color:${color};flex-shrink:0">${label}</div>
+        <div style="flex:1;min-width:120px">
+          <div style="font-size:11px;font-weight:600;color:var(--dark)">${log.entity_name||'—'}</div>
+          <div style="font-size:9px;color:var(--body);margin-top:1px">${log.summary||''}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:10px;font-weight:600;color:var(--blue)">${log.changed_by||'?'}</div>
+          <div style="font-size:8px;font-family:'DM Mono',monospace;color:var(--pend)">${dateStr} · ${timeStr}</div>
+        </div>
+      </div>`;
+    });
+    h+='</div>';
+    el.innerHTML=h;
+  }catch(e){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--err)">Error al cargar el historial. Verifica la conexión.</div>';
+  }
+}
+
+// ════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════
 document.getElementById('hdate').innerHTML=new Date().toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'<br><span>Guionista México UTC−6 · −3h Chile</span>';
-load();seedData();renderSB();
-document.getElementById('emp').style.display='flex';document.getElementById('det').style.display='none';
+loadFromSupabase();
 </script>
 </body>
 </html>
