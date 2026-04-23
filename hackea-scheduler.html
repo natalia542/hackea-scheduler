@@ -1295,10 +1295,138 @@ function setGZoom(z,el){gZoom=z;document.querySelectorAll('.gzoom-btn').forEach(
 function setGFilt(f,el){gFilt=f;document.querySelectorAll('.gfilt-btn').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderGantt();}
 
 function renderGantt(){
-  const wrap=document.getElementById('gantt-content');
+  const wrap=document.getElementById('gantt-wrap');
   if(!wrap)return;
   const subs=gFilt==='all'?subjects:subjects.filter(s=>s.program===gFilt);
   if(!subs.length){wrap.innerHTML='<div style="padding:40px;text-align:center;color:var(--pend)">No hay asignaturas para mostrar.</div>';return;}
+
+  let minD=null,maxD=null;
+  subs.forEach(s=>{
+    const d=computeAllDates(s);
+    [d.r1,d.done].filter(Boolean).forEach(dt=>{
+      if(!minD||dt<minD)minD=dt;if(!maxD||dt>maxD)maxD=dt;
+    });
+  });
+  if(!minD){wrap.innerHTML='<div style="padding:40px;text-align:center;color:var(--pend)">No hay fechas asignadas aún. Agrega fechas de R1 en la vista Planificar.</div>';return;}
+
+  const start=new Date(minD+'T12:00:00');start.setDate(start.getDate()-3);
+  const end=new Date(maxD+'T12:00:00');end.setDate(end.getDate()+5);
+  const today=todayS();
+
+  const cols=[];
+  if(gZoom==='w'){
+    let d=new Date(start);while(d.getDay()!==1)d.setDate(d.getDate()-1);
+    while(d<=end){
+      const wStart=dstr(d);const wEnd=new Date(d);wEnd.setDate(wEnd.getDate()+6);
+      cols.push({key:wStart,label:`${d.getDate()}/${d.getMonth()+1}`,start:wStart,end:dstr(wEnd),isToday:today>=wStart&&today<=dstr(wEnd)});
+      d.setDate(d.getDate()+7);
+    }
+  } else {
+    let d=new Date(start);
+    while(d<=end){
+      const ds2=dstr(d);const isWknd=d.getDay()===0||d.getDay()===6;
+      cols.push({key:ds2,label:`${d.getDate()}`,sublabel:['D','L','M','X','J','V','S'][d.getDay()],start:ds2,end:ds2,isToday:ds2===today,isWknd,isHol:HOLS.has(ds2)});
+      d.setDate(d.getDate()+1);
+    }
+  }
+
+  const COL_W=gZoom==='w'?80:26;
+  const NAME_W=200;
+  const totalW=cols.length*COL_W;
+
+  function dateToX(dateStr){
+    if(!dateStr)return null;
+    if(gZoom==='w'){
+      const idx=cols.findIndex(c=>c.start<=dateStr&&c.end>=dateStr);
+      if(idx<0){const ci=cols.findIndex(c=>c.start>dateStr);return ci>0?(ci-0.5)*COL_W:totalW;}
+      const c=cols[idx];const ws=new Date(c.start+'T12:00:00'),we=new Date(c.end+'T12:00:00'),dd=new Date(dateStr+'T12:00:00');
+      return idx*COL_W+((dd-ws)/(we-ws))*COL_W;
+    } else {
+      const idx=cols.findIndex(c=>c.key===dateStr);
+      if(idx<0){const ci=cols.findIndex(c=>c.key>dateStr);return ci>0?ci*COL_W:totalW;}
+      return idx*COL_W+COL_W/2;
+    }
+  }
+
+  const todayX=dateToX(today);
+  let html='<div style="display:flex;flex-direction:column;min-width:max-content">';
+
+  // Header
+  html+=`<div style="display:flex;position:sticky;top:0;z-index:10;background:var(--dark);flex-shrink:0">
+    <div style="width:${NAME_W}px;min-width:${NAME_W}px;padding:8px 12px;font-size:9px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.6px;position:sticky;left:0;z-index:11;background:var(--dark)">Asignatura</div>
+    <div style="display:flex;flex-shrink:0">`;
+  cols.forEach(c=>{
+    html+=`<div style="width:${COL_W}px;min-width:${COL_W}px;flex-shrink:0;text-align:center;padding:5px 1px;font-size:${gZoom==='w'?9:8}px;font-weight:600;color:rgba(255,255,255,${c.isToday?.9:.5});border-left:1px solid rgba(255,255,255,.06);background:${c.isToday?'rgba(0,144,248,.4)':'transparent'}">
+      ${gZoom==='d'?`<div style="font-size:7px;color:rgba(255,255,255,.35)">${c.sublabel}</div>`:''}${c.label}
+    </div>`;
+  });
+  html+=`</div></div>`;
+
+  // Rows by program
+  const progColors={MBA:'var(--b1)',MCG:'var(--b2)',MCEE:'var(--b3)',OPT:'var(--b5)'};
+  const progNames={MBA:'MBA',MCG:'Magíster Control de Gestión',MCEE:'Magíster Currículum y Evaluación',OPT:'Optativos'};
+  const progsInView=gFilt==='all'?['MBA','MCG','MCEE','OPT']:[gFilt];
+
+  progsInView.forEach(prog=>{
+    const ps=subs.filter(s=>s.program===prog);
+    if(!ps.length)return;
+    html+=`<div style="display:flex;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.1)">
+      <div style="width:${NAME_W}px;min-width:${NAME_W}px;background:${progColors[prog]||'var(--dark)'};color:#fff;font-size:8px;font-weight:700;padding:4px 12px;display:flex;align-items:center;letter-spacing:.6px;text-transform:uppercase;position:sticky;left:0;z-index:4">${progNames[prog]||prog}</div>
+      <div style="flex:1;background:${progColors[prog]||'var(--dark)'};opacity:.7;min-width:${totalW}px"></div>
+    </div>`;
+
+    ps.forEach((s,si)=>{
+      const d=computeAllDates(s);
+      const rowBg=si%2===0?'var(--w)':'var(--sf)';
+      const segments=[
+        {label:'Desarrollo',start:d.r1,end:d.notif1,color:'var(--b1)'},
+        {label:'Guionización',start:d.scriptStart,end:d.notif2,color:'var(--b2)'},
+        {label:'Producción',start:d.prodStart,end:d.notif3,color:'var(--b3)'},
+        {label:'Montaje',start:d.mountStart,end:d.mountEnd,color:'var(--b4)'},
+        {label:'Revisión UM',start:d.notifUM,end:d.done,color:'var(--b5)'},
+      ].filter(seg=>seg.start&&seg.end&&seg.start<=seg.end);
+      const meetings=[{key:'R1',date:d.r1,c:'#0090F8'},{key:'R2',date:d.r2,c:'#00C48C'},{key:'R3',date:d.r3,c:'#F5A623'},{key:'R4',date:d.r4,c:'#E84545'}].filter(m=>m.date);
+
+      html+=`<div style="display:flex;align-items:center;min-height:34px;background:${rowBg};border-bottom:1px solid var(--bdr);flex-shrink:0">
+        <div style="width:${NAME_W}px;min-width:${NAME_W}px;padding:6px 12px;cursor:pointer;position:sticky;left:0;z-index:4;background:${rowBg};border-right:1px solid var(--bdr)" onclick="selSub('${s.id}');showView('p')">
+          <div style="font-size:10px;font-weight:600;color:var(--dark);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:188px" title="${s.name}">${s.name}</div>
+          <div style="font-size:8px;color:var(--pend)">${s.teacher?.split(' ').slice(-1)[0]||'—'}</div>
+        </div>
+        <div style="position:relative;height:34px;min-width:${totalW}px;flex-shrink:0">`;
+
+      // Column backgrounds
+      cols.forEach((c,ci)=>{
+        const bg=c.isToday?'rgba(0,144,248,.06)':c.isWknd||c.isHol?'rgba(0,0,0,.03)':'transparent';
+        if(bg!=='transparent')html+=`<div style="position:absolute;left:${ci*COL_W}px;width:${COL_W}px;top:0;bottom:0;background:${bg}"></div>`;
+        if(ci>0)html+=`<div style="position:absolute;left:${ci*COL_W}px;top:0;bottom:0;width:1px;background:var(--bdr)"></div>`;
+      });
+
+      // Today line
+      if(todayX!==null)html+=`<div style="position:absolute;left:${todayX}px;top:0;bottom:0;width:2px;background:var(--blue);opacity:.5;z-index:3"></div>`;
+
+      // Bars
+      segments.forEach(seg=>{
+        const x1=dateToX(seg.start),x2=dateToX(seg.end);
+        if(x1===null||x2===null)return;
+        const w=Math.max(6,x2-x1);
+        html+=`<div style="position:absolute;left:${x1}px;width:${w}px;top:8px;height:18px;background:${seg.color};border-radius:3px;opacity:.85;overflow:hidden;cursor:pointer;display:flex;align-items:center;padding:0 4px" title="${s.name}: ${seg.label} (${fmt(seg.start)} → ${fmt(seg.end)})" onclick="selSub('${s.id}');showView('p')">
+          <span style="font-size:8px;font-weight:700;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w>35?seg.label:''}</span>
+        </div>`;
+      });
+
+      // Meeting dots
+      meetings.forEach(m=>{
+        const x=dateToX(m.date);if(x===null)return;
+        html+=`<div style="position:absolute;left:${x-5}px;top:50%;margin-top:-5px;width:10px;height:10px;border-radius:50%;background:${m.c};border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,.3);z-index:5;cursor:pointer" title="${m.key}: ${fmt(m.date)}" onclick="selSub('${s.id}');showView('p')"></div>`;
+      });
+
+      html+=`</div></div>`;
+    });
+  });
+
+  html+=`</div>`;
+  wrap.innerHTML=html;
+}
 
   // Compute date range
   let minD=null,maxD=null;
@@ -1413,25 +1541,6 @@ function renderGantt(){
   wrap.innerHTML=html;
 }
 
-function getSlotOverlap(slotStart,phStart,phEnd,zoom){
-  if(!phStart||!phEnd)return 0;
-  const slotEnd=zoom==='w'?addBD(slotStart,5):slotStart;
-  if(phEnd<slotStart||phStart>slotEnd)return 0;
-  if(zoom==='d')return phStart<=slotStart&&phEnd>=slotStart?1:0;
-  const overlapStart=phStart>slotStart?phStart:slotStart;
-  const overlapEnd=phEnd<slotEnd?phEnd:slotEnd;
-  if(overlapStart>overlapEnd)return 0;
-  const totalDays=5;
-  const overlapDays=(new Date(overlapEnd)-new Date(overlapStart))/(24*3600*1000)+1;
-  return Math.min(1,overlapDays/totalDays);
-}
-
-function isInSlot(slotStart,date,zoom){
-  if(!date)return false;
-  if(zoom==='d')return date===slotStart;
-  const slotEnd=addBD(slotStart,4);
-  return date>=slotStart&&date<=slotEnd;
-}
 
 // ════════════════════════════════════════════
 // CLASHES
@@ -1622,168 +1731,6 @@ function seedData(){
   save();
 }
 
-// ════════════════════════════════════════════
-// GANTT
-// ════════════════════════════════════════════
-let ganttZoom='w'; // 'w'=weekly, 'd'=daily
-
-function setZoom(z){
-  ganttZoom=z;
-  document.getElementById('zoom-w').classList.toggle('on',z==='w');
-  document.getElementById('zoom-d').classList.toggle('on',z==='d');
-  renderGantt();
-}
-
-function renderGantt(){
-  // Collect all dates to determine range
-  let minD=null,maxD=null;
-  const allDates=[];
-  subjects.forEach(s=>{
-    const d=computeAllDates(s);
-    const dates=[d.r1,d.devStart,d.sendDoc1,d.r2,d.adj1,d.notif1,d.scriptStart,d.sendDoc2,d.r3,d.adj2,d.notif2,d.prodStart,d.sendDoc3,d.r4,d.adj3,d.notif3,d.mountStart,d.mountEnd,d.notifUM,d.corrUM,d.closeMount,d.docReview,d.done].filter(Boolean);
-    dates.forEach(dt=>{
-      if(!minD||dt<minD)minD=dt;
-      if(!maxD||dt>maxD)maxD=dt;
-    });
-  });
-  if(!minD){
-    document.getElementById('gantt-wrap').innerHTML='<div style="padding:40px;text-align:center;color:var(--pend)">No hay asignaturas con fechas asignadas. Agrega fechas de R1 en la vista Planificar.</div>';
-    return;
-  }
-  // Extend range a bit
-  const start=new Date(minD+'T12:00:00');start.setDate(start.getDate()-3);
-  const end=new Date(maxD+'T12:00:00');end.setDate(end.getDate()+5);
-  const today=todayS();
-
-  // Build columns
-  const cols=[];
-  if(ganttZoom==='w'){
-    // Weekly: each column = 1 week (Mon-Sun)
-    let d=new Date(start);
-    // Go to Monday
-    while(d.getDay()!==1)d.setDate(d.getDate()-1);
-    while(d<=end){
-      const wStart=dstr(d);
-      const wEnd=new Date(d);wEnd.setDate(wEnd.getDate()+6);
-      cols.push({key:wStart,label:`${d.getDate()}/${d.getMonth()+1}`,start:wStart,end:dstr(wEnd),isToday:today>=wStart&&today<=dstr(wEnd)});
-      d.setDate(d.getDate()+7);
-    }
-  } else {
-    // Daily
-    let d=new Date(start);
-    while(d<=end){
-      const ds2=dstr(d);
-      const isWd=isWD(ds2);
-      const isWknd=d.getDay()===0||d.getDay()===6;
-      cols.push({key:ds2,label:`${d.getDate()}`,sublabel:['D','L','M','X','J','V','S'][d.getDay()],start:ds2,end:ds2,isToday:ds2===today,isWknd,isHol:HOLS.has(ds2)});
-      d.setDate(d.getDate()+1);
-    }
-  }
-
-  const COL_W=ganttZoom==='w'?80:28;
-  const NAME_W=200;
-
-  // Helper: date to pixel offset
-  function dateToX(dateStr){
-    if(!dateStr)return null;
-    if(ganttZoom==='w'){
-      const idx=cols.findIndex(c=>c.start<=dateStr&&c.end>=dateStr);
-      if(idx<0){
-        // fallback: proportional
-        const ci=cols.findIndex(c=>c.start>dateStr);
-        return ci>0?(ci-0.5)*COL_W:cols.length*COL_W;
-      }
-      // proportion within week
-      const c=cols[idx];const ws=new Date(c.start+'T12:00:00'),we=new Date(c.end+'T12:00:00');
-      const dd=new Date(dateStr+'T12:00:00');
-      const pct=(dd-ws)/(we-ws);
-      return idx*COL_W+pct*COL_W;
-    } else {
-      const idx=cols.findIndex(c=>c.key===dateStr);
-      if(idx<0){
-        const ci=cols.findIndex(c=>c.key>dateStr);
-        return ci>0?ci*COL_W:cols.length*COL_W;
-      }
-      return idx*COL_W+COL_W/2;
-    }
-  }
-
-  // Today line x
-  const todayX=dateToX(today);
-  const totalW=cols.length*COL_W;
-
-  let html='';
-
-  // Header row
-  html+=`<div class="gantt-header" style="flex-shrink:0">
-    <div class="gantt-name-col" style="width:${NAME_W}px;min-width:${NAME_W}px">Asignatura</div>
-    <div style="display:flex;flex-shrink:0">`;
-  cols.forEach(c=>{
-    html+=`<div class="gantt-col-hdr${c.isToday?' today-h':''}" style="width:${COL_W}px;min-width:${COL_W}px;flex-shrink:0">
-      ${ganttZoom==='d'?`<div style="font-size:8px;color:rgba(255,255,255,.4)">${c.sublabel}</div>`:''}
-      ${c.label}
-    </div>`;
-  });
-  html+=`</div></div>`;
-
-  // Rows grouped by program
-  ['MBA','MCG','MCEE','OPT'].forEach(prog=>{
-    const progSubs=subjects.filter(s=>s.program===prog);
-    if(!progSubs.length)return;
-    // Program header
-    html+=`<div style="display:flex;flex-shrink:0;border-bottom:1px solid var(--bdr)">
-      <div style="width:${NAME_W}px;min-width:${NAME_W}px;background:var(--dark);color:rgba(255,255,255,.6);font-size:8px;font-weight:700;padding:4px 12px;display:flex;align-items:center;letter-spacing:.6px;text-transform:uppercase;position:sticky;left:0;z-index:4">${prog}</div>
-      <div style="flex:1;background:var(--dark);min-width:${totalW}px"></div>
-    </div>`;
-
-    progSubs.forEach(s=>{
-      const d=computeAllDates(s);
-      // Blocks: [label, start, end, color]
-      const segments=[
-        {label:'Desarrollo',start:d.r1,end:d.notif1,color:'var(--b1)'},
-        {label:'Guionización',start:d.scriptStart,end:d.notif2,color:'var(--b2)'},
-        {label:'Producción',start:d.prodStart,end:d.notif3,color:'var(--b3)'},
-        {label:'Montaje',start:d.mountStart,end:d.mountEnd,color:'var(--b4)'},
-        {label:'Revisión UM',start:d.notifUM,end:d.done,color:'var(--b5)'},
-      ].filter(seg=>seg.start&&seg.end&&seg.start<=seg.end);
-
-      const meetings=[
-        {key:'R1',date:d.r1},{key:'R2',date:d.r2},{key:'R3',date:d.r3},{key:'R4',date:d.r4}
-      ].filter(m=>m.date);
-
-      html+=`<div class="gantt-row" style="flex-shrink:0">
-        <div class="gantt-row-name" style="width:${NAME_W}px;min-width:${NAME_W}px" onclick="selSub('${s.id}');showView('p')">${s.name.length>28?s.name.substring(0,26)+'…':s.name}</div>
-        <div class="gantt-bar-area" style="width:${totalW}px;min-width:${totalW}px;flex-shrink:0">`;
-
-      // Column backgrounds
-      cols.forEach((c,ci)=>{
-        html+=`<div class="gantt-col-bg${c.isWknd?' weekend':c.isHol?' hol':c.isToday?' today-col':''}" style="left:${ci*COL_W}px;width:${COL_W}px"></div>`;
-      });
-
-      // Today line
-      if(todayX!==null)html+=`<div class="gantt-today-line" style="left:${todayX}px"></div>`;
-
-      // Bars
-      segments.forEach(seg=>{
-        const x1=dateToX(seg.start);const x2=dateToX(seg.end);
-        if(x1===null||x2===null)return;
-        const w=Math.max(4,x2-x1);
-        html+=`<div class="gantt-bar" style="left:${x1}px;width:${w}px;background:${seg.color}" title="${s.name}: ${seg.label} (${fmt(seg.start)} → ${fmt(seg.end)})" onclick="selSub('${s.id}');showView('p')"><span>${w>30?seg.label:''}</span></div>`;
-      });
-
-      // Meeting dots
-      meetings.forEach(m=>{
-        const x=dateToX(m.date);
-        if(x===null)return;
-        html+=`<div class="gantt-dot" style="left:${x}px" title="${m.key}: ${fmt(m.date)}" onclick="selSub('${s.id}');showView('p')"></div>`;
-      });
-
-      html+=`</div></div>`;
-    });
-  });
-
-  document.getElementById('gantt-wrap').innerHTML=html;
-}
 
 // ════════════════════════════════════════════
 // INIT
