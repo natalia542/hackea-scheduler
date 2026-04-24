@@ -1637,57 +1637,93 @@ function renderClashes(){
   const el=document.getElementById('clashes-content');
   if(!el)return;
 
-  // Build day-by-day map of who does what
-  const dayMap={}; // date -> {guion:[],cont:[],devs:[],doc:{teacher:[]}}
+  // Per-day tracking — each role has its own list, no cross-contamination
+  const dayMap={}; // date -> {guion:[], contDev:[], contAdj:[], dev:[], doc:{teacher:[{name,label,id}]}}
+
+  function ensure(date){
+    if(!dayMap[date])dayMap[date]={guion:[],contDev:[],contAdj:[],dev:[],doc:{}};
+    return dayMap[date];
+  }
 
   subjects.forEach(s=>{
     if(isPaused(s))return;
     const d=computeAllDates(s);
-    const name=s.name.substring(0,22);
-    const teacher=s.teacher||'?';
+    const name=s.name.substring(0,24);
+    const teacher=(s.teacher||'').trim();
+    const id=s.id;
 
-    function add(date,role,label){
-      if(!date)return;
-      if(!dayMap[date])dayMap[date]={guion:[],cont:[],dev:[],doc:{}};
-      dayMap[date][role].push({name,label,id:s.id});
-      if(role==='guion'||role==='cont'){
-        if(!dayMap[date].doc[teacher])dayMap[date].doc[teacher]=[];
-        dayMap[date].doc[teacher].push({name,label,id:s.id});
+    // ── GUIONISTA: R1, R2, R3, R4 are meetings (each counts 1 slot)
+    [['r1','R1'],['r2','R2'],['r3','R3'],['r4','R4']].forEach(([k,lbl])=>{
+      if(!d[k])return;
+      ensure(d[k]).guion.push({name,label:lbl,id});
+    });
+
+    // ── CONTENIDISTA: development days (not exclusive — can overlap with other subjects)
+    if(d.r1&&d.sendDoc1){
+      let cur=d.r1;
+      while(cur<=d.sendDoc1){
+        ensure(cur).contDev.push({name,label:'Desarrollo',id});
+        cur=addBD(cur,1);if(cur>d.sendDoc1)break;
+      }
+    }
+    // adj1 = exclusive day (cannot be combined with dev of any subject)
+    if(d.adj1) ensure(d.adj1).contAdj.push({name,label:'Ajuste cont.',id});
+    // adj2 (guionista adjustment — not contenidista)
+
+    // ── DEVELOPERS: prodStart → notif3
+    if(d.prodStart&&d.notif3){
+      let cur=d.prodStart;
+      while(cur<=d.notif3){
+        ensure(cur).dev.push({name,label:'Producción',id});
+        cur=addBD(cur,1);if(cur>d.notif3)break;
       }
     }
 
-    // Guionista meetings: r1,r2,r3,r4
-    add(d.r1,'guion','R1');add(d.r2,'guion','R2');add(d.r3,'guion','R3');add(d.r4,'guion','R4');
-    // Contenidista: dev days (simplified: r1 → sendDoc1)
-    if(d.r1&&d.sendDoc1){let cur=d.r1;while(cur&&cur<=d.sendDoc1){add(cur,'cont','Desarrollo');cur=addBD(cur,1);if(cur>d.sendDoc1)break;}}
-    add(d.adj1,'cont','Ajuste cont.');
-    add(d.adj2,'guion','Ajuste guión');
-    // Developers: prodStart → r4
-    if(d.prodStart&&d.r4){let cur=d.prodStart;while(cur&&cur<=d.r4){add(cur,'dev','Producción');cur=addBD(cur,1);if(cur>d.r4)break;}}
-    // Doc teacher meetings
-    if(d.r1&&teacher){if(!dayMap[d.r1])dayMap[d.r1]={guion:[],cont:[],dev:[],doc:{}};if(!dayMap[d.r1].doc[teacher])dayMap[d.r1].doc[teacher]=[];dayMap[d.r1].doc[teacher].push({name,label:'R1',id:s.id});}
-    if(d.r2&&teacher){if(!dayMap[d.r2])dayMap[d.r2]={guion:[],cont:[],dev:[],doc:{}};if(!dayMap[d.r2].doc[teacher])dayMap[d.r2].doc[teacher]=[];dayMap[d.r2].doc[teacher].push({name,label:'R2',id:s.id});}
+    // ── DOCENTE: only meetings (R1, R2, R3, R4) — track per teacher
+    if(teacher&&teacher!=='Por confirmar'){
+      [['r1','R1'],['r2','R2'],['r3','R3'],['r4','R4']].forEach(([k,lbl])=>{
+        if(!d[k])return;
+        const dm=ensure(d[k]);
+        if(!dm.doc[teacher])dm.doc[teacher]=[];
+        dm.doc[teacher].push({name,label:lbl,id});
+      });
+    }
   });
 
-  // Find clashes
+  // ── DETECT CLASHES
   const clashes=[];
   Object.entries(dayMap).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([date,dm])=>{
     const issues=[];
-    // Guionista overload
-    if(dm.guion.length>2)issues.push({role:'Guionista',severity:'err',msg:`${dm.guion.length} reuniones (límite: 2)`,items:dm.guion});
-    else if(dm.guion.length===2)issues.push({role:'Guionista',severity:'warn',msg:`2 reuniones (en límite)`,items:dm.guion});
-    // Contenidista: adj day conflicts with dev
-    const adjItems=dm.cont.filter(x=>x.label.startsWith('Ajuste'));
-    const devItems=dm.cont.filter(x=>x.label==='Desarrollo');
-    if(adjItems.length>0&&devItems.length>0)issues.push({role:'Contenidista',severity:'err',msg:`Ajuste + Desarrollo el mismo día (ajuste requiere día exclusivo)`,items:[...adjItems,...devItems]});
-    // Multiple adj days
-    if(adjItems.length>1)issues.push({role:'Contenidista',severity:'err',msg:`${adjItems.length} asignaturas en ajuste el mismo día`,items:adjItems});
-    // Docente con múltiples asignaturas
+
+    // 1. Guionista: >2 meetings = critical, ==2 = warning
+    const uniqueGuionMtgs=[...new Map(dm.guion.map(x=>[x.id+x.label,x])).values()];
+    if(uniqueGuionMtgs.length>2)
+      issues.push({role:'Guionista',severity:'err',msg:`${uniqueGuionMtgs.length} reuniones (límite: 2)`,items:uniqueGuionMtgs});
+    else if(uniqueGuionMtgs.length===2)
+      issues.push({role:'Guionista',severity:'warn',msg:`2 reuniones (en límite máximo)`,items:uniqueGuionMtgs});
+
+    // 2. Contenidista: adj day (exclusive) + any dev = real clash
+    const uniqueAdj=[...new Map(dm.contAdj.map(x=>[x.id,x])).values()];
+    const uniqueDev=[...new Map(dm.contDev.map(x=>[x.id,x])).values()];
+    if(uniqueAdj.length>0&&uniqueDev.length>0)
+      issues.push({role:'Contenidista',severity:'err',msg:`Día de ajuste (exclusivo) coincide con desarrollo de otras asignaturas`,items:[...uniqueAdj,...uniqueDev]});
+    // Multiple adj same day = also a problem (only 1 exclusive adj per day)
+    if(uniqueAdj.length>1)
+      issues.push({role:'Contenidista',severity:'err',msg:`${uniqueAdj.length} ajustes el mismo día (el ajuste requiere día exclusivo)`,items:uniqueAdj});
+
+    // 3. Developers: >2 subjects in production same day (only 2 devs)
+    const uniqueDev2=[...new Map(dm.dev.map(x=>[x.id,x])).values()];
+    if(uniqueDev2.length>2)
+      issues.push({role:'Desarrolladores',severity:'err',msg:`${uniqueDev2.length} asignaturas en producción (máximo 2 simultáneas)`,items:uniqueDev2});
+
+    // 4. Docente with >1 meeting same day (different subjects)
     Object.entries(dm.doc).forEach(([teacher,meetings])=>{
-      if(meetings.length>1&&teacher!=='Por confirmar'&&teacher!=='?'){
-        issues.push({role:`Docente: ${teacher}`,severity:'warn',msg:`${meetings.length} reuniones el mismo día`,items:meetings});
-      }
+      const unique=[...new Map(meetings.map(x=>[x.id+x.label,x])).values()];
+      const uniqueSubjects=[...new Set(unique.map(x=>x.id))];
+      if(uniqueSubjects.length>1)
+        issues.push({role:`Docente: ${teacher}`,severity:'warn',msg:`${uniqueSubjects.length} reuniones en asignaturas distintas el mismo día`,items:unique});
     });
+
     if(issues.length)clashes.push({date,issues});
   });
 
@@ -1701,26 +1737,27 @@ function renderClashes(){
 
   let h=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px">
     <div style="background:var(--w);border-radius:9px;padding:12px 14px;text-align:center;border-top:3px solid var(--err)"><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--err)">${errCount}</div><div style="font-size:9px;color:var(--body)">Días con conflicto crítico</div></div>
-    <div style="background:var(--w);border-radius:9px;padding:12px 14px;text-align:center;border-top:3px solid var(--warn)"><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--warn)">${warnCount}</div><div style="font-size:9px;color:var(--body)">Días en límite (advertencia)</div></div>
+    <div style="background:var(--w);border-radius:9px;padding:12px 14px;text-align:center;border-top:3px solid var(--warn)"><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--warn)">${warnCount}</div><div style="font-size:9px;color:var(--body)">Días en advertencia</div></div>
     <div style="background:var(--w);border-radius:9px;padding:12px 14px;text-align:center;border-top:3px solid var(--ok)"><div style="font-size:24px;font-weight:700;font-family:'DM Mono',monospace;color:var(--ok)">${subjects.length}</div><div style="font-size:9px;color:var(--body)">Asignaturas monitoreadas</div></div>
+  </div>
+  <div style="font-size:9px;color:var(--body);background:var(--w);border-radius:8px;padding:9px 13px;margin-bottom:12px;line-height:1.6">
+    <strong>Qué se detecta:</strong> 🔴 Guionista con más de 2 reuniones · Contenidista con ajuste + desarrollo simultáneo · Más de 2 asignaturas en producción · 🟡 Guionista en límite (2 reuniones) · Docente con reuniones en asignaturas distintas el mismo día
   </div>`;
 
   clashes.forEach(c=>{
     const hasErr=c.issues.some(i=>i.severity==='err');
-    const borderCol=hasErr?'var(--err)':'var(--warn)';
     const fmtD=new Date(c.date+'T12:00:00').toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-    h+=`<div style="background:var(--w);border-radius:10px;padding:14px 16px;margin-bottom:8px;border-left:4px solid ${borderCol}">
+    h+=`<div style="background:var(--w);border-radius:10px;padding:14px 16px;margin-bottom:8px;border-left:4px solid ${hasErr?'var(--err)':'var(--warn)'}">
       <div style="font-size:11px;font-weight:700;color:var(--dark);margin-bottom:9px;display:flex;align-items:center;gap:8px">
         <span style="font-size:16px">${hasErr?'🔴':'🟡'}</span> ${fmtD}
       </div>`;
-
     c.issues.forEach(issue=>{
       const ic=issue.severity==='err'?'var(--err)':'var(--warn)';
       h+=`<div style="background:${issue.severity==='err'?'rgba(232,69,69,.06)':'rgba(245,166,35,.06)'};border:1px solid ${issue.severity==='err'?'rgba(232,69,69,.2)':'rgba(245,166,35,.2)'};border-radius:7px;padding:9px 12px;margin-bottom:6px">
         <div style="font-size:10px;font-weight:700;color:${ic};margin-bottom:5px">${issue.role} — ${issue.msg}</div>
         <div style="display:flex;gap:5px;flex-wrap:wrap">`;
       issue.items.forEach(it=>{
-        h+=`<span onclick="selSub('${it.id}');showView('p')" style="font-size:9px;background:var(--sf);border:1px solid var(--bdr);border-radius:5px;padding:2px 8px;cursor:pointer;color:var(--dark)" title="Ver detalle">${it.name} <span style="color:var(--pend)">(${it.label})</span></span>`;
+        h+=`<span onclick="selSub('${it.id}');showView('p')" style="font-size:9px;background:var(--sf);border:1px solid var(--bdr);border-radius:5px;padding:2px 8px;cursor:pointer;color:var(--dark)">${it.name} <span style="color:var(--pend)">(${it.label})</span></span>`;
       });
       h+=`</div></div>`;
     });
